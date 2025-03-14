@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -46,5 +47,17 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Get the user's initials from the first name and the last name
+     * 
+     * @return string
+     */
+    public function initials(): string
+    {
+        $firstNameInitial = Str::of($this->name)->substr(0, 1)->upper();
+        $lastNameInitial = Str::of($this->last_name)->substr(0, 1)->upper();
+        return $firstNameInitial . $lastNameInitial;
     }
 }
