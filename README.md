@@ -11,6 +11,10 @@
 
 ServITech es una aplicación web desarrollada con el framework Laravel. Este proyecto tiene como objetivo proporcionar una plataforma robusta y escalable para la gestión de servicios técnicos.
 
+## Instalación de PHP y el instalador de Laravel
+
+Antes de ejecutar la aplicación, asegúrate de que tu máquina local tenga instalados [PHP](https://www.php.net/ "PHP") y [Composer](https://getcomposer.org/ "Composer"). Además, deberías instalar [Node y NPM](https://nodejs.org/en/download "Node y NPM") para poder compilar los recursos del frontend de la aplicación.
+
 ## Cómo Ejecutar el Proyecto
 
 Para ejecutar el proyecto localmente, sigue estos pasos:
@@ -19,12 +23,6 @@ Para ejecutar el proyecto localmente, sigue estos pasos:
     ```sh
     git clone https://github.com/tu-usuario/servitech.git
     cd servitech
-    ```
-
-2. Instala las dependencias de PHP y Node.js:
-    ```sh
-    composer install
-    npm install
     ```
 
 3. Crea un archivo `.env` basado en el ejemplo proporcionado:
