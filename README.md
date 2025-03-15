@@ -11,7 +11,7 @@
 
 ServITech es una aplicación web desarrollada con el framework Laravel. Este proyecto tiene como objetivo proporcionar una plataforma robusta y escalable para la gestión de servicios técnicos.
 
-## Instalación de PHP y el instalador de Laravel
+## Instalación de PHP
 
 Antes de ejecutar la aplicación, asegúrate de que tu máquina local tenga instalados [PHP](https://www.php.net/ "PHP") y [Composer](https://getcomposer.org/ "Composer"). Además, deberías instalar [Node y NPM](https://nodejs.org/en/download "Node y NPM") para poder compilar los recursos del frontend de la aplicación.
 
