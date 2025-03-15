@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Session;
 use Symfony\Component\HttpFoundation\Response;
 use OpenApi\Annotations as OA;
 
@@ -172,33 +173,13 @@ class AuthController extends Controller
             );
         }
 
+        // Generate a password reset token
         $token = $user->createToken('passwordResetToken', ['*'], now()->addMinutes(60))->plainTextToken;
 
-        Mail::to($user->email)->send(new PasswordResetMail($token, $user));
+        Mail::to($user->email)->send(new PasswordResetMail($user, $token));
         return ApiResponse::success(__('messages.password_reset_link_sent'));
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/reset-password",
-     *     summary="Reset user password",
-     *     tags={"Auth"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="token", type="string"),
-     *             @OA\Property(property="reset_token", type="string"),
-     *             @OA\Property(property="password", type="string", format="password"),
-     *             @OA\Property(property="password_confirmation", type="string", format="password")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Password reset successfully",
-     *         @OA\JsonContent(ref="#/components/schemas/ApiResponse")
-     *     )
-     * )
-     */
     public function resetPassword(Request $request)
     {
         // Validate the request
@@ -212,10 +193,8 @@ class AuthController extends Controller
         $token = $request->reset_token;
         $user = User::where('password_reset_token', $token)->first();
         if (!$user || $user->tokenExpired()) {
-            return ApiResponse::error(__('messages.invalid_or_expired_token'), [], Response::HTTP_BAD_REQUEST);
-
-            // session()->flash('auth_error', __('messages.invalid_or_expired_token'));
-            // return view('auth.reset');
+            $swal = ['title' => __('messages.invalid_or_expired_token'), 'type' => 'error'];
+            return view('auth.reset', compact('swal'));
         }
 
         // Reset the password
@@ -223,7 +202,7 @@ class AuthController extends Controller
         $user->password_reset_token = null;
         $user->save();
 
-        session()->flash('success', __('messages.password_reset_success'));
+        $swal = ['title'=> __('messages.password_reset_success'), 'type'=> 'success'];
         return view('auth.reset');
     }
 
