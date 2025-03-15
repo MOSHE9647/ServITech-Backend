@@ -13,9 +13,52 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Symfony\Component\HttpFoundation\Response;
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Schema(
+ *     schema="RegisterUserRequest",
+ *     type="object",
+ *     required={"name", "email", "password"},
+ *     @OA\Property(property="name", type="string", example="John Doe"),
+ *     @OA\Property(property="email", type="string", format="email", example="john.doe@example.com"),
+ *     @OA\Property(property="password", type="string", format="password", example="password123")
+ * )
+ * 
+ * @OA\Schema(
+ *     schema="LoginUserRequest",
+ *     type="object",
+ *     required={"email", "password"},
+ *     @OA\Property(property="email", type="string", format="email", example="john.doe@example.com"),
+ *     @OA\Property(property="password", type="string", format="password", example="password123")
+ * )
+ * 
+ * @OA\Schema(
+ *     schema="ApiResponse",
+ *     type="object",
+ *     @OA\Property(property="message", type="string", example="Success"),
+ *     @OA\Property(property="data", type="object"),
+ *     @OA\Property(property="errors", type="object")
+ * )
+ */
 class AuthController extends Controller
 {
+    /**
+     * @OA\Post(
+     *     path="/api/register",
+     *     summary="Register a new user",
+     *     tags={"Auth"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/RegisterUserRequest")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="User registered successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/ApiResponse")
+     *     )
+     * )
+     */
     public function register(RegisterUserRequest $request)
     {
         $user = User::create($request->validated());
@@ -27,6 +70,22 @@ class AuthController extends Controller
         );
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/login",
+     *     summary="Login a user",
+     *     tags={"Auth"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/LoginUserRequest")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="User logged in successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/ApiResponse")
+     *     )
+     * )
+     */
     public function login(LoginUserRequest $request)
     {
         $data = $request->validated();
@@ -41,6 +100,18 @@ class AuthController extends Controller
         return ApiResponse::success(__('messages.user_logged_in'), ['token' => $token]);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/profile",
+     *     summary="Get user profile",
+     *     tags={"Auth"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="User profile retrieved successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/ApiResponse")
+     *     )
+     * )
+     */
     public function profile()
     {
         $userData = Auth::guard('sanctum')->user();
@@ -51,6 +122,18 @@ class AuthController extends Controller
         return ApiResponse::success(__('messages.user_details'), $userData->toArray());
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/logout",
+     *     summary="Logout a user",
+     *     tags={"Auth"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="User logged out successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/ApiResponse")
+     *     )
+     * )
+     */
     public function logout()
     {
         optional(Auth::guard('sanctum')->user())->tokens()->delete();
@@ -58,6 +141,24 @@ class AuthController extends Controller
         return ApiResponse::success(__('messages.successfully_logged_out'));
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/forgot-password",
+     *     summary="Send password reset link",
+     *     tags={"Auth"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="email", type="string", format="email")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Password reset link sent",
+     *         @OA\JsonContent(ref="#/components/schemas/ApiResponse")
+     *     )
+     * )
+     */
     public function forgotPassword(Request $request)
     {
         $request->validate(['email' => 'required|email']);
@@ -77,6 +178,27 @@ class AuthController extends Controller
         return ApiResponse::success(__('messages.password_reset_link_sent'));
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/reset-password",
+     *     summary="Reset user password",
+     *     tags={"Auth"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="token", type="string"),
+     *             @OA\Property(property="reset_token", type="string"),
+     *             @OA\Property(property="password", type="string", format="password"),
+     *             @OA\Property(property="password_confirmation", type="string", format="password")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Password reset successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/ApiResponse")
+     *     )
+     * )
+     */
     public function resetPassword(Request $request)
     {
         // Validate the request
