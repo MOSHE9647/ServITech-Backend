@@ -86,7 +86,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
         "/api/v1/user/logout": {
@@ -107,7 +112,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
         "/api/v1/auth/forgot-password": {
@@ -208,6 +218,14 @@
                 },
                 "type": "object"
             }
+        },
+        "securitySchemes": {
+            "sanctum": {
+                "type": "apiKey",
+                "description": "Enter token in format (Bearer <token>)",
+                "name": "Authorization",
+                "in": "header"
+            }
         }
     },
     "tags": [
@@ -215,5 +233,12 @@
             "name": "Auth",
             "description": "Auth"
         }
+    ],
+    "security": [
+        [
+            {
+                "sanctum": []
+            }
+        ]
     ]
 }

@@ -22,6 +22,6 @@ Route::group(
     ],
     function () {
         Route::get('profile', [AuthController::class, 'profile']);
-        Route::get('logout', [AuthController::class, 'logout']);
+        Route::post('logout', [AuthController::class, 'logout']);
     }
 );

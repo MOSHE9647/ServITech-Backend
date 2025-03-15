@@ -106,6 +106,7 @@ class AuthController extends Controller
      *     path="/api/v1/user/profile",
      *     summary="Get user profile",
      *     tags={"Auth"},
+     *     security={{"sanctum":{}}},
      *     @OA\Response(
      *         response=200,
      *         description="User profile retrieved successfully",
@@ -128,6 +129,7 @@ class AuthController extends Controller
      *     path="/api/v1/user/logout",
      *     summary="Logout a user",
      *     tags={"Auth"},
+     *     security={{"sanctum":{}}},
      *     @OA\Response(
      *         response=200,
      *         description="User logged out successfully",
