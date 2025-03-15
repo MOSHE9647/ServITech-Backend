@@ -46,7 +46,7 @@ Para ejecutar el proyecto localmente, sigue estos pasos:
 
 7. Inicia el servidor de desarrollo:
     ```sh
-    php artisan serve
+    composer run dev
     ```
 
 ## Cómo Buildear el Proyecto
@@ -117,9 +117,6 @@ Gracias por considerar contribuir al proyecto **ServITech**. La guía de contrib
 
 ## Código de Conducta  
 Para asegurar que la comunidad de **ServITech** sea acogedora para todos, por favor revisa y cumple con el **Código de Conducta**.  
-
-## Vulnerabilidades de Seguridad  
-Si descubres una vulnerabilidad de seguridad en **ServITech**, por favor envía un correo electrónico a **Taylor Otwell** a [taylor@laravel.com](mailto:taylor@laravel.com). Todas las vulnerabilidades de seguridad serán atendidas de inmediato.  
 
 ## Licencia  
 El framework **Laravel** es un software de código abierto licenciado bajo la licencia **MIT**.  
