@@ -10,6 +10,7 @@ $API_VERSION = 'v1';
 Route::group(["prefix" => "/$API_VERSION/auth"], function () {
     Route::post("register", [AuthController::class, "register"]);
     Route::post("login", [AuthController::class, "login"]);
+    Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
 });
 
 // Authenticated routes

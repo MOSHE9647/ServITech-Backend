@@ -7,33 +7,33 @@ use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\RegisterUserRequest;
 use App\Http\Responses\ApiResponse;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
 {
     /**
-     * Register API - POST Method <br>
+     * Register API - POST Method
      * Validate the user input and register the user.
      * 
      * @param \App\Http\Requests\RegisterUserRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function register(RegisterUserRequest $request) {
-        // Create a new user in the database
         $user = User::create($request->validated());
 
-        // Return the user details
         return ApiResponse::success(
-            'User registered successfully', 
+            __('User registered successfully'), 
             $user->toArray(), 
             Response::HTTP_CREATED
         );
     }
 
     /**
-     * Login API - POST Method <br>
+     * Login API - POST Method
      * Validate the user input and login the user.
      * 
      * @param \App\Http\Requests\LoginUserRequest $request
@@ -41,58 +41,73 @@ class AuthController extends Controller
      */
     public function login(LoginUserRequest $request)
     {
-        // Validate the user input
         $data = $request->validated();
 
-        // Verify the user credentials
         $user = User::where('email', $data['email'])->first();
         if (!$user || !Hash::check($data['password'], $user->password)) {
             return $this->authenticationError(!$user ? 'email' : 'password');
         }
 
-        // Generate the user token
-        $token = $user->createToken(
-            'authToken', 
-            ['*'], 
-            now()->addMinutes(60)
-        )->plainTextToken;
+        $token = $user->createToken('authToken', ['*'], now()->addMinutes(60))->plainTextToken;
 
-        // Return the token
-        return ApiResponse::success('User logged in successfully', ['token' => $token]);
+        return ApiResponse::success(__('User logged in successfully'), ['token' => $token]);
     }
 
     /**
-     * Profile API - GET Method <br>
+     * Profile API - GET Method
      * Get the user profile details.
      * 
      * @return \Illuminate\Http\JsonResponse
      */
     public function profile() {
-        // Get the user data from the token payload
         $userData = Auth::guard('sanctum')->user();
         if (!$userData) {
-            return ApiResponse::error('Unauthorized.', [], Response::HTTP_UNAUTHORIZED);
+            return ApiResponse::error(__('Unauthorized'), [], Response::HTTP_UNAUTHORIZED);
         }
 
-        // Return the user data
-        return ApiResponse::success(
-            'User profile details',
-            $userData->toArray()
-        );
+        return ApiResponse::success(__('User details'), $userData->toArray());
     }
 
     /**
-     * Logout API - GET Method <br>
+     * Logout API - GET Method
      * Logout the user and delete the tokens.
      * 
      * @return \Illuminate\Http\JsonResponse
      */
     public function logout() {
-        // Delete the user tokens
         optional(Auth::guard('sanctum')->user())->tokens()->delete();
 
-        // Return the success response
-        return ApiResponse::success('Successfully logged out.');
+        return ApiResponse::success(__('Successfully logged out'));
+    }
+
+    /**
+     * Forgot Password API - POST Method
+     * Send a password reset link to the user.
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function forgotPassword(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return ApiResponse::error(
+                __('User not found'), 
+                ['email' => [__('Email not found. Please register first')]], 
+                Response::HTTP_NOT_FOUND
+            );
+        }
+
+        $status = Password::sendResetLink($request->only('email'));
+
+        return $status === Password::RESET_LINK_SENT
+            ? ApiResponse::success(__('Password reset link sent successfully'))
+            : ApiResponse::error(__('Unable to send password reset link'), 
+                ['email' => [__($status)]], 
+                Response::HTTP_BAD_REQUEST
+            );
     }
 
     /**
@@ -103,19 +118,17 @@ class AuthController extends Controller
      */
     private function authenticationError(string $field)
     {
-        // Array of error messages
         $messages = [
             'email' => [
-                'message' => 'User not found.',
-                'errors'  => ['email' => ['Email not found. Please register first.']]
+                'message' => __('User not found'),
+                'errors'  => ['email' => [__('Email not found. Please register first')]]
             ],
             'password' => [
-                'message' => 'Password didn\'t match.',
-                'errors'  => ['password' => ['Password didn\'t match. Please try again.']]
+                'message' => __("Password didn't match"),
+                'errors'  => ['password' => [__("Password didn't match. Please try again")]]
             ]
         ];
 
-        // Return the error response
         return ApiResponse::error(
             $messages[$field]['message'],
             $messages[$field]['errors'],
