@@ -46,7 +46,7 @@ class AuthController extends Controller
 {
     /**
      * @OA\Post(
-     *     path="/api/register",
+     *     path="/api/v1/auth/register",
      *     summary="Register a new user",
      *     tags={"Auth"},
      *     @OA\RequestBody(
@@ -73,7 +73,7 @@ class AuthController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/login",
+     *     path="/api/v1/auth/login",
      *     summary="Login a user",
      *     tags={"Auth"},
      *     @OA\RequestBody(
@@ -103,7 +103,7 @@ class AuthController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/profile",
+     *     path="/api/v1/user/profile",
      *     summary="Get user profile",
      *     tags={"Auth"},
      *     @OA\Response(
@@ -125,7 +125,7 @@ class AuthController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/logout",
+     *     path="/api/v1/user/logout",
      *     summary="Logout a user",
      *     tags={"Auth"},
      *     @OA\Response(
@@ -144,7 +144,7 @@ class AuthController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/forgot-password",
+     *     path="/api/v1/auth/forgot-password",
      *     summary="Send password reset link",
      *     tags={"Auth"},
      *     @OA\RequestBody(

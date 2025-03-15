@@ -12,7 +12,7 @@
                 @lang('Change Password')
             </h2>
 
-            <form class="mt-4 space-y-4 lg:mt-5 md:space-y-5" :action="url('/api/v1/auth/reset-password')">
+            <form class="mt-4 space-y-4 lg:mt-5 md:space-y-5" action="{{ route('reset-password') }}" method="POST">
                 @csrf
                 <input type="hidden" name="reset_token" value="{{ $reset_token }}">
 

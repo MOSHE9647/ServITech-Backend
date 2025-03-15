@@ -6,13 +6,13 @@
         "version": "1.0.0"
     },
     "paths": {
-        "/api/register": {
+        "/api/v1/auth/register": {
             "post": {
                 "tags": [
                     "Auth"
                 ],
                 "summary": "Register a new user",
-                "operationId": "8e4e3cb7b46126f4696379d3c7eeb4ad",
+                "operationId": "fb835c97347e657e2a627790c4c5817a",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -37,13 +37,13 @@
                 }
             }
         },
-        "/api/login": {
+        "/api/v1/auth/login": {
             "post": {
                 "tags": [
                     "Auth"
                 ],
                 "summary": "Login a user",
-                "operationId": "222b2625838e3c57e017987f73598fda",
+                "operationId": "fb66b153966d9fac2e999136ef0ade67",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -68,13 +68,13 @@
                 }
             }
         },
-        "/api/profile": {
+        "/api/v1/user/profile": {
             "get": {
                 "tags": [
                     "Auth"
                 ],
                 "summary": "Get user profile",
-                "operationId": "94a5f4c5f5e5755cf43698cf9bc49e9d",
+                "operationId": "c253fbe33492c3df0ef13727269e6bb8",
                 "responses": {
                     "200": {
                         "description": "User profile retrieved successfully",
@@ -89,13 +89,13 @@
                 }
             }
         },
-        "/api/logout": {
+        "/api/v1/user/logout": {
             "post": {
                 "tags": [
                     "Auth"
                 ],
                 "summary": "Logout a user",
-                "operationId": "ad65cbbd4e9f201619eae184a5961a98",
+                "operationId": "d7de171dc1ca82c10fb7b7c9ff4f070a",
                 "responses": {
                     "200": {
                         "description": "User logged out successfully",
@@ -110,13 +110,13 @@
                 }
             }
         },
-        "/api/forgot-password": {
+        "/api/v1/auth/forgot-password": {
             "post": {
                 "tags": [
                     "Auth"
                 ],
                 "summary": "Send password reset link",
-                "operationId": "20d78161b19ac6afb56924e74974ec46",
+                "operationId": "6e1075f86c4e9bf1030edadbf4480939",
                 "requestBody": {
                     "required": true,
                     "content": {
