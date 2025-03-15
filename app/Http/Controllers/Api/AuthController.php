@@ -6,39 +6,27 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\RegisterUserRequest;
 use App\Http\Responses\ApiResponse;
+use App\Mail\PasswordResetMail;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Mail;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
 {
-    /**
-     * Register API - POST Method
-     * Validate the user input and register the user.
-     * 
-     * @param \App\Http\Requests\RegisterUserRequest $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function register(RegisterUserRequest $request) {
+    public function register(RegisterUserRequest $request)
+    {
         $user = User::create($request->validated());
 
         return ApiResponse::success(
-            __('User registered successfully'), 
+            __('messages.user_registered'), 
             $user->toArray(), 
             Response::HTTP_CREATED
         );
     }
 
-    /**
-     * Login API - POST Method
-     * Validate the user input and login the user.
-     * 
-     * @param \App\Http\Requests\LoginUserRequest $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function login(LoginUserRequest $request)
     {
         $data = $request->validated();
@@ -50,43 +38,26 @@ class AuthController extends Controller
 
         $token = $user->createToken('authToken', ['*'], now()->addMinutes(60))->plainTextToken;
 
-        return ApiResponse::success(__('User logged in successfully'), ['token' => $token]);
+        return ApiResponse::success(__('messages.user_logged_in'), ['token' => $token]);
     }
 
-    /**
-     * Profile API - GET Method
-     * Get the user profile details.
-     * 
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function profile() {
+    public function profile()
+    {
         $userData = Auth::guard('sanctum')->user();
         if (!$userData) {
-            return ApiResponse::error(__('Unauthorized'), [], Response::HTTP_UNAUTHORIZED);
+            return ApiResponse::error(__('messages.unauthorized'), [], Response::HTTP_UNAUTHORIZED);
         }
 
-        return ApiResponse::success(__('User details'), $userData->toArray());
+        return ApiResponse::success(__('messages.user_details'), $userData->toArray());
     }
 
-    /**
-     * Logout API - GET Method
-     * Logout the user and delete the tokens.
-     * 
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function logout() {
+    public function logout()
+    {
         optional(Auth::guard('sanctum')->user())->tokens()->delete();
 
-        return ApiResponse::success(__('Successfully logged out'));
+        return ApiResponse::success(__('messages.successfully_logged_out'));
     }
 
-    /**
-     * Forgot Password API - POST Method
-     * Send a password reset link to the user.
-     * 
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function forgotPassword(Request $request)
     {
         $request->validate(['email' => 'required|email']);
@@ -94,38 +65,56 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
         if (!$user) {
             return ApiResponse::error(
-                __('User not found'), 
-                ['email' => [__('Email not found. Please register first')]], 
+                __('messages.user_not_found'), 
+                ['email' => [__('messages.email_not_found')]], 
                 Response::HTTP_NOT_FOUND
             );
         }
 
-        $status = Password::sendResetLink($request->only('email'));
+        $token = $user->createToken('passwordResetToken', ['*'], now()->addMinutes(60))->plainTextToken;
 
-        return $status === Password::RESET_LINK_SENT
-            ? ApiResponse::success(__('Password reset link sent successfully'))
-            : ApiResponse::error(__('Unable to send password reset link'), 
-                ['email' => [__($status)]], 
-                Response::HTTP_BAD_REQUEST
-            );
+        Mail::to($user->email)->send(new PasswordResetMail($token, $user));
+        return ApiResponse::success(__('messages.password_reset_link_sent'));
     }
 
-    /**
-     * Handle the authentication error response.
-     * 
-     * @param string $field
-     * @return \Illuminate\Http\JsonResponse
-     */
+    public function resetPassword(Request $request)
+    {
+        // Validate the request
+        $request->validate([
+            'token' => 'required',
+            'reset_token' => 'required',
+            'password' => 'required|confirmed|min:8',
+        ]);
+
+        // Find the user with the token
+        $token = $request->reset_token;
+        $user = User::where('password_reset_token', $token)->first();
+        if (!$user || $user->tokenExpired()) {
+            return ApiResponse::error(__('messages.invalid_or_expired_token'), [], Response::HTTP_BAD_REQUEST);
+
+            // session()->flash('auth_error', __('messages.invalid_or_expired_token'));
+            // return view('auth.reset');
+        }
+
+        // Reset the password
+        $user->password = bcrypt($request->password);
+        $user->password_reset_token = null;
+        $user->save();
+
+        session()->flash('success', __('messages.password_reset_success'));
+        return view('auth.reset');
+    }
+
     private function authenticationError(string $field)
     {
         $messages = [
             'email' => [
-                'message' => __('User not found'),
-                'errors'  => ['email' => [__('Email not found. Please register first')]]
+                'message' => __('messages.user_not_found'),
+                'errors'  => ['email' => [__('messages.email_not_found')]]
             ],
             'password' => [
-                'message' => __("Password didn't match"),
-                'errors'  => ['password' => [__("Password didn't match. Please try again")]]
+                'message' => __("messages.password_mismatch"),
+                'errors'  => ['password' => [__("messages.password_mismatch")]]
             ]
         ];
 
