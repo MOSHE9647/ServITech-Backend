@@ -24,32 +24,31 @@
         </main>
     </div>
 
-    <script>
-        const swalData = @json($swal ?? []);
-        console.log("SwalData: ", swalData);
+    @if (session()->has('swal'))
+        <script>
+            const swalData = @json($swal ?? []);
+            console.log("SwalData: ", swalData);
 
-        const Toast = (type, title) => Swal.mixin({
-            toast: true,
-            theme: 'auto',
-            icon: `${type}`,
-            title: `${title}`,
-            position: "top-end",
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-            customClass: {
-                timerProgressBar: `swal-${type}-progress-bar`,
-            },
-            didOpen: (toast) => {
-                toast.onmouseenter = Swal.stopTimer;
-                toast.onmouseleave = Swal.resumeTimer;
-            }
-        });
-        
-        Toast(swalData.type, swalData.title).fire();
-    </script>
-    {{-- @if (session()->has('swal'))
-        
-    @endif --}}
+            const Toast = (type, title) => Swal.mixin({
+                toast: true,
+                theme: 'auto',
+                icon: `${type}`,
+                title: `${title}`,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                customClass: {
+                    timerProgressBar: `swal-${type}-progress-bar`,
+                },
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+            
+            Toast(swalData.type, swalData.title).fire();
+        </script>
+    @endif
 </body>
 </html>

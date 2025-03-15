@@ -174,7 +174,12 @@ class AuthController extends Controller
         }
 
         // Generate a password reset token
-        $token = $user->createToken('passwordResetToken', ['*'], now()->addMinutes(60))->plainTextToken;
+        $token = bin2hex(random_bytes(32));
+        \DB::table('password_reset_tokens')->insert([
+            'email' => $user->email,
+            'token' => Hash::make($token),
+            'created_at' => now(),
+        ]);
 
         Mail::to($user->email)->send(new PasswordResetMail($user, $token));
         return ApiResponse::success(__('messages.password_reset_link_sent'));
@@ -184,26 +189,46 @@ class AuthController extends Controller
     {
         // Validate the request
         $request->validate([
-            'token' => 'required',
+            'email' => 'required|email',
             'reset_token' => 'required',
             'password' => 'required|confirmed|min:8',
         ]);
 
-        // Find the user with the token
-        $token = $request->reset_token;
-        $user = User::where('password_reset_token', $token)->first();
-        if (!$user || $user->tokenExpired()) {
-            $swal = ['title' => __('messages.invalid_or_expired_token'), 'type' => 'error'];
+        // Find the token in the password_reset_tokens table
+        $tokenData = \DB::table('password_reset_tokens')
+            ->where('email', $request->email)
+            ->first();
+
+        if (!$tokenData || !Hash::check($request->reset_token, $tokenData->token)) {
+            $swal = [
+                'title' => __('messages.invalid_or_expired_token'),
+                'type' => 'error',
+            ];
+            return view('auth.reset', compact('swal'));
+        }
+
+        // Find the user by email
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            $swal = [
+                'title'=> __('messages.email_not_found'),
+                'type'=> 'error',
+            ];
             return view('auth.reset', compact('swal'));
         }
 
         // Reset the password
         $user->password = bcrypt($request->password);
-        $user->password_reset_token = null;
         $user->save();
 
-        $swal = ['title'=> __('messages.password_reset_success'), 'type'=> 'success'];
-        return view('auth.reset');
+        // Delete the token
+        \DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
+        $swal = [
+            'title' => __('messages.password_reset_success'),
+            'type' => 'success',
+        ];
+        return view('auth.reset', compact('swal'));
     }
 
     private function authenticationError(string $field)
