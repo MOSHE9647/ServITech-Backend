@@ -201,6 +201,7 @@ class AuthController extends Controller
             ->where('email', $request->email)
             ->first();
 
+        // Check if the token is invalid or expired
         if (!$tokenData || !Hash::check($request->reset_token, $tokenData->token)) {
             $swal = [
                 'title' => __('messages.invalid_or_expired_token'),
