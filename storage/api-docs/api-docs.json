@@ -12,6 +12,7 @@
                     "Auth"
                 ],
                 "summary": "Register a new user",
+                "description": "Register a new user.",
                 "operationId": "fb835c97347e657e2a627790c4c5817a",
                 "requestBody": {
                     "required": true,
@@ -43,6 +44,7 @@
                     "Auth"
                 ],
                 "summary": "Login a user",
+                "description": "Login a user.",
                 "operationId": "fb66b153966d9fac2e999136ef0ade67",
                 "requestBody": {
                     "required": true,
@@ -74,6 +76,7 @@
                     "Auth"
                 ],
                 "summary": "Get user profile",
+                "description": "Get user profile.",
                 "operationId": "c253fbe33492c3df0ef13727269e6bb8",
                 "responses": {
                     "200": {
@@ -100,6 +103,7 @@
                     "Auth"
                 ],
                 "summary": "Logout a user",
+                "description": "Logout a user.",
                 "operationId": "d7de171dc1ca82c10fb7b7c9ff4f070a",
                 "responses": {
                     "200": {
@@ -126,6 +130,7 @@
                     "Auth"
                 ],
                 "summary": "Send password reset link",
+                "description": "Send password reset link.",
                 "operationId": "6e1075f86c4e9bf1030edadbf4480939",
                 "requestBody": {
                     "required": true,
@@ -135,7 +140,8 @@
                                 "properties": {
                                     "email": {
                                         "type": "string",
-                                        "format": "email"
+                                        "format": "email",
+                                        "example": "john.doe@example.com"
                                     }
                                 },
                                 "type": "object"
@@ -156,6 +162,39 @@
                     }
                 }
             }
+        },
+        "/api/v1/auth/reset-password": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Reset user password",
+                "description": "Reset user password in case of forgotten password.",
+                "operationId": "1023bcce0b2950ff7518d34a1bdfacdb",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PasswordResetRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns a rendered HTML view",
+                        "content": {
+                            "text/html": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": "<html><body>Password reset successful</body></html>"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -164,10 +203,12 @@
                 "required": [
                     "name",
                     "email",
-                    "password"
+                    "password",
+                    "password_confirmation"
                 ],
                 "properties": {
                     "name": {
+                        "description": "Class AuthController for handling user authentication.",
                         "type": "string",
                         "example": "John Doe"
                     },
@@ -177,6 +218,11 @@
                         "example": "john.doe@example.com"
                     },
                     "password": {
+                        "type": "string",
+                        "format": "password",
+                        "example": "password123"
+                    },
+                    "password_confirmation": {
                         "type": "string",
                         "format": "password",
                         "example": "password123"
@@ -203,6 +249,36 @@
                 },
                 "type": "object"
             },
+            "PasswordResetRequest": {
+                "required": [
+                    "email",
+                    "reset_token",
+                    "password",
+                    "password_confirmation"
+                ],
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "john.doe@example.com"
+                    },
+                    "reset_token": {
+                        "type": "string",
+                        "example": "1234567890"
+                    },
+                    "password": {
+                        "type": "string",
+                        "format": "password",
+                        "example": "password123"
+                    },
+                    "password_confirmation": {
+                        "type": "string",
+                        "format": "password",
+                        "example": "password123"
+                    }
+                },
+                "type": "object"
+            },
             "ApiResponse": {
                 "properties": {
                     "message": {
@@ -214,6 +290,19 @@
                     },
                     "errors": {
                         "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "MessageResponse": {
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "example": "Success"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "success"
                     }
                 },
                 "type": "object"

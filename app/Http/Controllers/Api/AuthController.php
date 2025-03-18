@@ -5,15 +5,16 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\RegisterUserRequest;
+use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Responses\ApiResponse;
 use App\Http\Responses\MessageResponse;
 use App\Mail\PasswordResetMail;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
 use OpenApi\Annotations as OA;
@@ -40,6 +41,16 @@ use OpenApi\Annotations as OA;
  * )
  * 
  * @OA\Schema(
+ *    schema="PasswordResetRequest",
+ *    type="object",
+ *    required={"email", "reset_token", "password", "password_confirmation"},
+ *    @OA\Property(property="email", type="string", format="email", example="john.doe@example.com"),
+ *    @OA\Property(property="reset_token", type="string", example="1234567890"),
+ *    @OA\Property(property="password", type="string", format="password", example="password123"),
+ *    @OA\Property(property="password_confirmation", type="string", format="password", example="password123")
+ * )
+ * 
+ * @OA\Schema(
  *     schema="ApiResponse",
  *     type="object",
  *     @OA\Property(property="message", type="string", example="Success"),
@@ -56,8 +67,14 @@ use OpenApi\Annotations as OA;
  */
 class AuthController extends Controller
 {
+
     /**
      * Register a new user.
+     * 
+     * @Route(
+     *     path="/api/$API_VERSION/auth/register",
+     *     methods={"POST"}
+     * )
      * 
      * @OA\Post(
      *     path="/api/v1/auth/register",
@@ -73,8 +90,11 @@ class AuthController extends Controller
      *         @OA\JsonContent(ref="#/components/schemas/ApiResponse")
      *     )
      * )
+     * 
+     * @param \App\Http\Requests\RegisterUserRequest $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function register(RegisterUserRequest $request)
+    public function register(RegisterUserRequest $request): JsonResponse
     {
         // Create a new user with the validated request data
         $user = User::create($request->validated());
@@ -90,6 +110,11 @@ class AuthController extends Controller
     /**
      * Login a user.
      * 
+     * @Route(
+     *    path="/api/$API_VERSION/auth/login",
+     *    methods={"POST"}
+     * )
+     * 
      * @OA\Post(
      *     path="/api/v1/auth/login",
      *     summary="Login a user",
@@ -104,8 +129,11 @@ class AuthController extends Controller
      *         @OA\JsonContent(ref="#/components/schemas/ApiResponse")
      *     )
      * )
+     * 
+     * @param \App\Http\Requests\LoginUserRequest $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function login(LoginUserRequest $request)
+    public function login(LoginUserRequest $request): JsonResponse
     {
         // Validate the request data
         $data = $request->validated();
@@ -127,6 +155,11 @@ class AuthController extends Controller
     /**
      * Get user profile.
      * 
+     * @Route(
+     *    path="/api/$API_VERSION/user/profile",
+     *    methods={"GET"}
+     * )
+     * 
      * @OA\Get(
      *     path="/api/v1/user/profile",
      *     summary="Get user profile",
@@ -138,8 +171,10 @@ class AuthController extends Controller
      *         @OA\JsonContent(ref="#/components/schemas/ApiResponse")
      *     )
      * )
+     * 
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function profile()
+    public function profile(): JsonResponse
     {
         // Get the authenticated user
         $userData = Auth::guard('sanctum')->user();
@@ -155,6 +190,11 @@ class AuthController extends Controller
     /**
      * Logout a user.
      * 
+     * @Route(
+     *     path="/api/$API_VERSION/user/logout",
+     *     methods={"POST"}
+     * )
+     * 
      * @OA\Post(
      *     path="/api/v1/user/logout",
      *     summary="Logout a user",
@@ -166,8 +206,10 @@ class AuthController extends Controller
      *         @OA\JsonContent(ref="#/components/schemas/ApiResponse")
      *     )
      * )
+     * 
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function logout()
+    public function logout(): JsonResponse
     {
         // Delete all tokens of the authenticated user
         optional(Auth::guard('sanctum')->user())->tokens()->delete();
@@ -178,6 +220,11 @@ class AuthController extends Controller
 
     /**
      * Send password reset link.
+     * 
+     * @Route(
+     *     path="/api/$API_VERSION/auth/forgot-password",
+     *     methods={"POST"}
+     * )
      * 
      * @OA\Post(
      *     path="/api/v1/auth/forgot-password",
@@ -195,8 +242,11 @@ class AuthController extends Controller
      *         @OA\JsonContent(ref="#/components/schemas/ApiResponse")
      *     )
      * )
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function forgotPassword(Request $request)
+    public function forgotPassword(Request $request): JsonResponse
     {
         // Validate the request data
         $request->validate(['email' => 'required|email']);
@@ -227,62 +277,64 @@ class AuthController extends Controller
     }
 
     /**
-     * Reset the user's password.
+     * Reset user password in case of forgotten password.
+     * 
+     * @Route(
+     *     path="/api/$API_VERSION/auth/reset-password",
+     *     methods={"POST"}
+     * )
      * 
      * @OA\Post(
-     *     path="/api/v1/auth/reset-password",
-     *     summary="Reset the user's password",
-     *     tags={"Auth"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="email", type="string", format="email", example="john.doe@example.com"),
-     *             @OA\Property(property="reset_token", type="string", example="reset_token_example"),
-     *             @OA\Property(property="password", type="string", format="password", example="newpassword123"),
-     *             @OA\Property(property="password_confirmation", type="string", format="password", example="newpassword123")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Password reset successfully",
-     *         @OA\JsonContent(ref="#/components/schemas/ApiResponse")
-     *     )
+     *    path="/api/v1/auth/reset-password",
+     *    summary="Reset user password",
+     *    tags={"Auth"},
+     *    @OA\RequestBody(
+     *        required=true,
+     *        @OA\JsonContent(ref="#/components/schemas/PasswordResetRequest")
+     *    ),
+     *    @OA\Response(
+     *       response=200,
+     *       description="Returns a rendered HTML view",
+     *       @OA\MediaType(
+     *           mediaType="text/html",
+     *           @OA\Schema(type="string", example="<html><body>Password reset successful</body></html>")
+     *       )
+     *    )
      * )
+     * 
+     * @param \App\Http\Requests\ResetPasswordRequest $request
+     * @return \Illuminate\Contracts\View\View
      */
-    public function resetPassword(Request $request): View
+    public function resetPassword(ResetPasswordRequest $request): View
     {
         // Validate the request data
-        $request->validate([
-            'email' => 'required|email',
-            'reset_token' => 'required',
-            'password' => 'required|confirmed|min:8',
-        ]);
+        $data = $request->validated();
 
         // Retrieve the token data from the password_reset_tokens table
         $tokenData = \DB::table('password_reset_tokens')
-            ->where('email', $request->email)
+            ->where('email', $data->email)
             ->first();
 
         // Check if the token is invalid or expired
-        if (!$tokenData || !Hash::check($request->reset_token, $tokenData->token) || $tokenData->deleted_at) {
+        if (!$tokenData || !Hash::check($data->reset_token, $tokenData->token) || $tokenData->deleted_at) {
             $message = MessageResponse::create(__('messages.invalid_or_expired_token'), MessageResponse::TYPE_ERROR);
             return view('auth.reset', compact('message'));
         }
 
         // Find the user by email
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $data->email)->first();
         if (!$user) {
             $message = MessageResponse::create(__('messages.email_not_found'), MessageResponse::TYPE_ERROR);
             return view('auth.reset', compact('message'));
         }
 
         // Update the user's password
-        $user->password = bcrypt($request->password);
+        $user->password = bcrypt($data->password);
         $user->save();
 
         // Soft delete the token
         \DB::table('password_reset_tokens')
-            ->where('email', $request->email)
+            ->where('email', $data->email)
             ->update(['deleted_at' => now()]);
 
         // Return a success message
@@ -296,7 +348,7 @@ class AuthController extends Controller
      * @param string $field The field that caused the authentication error.
      * @return \Illuminate\Http\JsonResponse
      */
-    private function authenticationError(string $field)
+    private function authenticationError(string $field): JsonResponse
     {
         $messages = [
             'email' => [
