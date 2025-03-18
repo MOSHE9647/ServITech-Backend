@@ -60,12 +60,12 @@
             @else
 
                 <div class="flex gap-3 align-items-center justify-center">
-                    <h2 class="text-xl font-bold md:text-2xl {{ $swal['type'] == 'success' ? 'text-green-500 dark:text-green-500' : 'text-red-500 dark:text-red-500' }}">
-                        {{ $swal['type'] == 'success' ? __('Success') : __('Error') }}:
+                    <h2 class="text-xl font-bold md:text-2xl {{ $message['type'] == 'success' ? 'text-green-500 dark:text-green-500' : 'text-red-500 dark:text-red-500' }}">
+                        {{ $message['type'] == 'success' ? __('Success') : __('Error') }}:
                     </h2>
                     
                     <h4 class="text-xl font-bold text-gray-900 md:text-2xl dark:text-white">
-                        {{ $swal['title'] }}
+                        {{ $message['title'] }}
                     </h4>
                 </div>
 

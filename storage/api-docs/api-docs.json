@@ -206,48 +206,68 @@
                     "password",
                     "password_confirmation"
                 ],
-                "properties": {
-                    "name": {
-                        "description": "Class AuthController for handling user authentication.",
-                        "type": "string",
-                        "example": "John Doe"
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/MessageResponse"
                     },
-                    "email": {
-                        "type": "string",
-                        "format": "email",
-                        "example": "john.doe@example.com"
-                    },
-                    "password": {
-                        "type": "string",
-                        "format": "password",
-                        "example": "password123"
-                    },
-                    "password_confirmation": {
-                        "type": "string",
-                        "format": "password",
-                        "example": "password123"
+                    {
+                        "properties": {
+                            "name": {
+                                "description": "Class AuthController for handling user authentication.",
+                                "type": "string",
+                                "example": "John Doe"
+                            },
+                            "email": {
+                                "type": "string",
+                                "format": "email",
+                                "example": "john.doe@example.com"
+                            },
+                            "phone": {
+                                "type": "string",
+                                "example": "506 8888 8888"
+                            },
+                            "password": {
+                                "type": "string",
+                                "format": "password",
+                                "example": "password123"
+                            },
+                            "password_confirmation": {
+                                "type": "string",
+                                "format": "password",
+                                "example": "password123"
+                            }
+                        },
+                        "type": "object"
                     }
-                },
-                "type": "object"
+                ]
             },
             "LoginUserRequest": {
                 "required": [
                     "email",
                     "password"
                 ],
-                "properties": {
-                    "email": {
-                        "type": "string",
-                        "format": "email",
-                        "example": "john.doe@example.com"
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/MessageResponse"
                     },
-                    "password": {
-                        "type": "string",
-                        "format": "password",
-                        "example": "password123"
+                    {
+                        "properties": {
+                            "email": {
+                                "type": "string",
+                                "format": "email",
+                                "example": "john.doe@example.com"
+                            },
+                            "password": {
+                                "type": "string",
+                                "format": "password",
+                                "example": "password123"
+                            }
+                        },
+                        "type": "object"
                     }
-                },
-                "type": "object"
+                ]
             },
             "PasswordResetRequest": {
                 "required": [
@@ -256,28 +276,36 @@
                     "password",
                     "password_confirmation"
                 ],
-                "properties": {
-                    "email": {
-                        "type": "string",
-                        "format": "email",
-                        "example": "john.doe@example.com"
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/MessageResponse"
                     },
-                    "reset_token": {
-                        "type": "string",
-                        "example": "1234567890"
-                    },
-                    "password": {
-                        "type": "string",
-                        "format": "password",
-                        "example": "password123"
-                    },
-                    "password_confirmation": {
-                        "type": "string",
-                        "format": "password",
-                        "example": "password123"
+                    {
+                        "properties": {
+                            "email": {
+                                "type": "string",
+                                "format": "email",
+                                "example": "john.doe@example.com"
+                            },
+                            "reset_token": {
+                                "type": "string",
+                                "example": "1234567890"
+                            },
+                            "password": {
+                                "type": "string",
+                                "format": "password",
+                                "example": "password123"
+                            },
+                            "password_confirmation": {
+                                "type": "string",
+                                "format": "password",
+                                "example": "password123"
+                            }
+                        },
+                        "type": "object"
                     }
-                },
-                "type": "object"
+                ]
             },
             "ApiResponse": {
                 "properties": {

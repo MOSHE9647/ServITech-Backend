@@ -28,6 +28,7 @@ use OpenApi\Annotations as OA;
  *     required={"name", "email", "password", "password_confirmation"},
  *     @OA\Property(property="name", type="string", example="John Doe"),
  *     @OA\Property(property="email", type="string", format="email", example="john.doe@example.com"),
+ *     @OA\Property(property="phone", type="string", example="506 8888 8888"),
  *     @OA\Property(property="password", type="string", format="password", example="password123"),
  *     @OA\Property(property="password_confirmation", type="string", format="password", example="password123")
  * )
@@ -48,21 +49,6 @@ use OpenApi\Annotations as OA;
  *    @OA\Property(property="reset_token", type="string", example="1234567890"),
  *    @OA\Property(property="password", type="string", format="password", example="password123"),
  *    @OA\Property(property="password_confirmation", type="string", format="password", example="password123")
- * )
- * 
- * @OA\Schema(
- *     schema="ApiResponse",
- *     type="object",
- *     @OA\Property(property="message", type="string", example="Success"),
- *     @OA\Property(property="data", type="object"),
- *     @OA\Property(property="errors", type="object")
- * )
- * 
- * @OA\Schema(
- *    schema="MessageResponse",
- *    type="object",
- *    @OA\Property(property="title", type="string", example="Success"),
- *    @OA\Property(property="type", type="string", example="success")
  * )
  */
 class AuthController extends Controller
@@ -312,29 +298,29 @@ class AuthController extends Controller
 
         // Retrieve the token data from the password_reset_tokens table
         $tokenData = \DB::table('password_reset_tokens')
-            ->where('email', $data->email)
+            ->where('email', $data['email'])
             ->first();
 
         // Check if the token is invalid or expired
-        if (!$tokenData || !Hash::check($data->reset_token, $tokenData->token) || $tokenData->deleted_at) {
+        if (!$tokenData || !Hash::check($data['reset_token'], $tokenData->token) || $tokenData->deleted_at) {
             $message = MessageResponse::create(__('messages.invalid_or_expired_token'), MessageResponse::TYPE_ERROR);
             return view('auth.reset', compact('message'));
         }
 
         // Find the user by email
-        $user = User::where('email', $data->email)->first();
+        $user = User::where('email', $data['email'])->first();
         if (!$user) {
             $message = MessageResponse::create(__('messages.email_not_found'), MessageResponse::TYPE_ERROR);
             return view('auth.reset', compact('message'));
         }
 
         // Update the user's password
-        $user->password = bcrypt($data->password);
+        $user->password = bcrypt($data['password']);
         $user->save();
 
         // Soft delete the token
         \DB::table('password_reset_tokens')
-            ->where('email', $data->email)
+            ->where('email', $data['email'])
             ->update(['deleted_at' => now()]);
 
         // Return a success message
