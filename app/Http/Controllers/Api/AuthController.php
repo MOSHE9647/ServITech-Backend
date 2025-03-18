@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\RegisterUserRequest;
 use App\Http\Responses\ApiResponse;
+use App\Http\Responses\MessageResponse;
 use App\Mail\PasswordResetMail;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -13,17 +14,21 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
+use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
 use OpenApi\Annotations as OA;
 
 /**
+ * Class AuthController for handling user authentication.
+ * 
  * @OA\Schema(
  *     schema="RegisterUserRequest",
  *     type="object",
- *     required={"name", "email", "password"},
+ *     required={"name", "email", "password", "password_confirmation"},
  *     @OA\Property(property="name", type="string", example="John Doe"),
  *     @OA\Property(property="email", type="string", format="email", example="john.doe@example.com"),
- *     @OA\Property(property="password", type="string", format="password", example="password123")
+ *     @OA\Property(property="password", type="string", format="password", example="password123"),
+ *     @OA\Property(property="password_confirmation", type="string", format="password", example="password123")
  * )
  * 
  * @OA\Schema(
@@ -41,10 +46,19 @@ use OpenApi\Annotations as OA;
  *     @OA\Property(property="data", type="object"),
  *     @OA\Property(property="errors", type="object")
  * )
+ * 
+ * @OA\Schema(
+ *    schema="MessageResponse",
+ *    type="object",
+ *    @OA\Property(property="title", type="string", example="Success"),
+ *    @OA\Property(property="type", type="string", example="success")
+ * )
  */
 class AuthController extends Controller
 {
     /**
+     * Register a new user.
+     * 
      * @OA\Post(
      *     path="/api/v1/auth/register",
      *     summary="Register a new user",
@@ -62,8 +76,10 @@ class AuthController extends Controller
      */
     public function register(RegisterUserRequest $request)
     {
+        // Create a new user with the validated request data
         $user = User::create($request->validated());
 
+        // Return a success response with the created user data
         return ApiResponse::success(
             __('messages.user_registered'), 
             $user->toArray(), 
@@ -72,6 +88,8 @@ class AuthController extends Controller
     }
 
     /**
+     * Login a user.
+     * 
      * @OA\Post(
      *     path="/api/v1/auth/login",
      *     summary="Login a user",
@@ -89,19 +107,26 @@ class AuthController extends Controller
      */
     public function login(LoginUserRequest $request)
     {
+        // Validate the request data
         $data = $request->validated();
 
+        // Find the user by email
         $user = User::where('email', $data['email'])->first();
         if (!$user || !Hash::check($data['password'], $user->password)) {
+            // Return an authentication error if the user is not found or the password is incorrect
             return $this->authenticationError(!$user ? 'email' : 'password');
         }
 
+        // Create a new token for the user
         $token = $user->createToken('authToken', ['*'], now()->addMinutes(60))->plainTextToken;
 
+        // Return a success response with the token
         return ApiResponse::success(__('messages.user_logged_in'), ['token' => $token]);
     }
 
     /**
+     * Get user profile.
+     * 
      * @OA\Get(
      *     path="/api/v1/user/profile",
      *     summary="Get user profile",
@@ -116,15 +141,20 @@ class AuthController extends Controller
      */
     public function profile()
     {
+        // Get the authenticated user
         $userData = Auth::guard('sanctum')->user();
         if (!$userData) {
+            // Return an error response if the user is not authenticated
             return ApiResponse::error(__('messages.unauthorized'), [], Response::HTTP_UNAUTHORIZED);
         }
 
+        // Return a success response with the user data
         return ApiResponse::success(__('messages.user_details'), $userData->toArray());
     }
 
     /**
+     * Logout a user.
+     * 
      * @OA\Post(
      *     path="/api/v1/user/logout",
      *     summary="Logout a user",
@@ -139,12 +169,16 @@ class AuthController extends Controller
      */
     public function logout()
     {
+        // Delete all tokens of the authenticated user
         optional(Auth::guard('sanctum')->user())->tokens()->delete();
 
+        // Return a success response
         return ApiResponse::success(__('messages.successfully_logged_out'));
     }
 
     /**
+     * Send password reset link.
+     * 
      * @OA\Post(
      *     path="/api/v1/auth/forgot-password",
      *     summary="Send password reset link",
@@ -152,7 +186,7 @@ class AuthController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             @OA\Property(property="email", type="string", format="email")
+     *             @OA\Property(property="email", type="string", format="email", example="john.doe@example.com")
      *         )
      *     ),
      *     @OA\Response(
@@ -164,10 +198,13 @@ class AuthController extends Controller
      */
     public function forgotPassword(Request $request)
     {
+        // Validate the request data
         $request->validate(['email' => 'required|email']);
 
+        // Find the user by email
         $user = User::where('email', $request->email)->first();
         if (!$user) {
+            // Return an error response if the user is not found
             return ApiResponse::error(
                 __('messages.user_not_found'), 
                 ['email' => [__('messages.email_not_found')]], 
@@ -176,64 +213,89 @@ class AuthController extends Controller
         }
 
         // Generate a password reset token
-        $token = bin2hex(random_bytes(32));
+        $token = bin2hex(random_bytes(50));
         \DB::table('password_reset_tokens')->insert([
             'email' => $user->email,
             'token' => Hash::make($token),
             'created_at' => now(),
+            'expires_at' => now()->addMinutes(30),
         ]);
 
+        // Send the password reset email
         Mail::to($user->email)->send(new PasswordResetMail($user, $token));
         return ApiResponse::success(__('messages.password_reset_link_sent'));
     }
 
-    public function resetPassword(Request $request)
+    /**
+     * Reset the user's password.
+     * 
+     * @OA\Post(
+     *     path="/api/v1/auth/reset-password",
+     *     summary="Reset the user's password",
+     *     tags={"Auth"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="email", type="string", format="email", example="john.doe@example.com"),
+     *             @OA\Property(property="reset_token", type="string", example="reset_token_example"),
+     *             @OA\Property(property="password", type="string", format="password", example="newpassword123"),
+     *             @OA\Property(property="password_confirmation", type="string", format="password", example="newpassword123")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Password reset successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/ApiResponse")
+     *     )
+     * )
+     */
+    public function resetPassword(Request $request): View
     {
-        // Validate the request
+        // Validate the request data
         $request->validate([
             'email' => 'required|email',
             'reset_token' => 'required',
             'password' => 'required|confirmed|min:8',
         ]);
 
-        // Find the token in the password_reset_tokens table
+        // Retrieve the token data from the password_reset_tokens table
         $tokenData = \DB::table('password_reset_tokens')
             ->where('email', $request->email)
             ->first();
 
         // Check if the token is invalid or expired
-        if (!$tokenData || !Hash::check($request->reset_token, $tokenData->token)) {
-            $swal = [
-                'title' => __('messages.invalid_or_expired_token'),
-                'type' => 'error',
-            ];
-            return view('auth.reset', compact('swal'));
+        if (!$tokenData || !Hash::check($request->reset_token, $tokenData->token) || $tokenData->deleted_at) {
+            $message = MessageResponse::create(__('messages.invalid_or_expired_token'), MessageResponse::TYPE_ERROR);
+            return view('auth.reset', compact('message'));
         }
 
         // Find the user by email
         $user = User::where('email', $request->email)->first();
         if (!$user) {
-            $swal = [
-                'title'=> __('messages.email_not_found'),
-                'type'=> 'error',
-            ];
-            return view('auth.reset', compact('swal'));
+            $message = MessageResponse::create(__('messages.email_not_found'), MessageResponse::TYPE_ERROR);
+            return view('auth.reset', compact('message'));
         }
 
-        // Reset the password
+        // Update the user's password
         $user->password = bcrypt($request->password);
         $user->save();
 
-        // Delete the token
-        \DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+        // Soft delete the token
+        \DB::table('password_reset_tokens')
+            ->where('email', $request->email)
+            ->update(['deleted_at' => now()]);
 
-        $swal = [
-            'title' => __('messages.password_reset_success'),
-            'type' => 'success',
-        ];
-        return view('auth.reset', compact('swal'));
+        // Return a success message
+        $message = MessageResponse::create(__('messages.password_reset_success'), MessageResponse::TYPE_SUCCESS);
+        return view('auth.reset', compact('message'));
     }
 
+    /**
+     * Handle authentication errors.
+     * 
+     * @param string $field The field that caused the authentication error.
+     * @return \Illuminate\Http\JsonResponse
+     */
     private function authenticationError(string $field)
     {
         $messages = [
@@ -247,6 +309,7 @@ class AuthController extends Controller
             ]
         ];
 
+        // Return an error response with the appropriate message and errors
         return ApiResponse::error(
             $messages[$field]['message'],
             $messages[$field]['errors'],
