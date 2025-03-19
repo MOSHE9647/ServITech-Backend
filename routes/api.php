@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CategoryController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 
@@ -24,5 +25,15 @@ Route::group(
     function () {
         Route::get('profile', [AuthController::class, 'profile']);
         Route::post('logout', [AuthController::class, 'logout']);
+    }
+);
+
+// Categories routes    
+Route::group(
+    [
+        'prefix' => "/$API_VERSION/categories",
+    ], 
+    function () {
+        Route::get('/', [CategoryController::class, 'index']);
     }
 );
