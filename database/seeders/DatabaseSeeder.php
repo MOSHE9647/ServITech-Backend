@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Admin\Category;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -30,5 +31,7 @@ class DatabaseSeeder extends Seeder
         // Assign the admin role to the admin user
         $adminRole = Role::where('name','admin')->first();
         $adminUser->assignRole($adminRole);
+
+        Category::factory(10)->create();
     }
 }
