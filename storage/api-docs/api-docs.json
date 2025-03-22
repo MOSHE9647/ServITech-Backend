@@ -320,6 +320,69 @@
                 }
             }
         },
+        "/api/{version}/auth/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logs out the authenticated user",
+                "operationId": "d3517d2d4e732452b31cf72cbc5b790b",
+                "parameters": [
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "description": "API version",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "v1"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User successfully logged out",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User logged out successfully"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "User already logged out",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User already logged out"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 401
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/categories": {
             "get": {
                 "tags": [

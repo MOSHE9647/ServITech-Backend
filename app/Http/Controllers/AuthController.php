@@ -318,6 +318,40 @@ class AuthController extends Controller
         return view('auth.reset-password', compact('message'));
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/{version}/auth/logout",
+     *     summary="Logs out the authenticated user",
+     *     tags={"Auth"},
+     *     @OA\Parameter(
+     *         name="version",
+     *         in="path",
+     *         required=true,
+     *         description="API version",
+     *         @OA\Schema(type="string", example="v1")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="User successfully logged out",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="User logged out successfully"),
+     *             @OA\Property(property="status", type="integer", example=200)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="User already logged out",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="User already logged out"),
+     *             @OA\Property(property="status", type="integer", example=401)
+     *         )
+     *     )
+     * )
+     *
+     * Logs out the authenticated user.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function logout(): JsonResponse
     {
         // Verifies if the user is already logged out

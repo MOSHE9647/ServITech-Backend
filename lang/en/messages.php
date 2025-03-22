@@ -9,6 +9,7 @@ return [
     'user_logged_out'           => 'User logged out successfully.',
     'user_info_retrieved'       => 'User information obtained successfully.',
     'invalid_credentials'       => 'Invalid credentials.',
+    'user_already_logged_out'   => 'User already logged out.',
     'categories_retrieved'      => 'List of categories obtained successfully.',
     'category_retrieved'        => 'Categorie retrieved successfully.',
     'category_created'          => 'Category created successfully.',
