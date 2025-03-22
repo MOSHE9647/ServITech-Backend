@@ -172,7 +172,7 @@ class AuthController extends Controller
      * @param \App\Http\Requests\RegisterUserRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function register(RegisterUserRequest $request)
+    public function register(RegisterUserRequest $request): JsonResponse
     {
         $user = User::create($request->validated());
         return ApiResponse::success(
@@ -227,7 +227,7 @@ class AuthController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function sendResetLink(Request $request)
+    public function sendResetLink(Request $request): JsonResponse
     {
         $request->validate([
             'email' => 'required|email|exists:users,email'
