@@ -2,7 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Responses\ApiResponse;
+use App\Http\Responses\MessageResponse;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\ValidationException;
 
 class ResetPasswordRequest extends FormRequest
 {
@@ -24,9 +28,9 @@ class ResetPasswordRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'required|email',
-            'reset_token' => 'required',
-            'password' => 'required|confirmed|min:8',
+            'email'     => 'required|email',
+            'password'  => 'required|confirmed|min:8',
+            'token'     => 'required',
         ];
     }
 }

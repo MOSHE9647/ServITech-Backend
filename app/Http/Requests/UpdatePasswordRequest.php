@@ -2,16 +2,17 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\CheckPasswordRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class RegisterUserRequest extends FormRequest
+class UpdatePasswordRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return auth()->guard('api')->check();
     }
 
     /**
@@ -22,11 +23,8 @@ class RegisterUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'      => 'required|string|min:2',
-            'last_name' => 'required|string|min:2',
-            'phone'     => 'required|string|min:10',
-            'email'     => 'required|email|unique:users',
-            'password'  => 'required|confirmed|min:8',
+            'old_password'  => ['required', 'min:8', new CheckPasswordRule],
+            'password'      => 'required|confirmed|min:8',
         ];
     }
 }

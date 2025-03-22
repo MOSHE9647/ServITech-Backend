@@ -53,6 +53,8 @@
     "Duplicate :name": "Duplicate :name",
     "Edit": "Edit",
     "Edit :name": "Edit :name",
+    "Email": "Email",
+    "email": "email",
     "Enable": "Enable",
     "Encrypted environment file already exists.": "Encrypted environment file already exists.",
     "Encrypted environment file not found.": "Encrypted environment file not found.",

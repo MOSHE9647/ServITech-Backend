@@ -107,6 +107,7 @@ return [
     'not_in'                 => 'El campo :attribute no debe estar en la lista.',
     'not_regex'              => 'El formato del campo :attribute no es válido.',
     'numeric'                => 'El campo :attribute debe ser numérico.',
+    'old_password'           => 'El campo :attribute no coincide con su contraseña actual.',
     'password'               => [
         'letters'       => 'La :attribute debe contener al menos una letra.',
         'mixed'         => 'La :attribute debe contener al menos una letra mayúscula y una minúscula.',
@@ -221,6 +222,7 @@ return [
         'name'                     => 'nombre',
         'national_code'            => 'código nacional',
         'number'                   => 'número',
+        'old_password'             => 'antigua contraseña',
         'password'                 => 'contraseña',
         'password_confirmation'    => 'confirmación de la contraseña',
         'phone'                    => 'teléfono',

@@ -7,114 +7,60 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## Sobre el Proyecto
+## About Laravel
 
-ServITech es una aplicación web desarrollada con el framework Laravel. Este proyecto tiene como objetivo proporcionar una plataforma robusta y escalable para la gestión de servicios técnicos.
+Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-## Instalación de PHP
+- [Simple, fast routing engine](https://laravel.com/docs/routing).
+- [Powerful dependency injection container](https://laravel.com/docs/container).
+- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
+- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
+- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
+- [Robust background job processing](https://laravel.com/docs/queues).
+- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-Antes de ejecutar la aplicación, asegúrate de que tu máquina local tenga instalados [PHP](https://www.php.net/ "PHP") y [Composer](https://getcomposer.org/ "Composer"). Además, deberías instalar [Node y NPM](https://nodejs.org/en/download "Node y NPM") para poder compilar los recursos del frontend de la aplicación.
+Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-## Cómo Ejecutar el Proyecto
+## Learning Laravel
 
-Para ejecutar el proyecto localmente, sigue estos pasos:
+Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
 
-1. Clona el repositorio:
-    ```sh
-    git clone https://github.com/tu-usuario/servitech.git
-    cd servitech
-    ```
+You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
 
-3. Crea un archivo `.env` basado en el ejemplo proporcionado:
-    ```sh
-    cp .env.example .env
-    ```
+If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-4. Genera la clave de la aplicación:
-    ```sh
-    php artisan key:generate
-    ```
+## Laravel Sponsors
 
-5. Configura tu archivo `.env` con las credenciales de tu base de datos y otros servicios.
+We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
 
-6. Ejecuta las migraciones de la base de datos:
-    ```sh
-    php artisan migrate
-    ```
+### Premium Partners
 
-7. Inicia el servidor de desarrollo:
-    ```sh
-    composer run dev
-    ```
+- **[Vehikl](https://vehikl.com/)**
+- **[Tighten Co.](https://tighten.co)**
+- **[WebReinvent](https://webreinvent.com/)**
+- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
+- **[64 Robots](https://64robots.com)**
+- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
+- **[Cyber-Duck](https://cyber-duck.co.uk)**
+- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
+- **[Jump24](https://jump24.co.uk)**
+- **[Redberry](https://redberry.international/laravel/)**
+- **[Active Logic](https://activelogic.com)**
+- **[byte5](https://byte5.de)**
+- **[OP.GG](https://op.gg)**
 
-## Cómo Buildear el Proyecto
+## Contributing
 
-Para buildear el proyecto para producción, ejecuta:
-```sh
-npm run build
-```
+Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-# Acceder a la Documentación de la API  
-La documentación de la API está disponible en la ruta `/api/doc`. Puedes acceder a ella visitando:  
+## Code of Conduct
 
-## Ejemplo de Archivo .env  
-Aquí tienes un ejemplo de cómo debería verse tu archivo `.env`:
+In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
-```sh
-APP_NAME=ServITech
-APP_VERSION=1.0.0
-APP_ENV=local
-APP_KEY=base64:tu_clave_genérica
-APP_DEBUG=true
-APP_URL=http://localhost:8000
+## Security Vulnerabilities
 
-APP_LOCALE=es
-APP_FALLBACK_LOCALE=en
-APP_FAKER_LOCALE=en_US
+If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
-LOG_CHANNEL=stack
-LOG_LEVEL=debug
+## License
 
-## Si utilizas MySQL cambia 'sqlite' por 'mysql' y descomenta las variables DB_*
-DB_CONNECTION=sqlite
-# DB_HOST=127.0.0.1
-# DB_PORT=3306
-# DB_DATABASE=laravel
-# DB_USERNAME=root
-# DB_PASSWORD=
-
-SESSION_DRIVER=database
-SESSION_LIFETIME=120
-
-BROADCAST_CONNECTION=log
-FILESYSTEM_DISK=local
-QUEUE_CONNECTION=database
-
-CACHE_STORE=database
-
-MAIL_MAILER=smtp
-MAIL_HOST=sandbox.smtp.mailtrap.io
-MAIL_PORT=2525
-MAIL_USERNAME=tu_usuario
-MAIL_PASSWORD=tu_contraseña
-MAIL_FROM_ADDRESS="mailhelper@servitechcr.com"
-MAIL_FROM_NAME="${APP_NAME}"
-
-# L5 SWAGGER
-L5_SWAGGER_GENERATE_ALWAYS=true
-L5_SWAGGER_API_BASE_PATH=/
-L5_SWAGGER_API_ROUTE=/api/doc
-L5_SWAGGER_USE_ABSOLUTE_PATH=true
-L5_FORMAT_TO_USE_FOR_DOCS=json
-
-VITE_APP_NAME="${APP_NAME}"
-```
-
-## Contribuyendo  
-Gracias por considerar contribuir al proyecto **ServITech**. La guía de contribución se puede encontrar en la documentación de Laravel.  
-
-## Código de Conducta  
-Para asegurar que la comunidad de **ServITech** sea acogedora para todos, por favor revisa y cumple con el **Código de Conducta**.  
-
-## Licencia  
-El framework **Laravel** es un software de código abierto licenciado bajo la licencia **MIT**.  
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
