@@ -13,10 +13,13 @@ return new class extends Migration
     {
         Schema::create('subcategories', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('category_id')->constrained()->cascadeOnDelete();
-            $table->string('name');
-            $table->text('description')->nullable();
+
+            $table->foreignId('category_id')->constrained()->onDelete('cascade');
+            $table->string('name'); // Subcategory name
+            $table->text('description')->nullable(); // Subcategory description
             $table->softDeletes(); // Deleted_At
+            $table->unique(['category_id', 'name']); // Indicates that the combination of category_id and name must be unique
+            
             $table->timestamps(); // Created_At and Updated_At
         });
     }

@@ -11,15 +11,7 @@ class Subcategory extends Model
     /** @use HasFactory<\Database\Factories\SubcategoryFactory> */
     use HasFactory, SoftDeletes;
 
-    protected $fillable = [
-        "name",
-        "description",
-        "category_id",
-    ];
-
-    protected $casts = [
-    
-    ];
+    protected $fillable = ['category_id', 'name', 'description'];
 
     public function category()
     {
