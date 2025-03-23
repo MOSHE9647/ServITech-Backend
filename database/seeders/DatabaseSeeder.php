@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
+use App\Models\Subcategory;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -33,5 +34,6 @@ class DatabaseSeeder extends Seeder
         $adminUser->assignRole($adminRole);
 
         Category::factory(10)->create();
+        Subcategory::factory(10)->create();
     }
 }

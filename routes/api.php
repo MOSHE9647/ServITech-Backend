@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Model\CategoryController;
+use App\Http\Controllers\Model\SubcategoryController;
 use App\Http\Controllers\Model\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -31,4 +32,9 @@ Route::middleware('auth:api')->group(function () {
         Route::put('{category:name}', [CategoryController::class,'update'])->name('category.update');
         Route::delete('{category:name}', [CategoryController::class,'destroy'])->name('category.destroy');
     });
+});
+
+// Subcategory routes
+Route::prefix('subcategories')->group(function () {
+    Route::get('', [SubcategoryController::class, 'index'])->name('subcategories.index');
 });

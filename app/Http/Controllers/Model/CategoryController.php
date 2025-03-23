@@ -142,7 +142,7 @@ class CategoryController extends Controller
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255', // Needs to verify if the category name is unique
         ]);
         $category = Category::create($data);
 
