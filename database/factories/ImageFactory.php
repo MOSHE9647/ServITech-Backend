@@ -17,8 +17,8 @@ class ImageFactory extends Factory
     public function definition(): array
     {
         return [
-            "path" => $this->faker->imageUrl(),
-            "alt" => $this->faker->sentence(),
+            'path'  => "storage/images/{$this->faker->uuid()}.webp",
+            "alt"   => $this->faker->sentence(),
             "title" => $this->faker->sentence(),
         ];
     }
