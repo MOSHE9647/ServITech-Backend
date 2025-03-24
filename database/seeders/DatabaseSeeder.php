@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
+use App\Models\Image;
+use App\Models\RepairRequest;
 use App\Models\Subcategory;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -33,7 +35,14 @@ class DatabaseSeeder extends Seeder
         $adminRole = Role::where('name','admin')->first();
         $adminUser->assignRole($adminRole);
 
-        Category::factory(10)->create();
+        // Category::factory(10)->create();
         Subcategory::factory(10)->create();
+
+        // Create RepairRequests with images
+        RepairRequest::factory(10)->create()->each(function ($repairRequest) {
+            $repairRequest->images()->createMany(
+                Image::factory(2)->make()->toArray()
+            );
+        });
     }
 }

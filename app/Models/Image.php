@@ -12,8 +12,17 @@ class Image extends Model
 
     protected $fillable = ['path'];
 
+    /**
+     * Polymorphic relationship: This image can belong to different models.
+     * 
+     * Example usage:
+     * 
+     * Get the model (RepairRequest, Article, etc.) that owns this image
+     * ```php
+     * $owner = $image->imageable;
+     * ```
+     */
     public function imageable() {
-        // Polymorphic relationship between Image and other models
         return $this->morphTo();
     }
 }
