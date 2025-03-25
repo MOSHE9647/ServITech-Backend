@@ -17,7 +17,7 @@ class SubcategoryController extends Controller
         $subcategories = Subcategory::orderBy('id', 'desc')->get();
         return ApiResponse::success(
             data: compact('subcategories'),
-            message: 'Subcategories retrieved successfully.' // Needs translation
+            message: __('messages.subcategory.retrieved_all')
         );
     }
 

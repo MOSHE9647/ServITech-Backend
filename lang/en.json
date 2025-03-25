@@ -220,6 +220,8 @@
     "URI Too Long": "URI Too Long",
     "Use Proxy": "Use Proxy",
     "User": "User",
+    "User does not have the right roles.": "User does not have the right roles.",
+    "User does not have the right permissions.": "User does not have the right permissions.",
     "Variant Also Negotiates": "Variant Also Negotiates",
     "Verify Email Address": "Verify Email Address",
     "View": "View",

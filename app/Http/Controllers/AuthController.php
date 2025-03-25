@@ -121,11 +121,11 @@ class AuthController extends Controller
     
             return ApiResponse::error(
                 status: Response::HTTP_UNAUTHORIZED,
-                message: __('messages.invalid_credentials')
+                message: __('messages.user.invalid_credentials')
             );
         }
 
-        return ApiResponse::success(message: __('messages.user_logged_in'),
+        return ApiResponse::success(message: __('messages.user.logged_in'),
         data:[
             'token' => $token,
             'expires_in' => auth('api')->factory()->getTTL() * 60,
@@ -176,7 +176,7 @@ class AuthController extends Controller
     {
         $user = User::create($request->validated());
         return ApiResponse::success(
-            message: __('messages.user_registered'),
+            message: __('messages.user.registered'),
             status: Response::HTTP_CREATED,
             data: ['user' => $user]
         );
@@ -357,14 +357,14 @@ class AuthController extends Controller
         // Verifies if the user is already logged out
         if (! auth()->guard('api')->check()) {
             return ApiResponse::error(
-                message: __('messages.user_already_logged_out'),
+                message: __('messages.user.already_logged_out'),
                 status: Response::HTTP_UNAUTHORIZED
             );
         }
 
         auth()->guard('api')->logout();
         return ApiResponse::success(
-            message: __('messages.user_logged_out'),
+            message: __('messages.user.logged_out'),
             status: Response::HTTP_OK
         );
     }

@@ -1,7 +1,9 @@
 <?php
 
+use App\Enums\UserRoles;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Model\CategoryController;
+use App\Http\Controllers\Model\RepairRequestController;
 use App\Http\Controllers\Model\SubcategoryController;
 use App\Http\Controllers\Model\UserController;
 use Illuminate\Support\Facades\Route;
@@ -11,7 +13,7 @@ Route::prefix('auth')->group(function () {
     Route::post('login', [AuthController::class, 'login'])->name('auth.login');
     Route::post('register', [AuthController::class, 'register'])->name('auth.register');
     Route::post('logout', [AuthController::class,'logout'])->name('auth.logout');
-    Route::post('reset-password', [AuthController::class,'sendResetLink'])->name('auth.reset-password');
+    Route::post('reset-password', [AuthController::class,'sendResetLink'])->name('auth.send-reset-link');
     Route::put('reset-password', [AuthController::class,'resetPassword'])->name('auth.reset-password');
 });
 
@@ -32,9 +34,18 @@ Route::middleware('auth:api')->group(function () {
         Route::put('{category:name}', [CategoryController::class,'update'])->name('category.update');
         Route::delete('{category:name}', [CategoryController::class,'destroy'])->name('category.destroy');
     });
-});
 
-// Subcategory routes
-Route::prefix('subcategories')->group(function () {
-    Route::get('', [SubcategoryController::class, 'index'])->name('subcategories.index');
+    // Subcategory routes
+    Route::prefix('subcategories')->group(function () {
+        Route::get('', [SubcategoryController::class, 'index'])->name('subcategories.index');
+    });
+
+    // RepairRequest routes
+    Route::prefix('repair-request')->middleware("role:" . UserRoles::ADMIN->value)->group(function () {
+        Route::get('', [RepairRequestController::class, 'index'])->name('repair-request.index');
+        Route::post('', [RepairRequestController::class, 'store'])->name('repair-request.store');
+        Route::get('{repairRequest}', [RepairRequestController::class, 'show'])->name('repair-request.show');
+        Route::put('{repairRequest}', [RepairRequestController::class, 'update'])->name('repair-request.update');
+        Route::delete('{repairRequest}', [RepairRequestController::class, 'destroy'])->name('repair-request.destroy');
+    });
 });

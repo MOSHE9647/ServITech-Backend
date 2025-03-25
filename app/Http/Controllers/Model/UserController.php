@@ -74,7 +74,7 @@ class UserController extends Controller
     public function profile(): JsonResponse
     {
         $user = UserResource::make(auth()->guard('api')->user());
-        return ApiResponse::success(data: compact('user'), message: __('messages.user_info_retrieved'));
+        return ApiResponse::success(data: compact('user'), message: __('messages.user.info_retrieved'));
     }
 
     /**
@@ -117,7 +117,7 @@ class UserController extends Controller
     {
         auth()->guard('api')->user()->update($request->validated());
         $user = UserResource::make(auth()->guard('api')->user()->fresh() ?? []);
-        return ApiResponse::success(compact('user'), message: __('messages.user_info_updated'));
+        return ApiResponse::success(compact('user'), message: __('messages.user.info_updated'));
     }
 
     /**
@@ -159,6 +159,6 @@ class UserController extends Controller
             'password'=> bcrypt($request->get('password')),
         ]);
 
-        return ApiResponse::success(message: __('messages.user_password_updated'));
+        return ApiResponse::success(message: __('messages.user.password_updated'));
     }
 }

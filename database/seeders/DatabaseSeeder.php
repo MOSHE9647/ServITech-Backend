@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\UserRoles;
 use App\Models\Category;
 use App\Models\Image;
 use App\Models\RepairRequest;
@@ -32,17 +33,17 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Assign the admin role to the admin user
-        $adminRole = Role::where('name','admin')->first();
+        $adminRole = Role::where('name', UserRoles::ADMIN)->first();
         $adminUser->assignRole($adminRole);
 
-        // Category::factory(10)->create();
-        Subcategory::factory(10)->create();
+        // // Category::factory(10)->create();
+        // Subcategory::factory(10)->create();
 
-        // Create RepairRequests with images
-        RepairRequest::factory(10)->create()->each(function ($repairRequest) {
-            $repairRequest->images()->createMany(
-                Image::factory(2)->make()->toArray()
-            );
-        });
+        // // Create RepairRequests with images
+        // RepairRequest::factory(10)->create()->each(function ($repairRequest) {
+        //     $repairRequest->images()->createMany(
+        //         Image::factory(2)->make()->toArray()
+        //     );
+        // });
     }
 }

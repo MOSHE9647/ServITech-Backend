@@ -31,7 +31,7 @@ class UpdateUserDataTest extends TestCase
 
         // When:
         $user = User::find(1)->first(); // Find the user with ID 1
-        $this->assertNotNull($user, __('messages.user_not_found')); // Ensure the user exists
+        $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
         
         $response = $this->apiAs($user, 'PUT', "{$this->apiBase}/user/profile", $data);
 
@@ -48,7 +48,7 @@ class UpdateUserDataTest extends TestCase
                 ],
             ],
             'status' => 200, 
-            'message' => __('messages.user_info_updated')
+            'message' => __('messages.user.info_updated')
         ]);
 
         // Ensure the old data is not present in the database
@@ -73,7 +73,7 @@ class UpdateUserDataTest extends TestCase
 
         // When:
         $user = User::find(1)->first(); // Find the user with ID 1
-        $this->assertNotNull($user, __('messages.user_not_found')); // Ensure the user exists
+        $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
         $response = $this->apiAs($user, 'PUT', "{$this->apiBase}/user/profile", $data);
 
@@ -90,7 +90,7 @@ class UpdateUserDataTest extends TestCase
                 ],
             ],
             'status' => 200, 
-            'message' => __('messages.user_info_updated')
+            'message' => __('messages.user.info_updated')
         ]);
 
         // Ensure the email was not changed in the database
@@ -115,7 +115,7 @@ class UpdateUserDataTest extends TestCase
 
         // When:
         $user = User::find(1)->first(); // Find the user with ID 1
-        $this->assertNotNull($user, __('messages.user_not_found')); // Ensure the user exists
+        $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
         $response = $this->apiAs($user, 'PUT', "{$this->apiBase}/user/profile", $data);
 
@@ -140,7 +140,7 @@ class UpdateUserDataTest extends TestCase
 
         // When:
         $user = User::find(1)->first(); // Find the user with ID 1
-        $this->assertNotNull($user, __('messages.user_not_found')); // Ensure the user exists
+        $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
         $response = $this->apiAs($user, 'PUT', "{$this->apiBase}/user/profile", $data);
 
@@ -171,7 +171,7 @@ class UpdateUserDataTest extends TestCase
 
         // When:
         $user = User::find(1)->first(); // Find the user with ID 1
-        $this->assertNotNull($user, __('messages.user_not_found')); // Ensure the user exists
+        $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
         $response = $this->apiAs($user, 'PUT', "{$this->apiBase}/user/profile", $data);
 
@@ -202,7 +202,7 @@ class UpdateUserDataTest extends TestCase
 
         // When:
         $user = User::find(1)->first(); // Find the user with ID 1
-        $this->assertNotNull($user, __('messages.user_not_found')); // Ensure the user exists
+        $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
         $response = $this->apiAs($user, 'PUT', "{$this->apiBase}/user/profile", $data);
 
@@ -234,7 +234,7 @@ class UpdateUserDataTest extends TestCase
 
         // When:
         $user = User::find(1)->first(); // Find the user with ID 1
-        $this->assertNotNull($user, __('messages.user_not_found')); // Ensure the user exists
+        $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
         $response = $this->apiAs($user, 'PUT', "{$this->apiBase}/user/profile", $data);
 
@@ -265,7 +265,7 @@ class UpdateUserDataTest extends TestCase
 
         // When:
         $user = User::find(1)->first(); // Find the user with ID 1
-        $this->assertNotNull($user, __('messages.user_not_found')); // Ensure the user exists
+        $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
         $response = $this->apiAs($user, 'PUT', "{$this->apiBase}/user/profile", $data);
 
@@ -296,7 +296,7 @@ class UpdateUserDataTest extends TestCase
 
         // When:
         $user = User::find(1)->first(); // Find the user with ID 1
-        $this->assertNotNull($user, __('messages.user_not_found')); // Ensure the user exists
+        $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
         $response = $this->apiAs($user, 'PUT', "{$this->apiBase}/user/profile", $data);
 

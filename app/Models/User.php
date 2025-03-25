@@ -85,6 +85,9 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
+    /**
+     * Send the password reset notification to the user.
+     */
     public function sendPasswordResetNotification($token)
     {
         $appUrl = config('app.url');

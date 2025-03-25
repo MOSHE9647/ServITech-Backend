@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\RepairStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -31,6 +32,11 @@ class RepairRequest extends Model
     ];
 
     protected $dates = ['received_at', 'repaired_at'];
+
+    protected $casts = [
+        'repair_price' => 'decimal:2',
+        'repair_status' => RepairStatus::class,
+    ];
 
     /**
      * The "booting" method of the model.

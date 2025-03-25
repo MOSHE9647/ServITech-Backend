@@ -11,7 +11,7 @@ class RepairRequestTest extends TestCase {
 
     public function test_repair_request_is_created_with_unique_receipt_number() {
         $repairRequest = RepairRequest::factory()->create();
-        dd($repairRequest);
+        // dd($repairRequest);
 
         $this->assertNotNull($repairRequest->receipt_number);
         $this->assertMatchesRegularExpression('/^RR-\d{12}$/', $repairRequest->receipt_number);

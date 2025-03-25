@@ -63,7 +63,7 @@ class LoginTest extends TestCase
 
         // Then:
         $response->assertStatus(401);
-        $response->assertJsonFragment(['status' => 401, 'message' => __('messages.invalid_credentials')]);
+        $response->assertJsonFragment(['status' => 401, 'message' => __('messages.user.invalid_credentials')]);
     }
 
     public function test_email_must_be_required(): void

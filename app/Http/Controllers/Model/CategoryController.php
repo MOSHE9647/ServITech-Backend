@@ -79,7 +79,7 @@ class CategoryController extends Controller
         $categories = Category::orderBy('id', 'desc')->get();
         return ApiResponse::success(
             data: compact('categories'),
-            message: __('messages.categories_retrieved')
+            message: __('messages.category.retrieved_all')
         );
     }
 
@@ -148,7 +148,7 @@ class CategoryController extends Controller
 
         return ApiResponse::success(
             data: compact('category'),
-            message: __('messages.category_created')
+            message: __('messages.category.created')
         );
     }
 
@@ -211,7 +211,7 @@ class CategoryController extends Controller
     {
         return ApiResponse::success(
             data: compact('category'),
-            message: __('messages.category_retrieved')
+            message: __('messages.category.retrieved')
         );
     }
 
@@ -287,7 +287,7 @@ class CategoryController extends Controller
 
         return ApiResponse::success(
             data: compact('category'),
-            message: __('messages.category_updated')
+            message: __('messages.category.updated')
         );
     }
 
@@ -341,6 +341,6 @@ class CategoryController extends Controller
     public function destroy(Category $category): JsonResponse
     {
         $category->delete();
-        return ApiResponse::success(message: __('messages.category_deleted'));
+        return ApiResponse::success(message: __('messages.category.deleted'));
     }
 }

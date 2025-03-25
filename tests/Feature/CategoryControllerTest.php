@@ -25,7 +25,7 @@ class CategoryControllerTest extends TestCase
 
         // When:
         $user = User::find(1)->first(); // Find the user with ID 1
-        $this->assertNotNull($user, __('messages.user_not_found')); // Ensure the user exists
+        $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
         $response = $this->apiAs($user, 'GET', "{$this->apiBase}/category");
 
@@ -37,7 +37,7 @@ class CategoryControllerTest extends TestCase
 
         $response->assertJsonFragment([
             'status' => 200,
-            'message'=> __('messages.categories_retrieved'),
+            'message'=> __('messages.category.retrieved_all'),
             'data' => ['categories' => Category::all()->toArray()],
         ]);
     }
@@ -49,7 +49,7 @@ class CategoryControllerTest extends TestCase
 
         // When:
         $user = User::find(1)->first(); // Find the user with ID 1
-        $this->assertNotNull($user, __('messages.user_not_found')); // Ensure the user exists
+        $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
         $response = $this->apiAs($user, 'POST', "{$this->apiBase}/category", $data);
 
@@ -58,7 +58,7 @@ class CategoryControllerTest extends TestCase
         $response->assertJsonStructure(['message', 'status', 'data' => ['category']]);
         $response->assertJsonFragment([
             'status' => 200,
-            'message'=> __('messages.category_created'),
+            'message'=> __('messages.category.created'),
             'data' => [
                 'category' => [
                     'id'=> 1,
@@ -80,7 +80,7 @@ class CategoryControllerTest extends TestCase
 
         // When:
         $user = User::find(1)->first(); // Find the user with ID 1
-        $this->assertNotNull($user, __('messages.user_not_found')); // Ensure the user exists
+        $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
         $response = $this->apiAs($user, 'GET', "{$this->apiBase}/category/{$category->name}");
 
@@ -89,7 +89,7 @@ class CategoryControllerTest extends TestCase
         $response->assertJsonStructure(['message', 'status', 'data' => ['category']]);
         $response->assertJsonFragment([
             'status' => 200,
-            'message'=> __('messages.category_retrieved'),
+            'message'=> __('messages.category.retrieved'),
             'data' => [
                 'category' => [
                     'id'=> 1,
@@ -111,7 +111,7 @@ class CategoryControllerTest extends TestCase
 
         // When:
         $user = User::find(1)->first(); // Find the user with ID 1
-        $this->assertNotNull($user, __('messages.user_not_found')); // Ensure the user exists
+        $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
         $response = $this->apiAs($user, 'PUT', "{$this->apiBase}/category/{$category->name}", $data);
         // dd($response->json());
@@ -121,7 +121,7 @@ class CategoryControllerTest extends TestCase
         $response->assertJsonStructure(['message', 'status', 'data' => ['category']]);
         $response->assertJsonFragment([
             'status' => 200,
-            'message'=> __('messages.category_updated'),
+            'message'=> __('messages.category.updated'),
             'data' => [
                 'category' => [
                     'id'=> 1,
@@ -145,7 +145,7 @@ class CategoryControllerTest extends TestCase
 
         // When:
         $user = User::find(1)->first(); // Find the user with ID 1
-        $this->assertNotNull($user, __('messages.user_not_found')); // Ensure the user exists
+        $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
         $response = $this->apiAs($user, 'DELETE', "{$this->apiBase}/category/{$category->name}");
 
@@ -154,7 +154,7 @@ class CategoryControllerTest extends TestCase
         $response->assertJsonStructure(['status', 'message']);
         $response->assertJsonFragment([
             'status'=> 200,
-            'message'=> __('messages.category_deleted'),
+            'message'=> __('messages.category.deleted'),
         ]);
 
         // Ensure the category is soft deleted in the database

@@ -44,7 +44,7 @@ class UserRegisterTest extends TestCase
                 ],
             ],
             'status' => 201, 
-            'message' => __('messages.user_registered'),
+            'message' => __('messages.user.registered'),
         ]);
 
         // Ensure the user is in the database

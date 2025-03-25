@@ -34,7 +34,7 @@ class LogoutTest extends TestCase
         $response->assertJsonStructure(['status', 'message', 'data']);
         $response->assertJsonFragment([
             'status'=> 200,
-            'message'=> __('messages.user_logged_out'),
+            'message'=> __('messages.user.logged_out'),
         ]);
     }
 
@@ -57,7 +57,7 @@ class LogoutTest extends TestCase
         $response->assertJsonStructure(['status', 'message', 'errors']);
         $response->assertJsonFragment([
             'status'=> 401,
-            'message'=> __('messages.user_already_logged_out'),
+            'message'=> __('messages.user.already_logged_out'),
         ]);
     }
 }

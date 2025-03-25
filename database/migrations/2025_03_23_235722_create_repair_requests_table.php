@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\RepairStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,7 +15,7 @@ return new class extends Migration
         Schema::create('repair_requests', function (Blueprint $table) {
             $table->id();
             
-            $table->string('receipt_number')->unique(); // Unique receipt number instead of ID
+            $table->string('receipt_number')->unique(); // Unique receipt number
             $table->string('customer_name');
             $table->string('customer_phone');
             $table->string('customer_email');
@@ -25,7 +26,7 @@ return new class extends Migration
             $table->string('article_serialnumber')->nullable();
             $table->text('article_accesories')->nullable();
             $table->text('article_problem');
-            $table->string('repair_status')->default('Pending');
+            $table->string('repair_status')->default(RepairStatus::PENDING);
             $table->text('repair_details')->nullable();
             $table->decimal('repair_price', 10, 2)->nullable();
             $table->date('received_at');
