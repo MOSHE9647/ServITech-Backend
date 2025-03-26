@@ -46,6 +46,6 @@ Route::middleware('auth:api')->group(function () {
         Route::post('', [RepairRequestController::class, 'store'])->name('repair-request.store');
         Route::get('{repairRequest:receipt_number}', [RepairRequestController::class, 'show'])->name('repair-request.show');
         // Route::put('{repairRequest:receipt_number}', [RepairRequestController::class, 'update'])->name('repair-request.update');
-        // Route::delete('{repairRequest:receipt_number}', [RepairRequestController::class, 'destroy'])->name('repair-request.destroy');
+        Route::delete('{repairRequest:receipt_number}', [RepairRequestController::class, 'destroy'])->name('repair-request.destroy');
     });
 });

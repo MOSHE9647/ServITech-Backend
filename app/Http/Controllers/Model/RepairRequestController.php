@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Model;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RepairRequest\CreateRepairRequest;
+use App\Http\Requests\RepairRequest\UpdateRepairRequest;
 use App\Http\Responses\ApiResponse;
 use App\Models\RepairRequest;
-use Illuminate\Http\Request;
 
 class RepairRequestController extends Controller
 {
@@ -50,9 +50,9 @@ class RepairRequestController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, RepairRequest $repairRequest)
+    public function update(UpdateRepairRequest $request, RepairRequest $repairRequest)
     {
-        //
+        $data = $request->validated();
     }
 
     /**
@@ -60,6 +60,7 @@ class RepairRequestController extends Controller
      */
     public function destroy(RepairRequest $repairRequest)
     {
-        //
+        $repairRequest->delete();
+        return ApiResponse::success(message: __('messages.repair_request.deleted'));
     }
 }
