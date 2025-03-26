@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\RepairRequestTests;
 
 use App\Enums\UserRoles;
 use App\Models\RepairRequest;

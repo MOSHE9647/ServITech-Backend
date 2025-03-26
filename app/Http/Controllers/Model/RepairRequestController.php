@@ -53,6 +53,11 @@ class RepairRequestController extends Controller
     public function update(UpdateRepairRequest $request, RepairRequest $repairRequest)
     {
         $data = $request->validated();
+        $repairRequest->update($data);
+        return ApiResponse::success(
+            message: __('messages.repair_request.updated'),
+            data: compact('repairRequest'),
+        );
     }
 
     /**
