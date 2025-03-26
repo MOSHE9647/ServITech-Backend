@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Enums\UserRoles;
+use App\Models\Article;
 use App\Models\Category;
 use App\Models\Image;
 use App\Models\RepairRequest;
@@ -45,5 +46,13 @@ class DatabaseSeeder extends Seeder
         //         Image::factory(2)->make()->toArray()
         //     );
         // });
+
+       Article::factory()->create([
+            'name' => 'Article 1',
+            'description' => 'Description of article 1',
+            'price' => 100,
+            'category_id' => Category::factory()->create()->id,
+            'subcategory_id' => Subcategory::factory()->create()->id,
+        ]);
     }
 }
