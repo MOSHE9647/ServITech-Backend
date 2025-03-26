@@ -15,7 +15,11 @@ class RepairRequestController extends Controller
      */
     public function index()
     {
-        //
+        $repairRequests = RepairRequest::orderBy("id", "desc")->get();
+        return ApiResponse::success(
+            message: __('messages.repair_request.retrieved_list'),
+            data: compact("repairRequests")
+        );
     }
 
     /**
@@ -37,7 +41,10 @@ class RepairRequestController extends Controller
      */
     public function show(RepairRequest $repairRequest)
     {
-        //
+        return ApiResponse::success(
+            data: compact('repairRequest'),
+            message: __('messages.repair_request.retrieved')
+        );
     }
 
     /**

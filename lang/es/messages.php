@@ -31,6 +31,10 @@ return [
         'reset_success'        => 'Contraseña restablecida con éxito',
     ],
     'repair_request' => [
+        'retrieved_list'       => 'Lista de solicitudes de reparación obtenida exitosamente.',
+        'retrieved'            => 'Solicitud de reparación obtenida exitosamente.',
         'created'              => 'Solicitud de reparación creada exitosamente.',
+        'updated'              => 'Solicitud de reparación actualizada exitosamente.',
+        'deleted'              => 'Solicitud de reparación eliminada exitosamente.',
     ],
 ];
