@@ -1,9 +1,10 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\RepairRequestTests;
 
 use App\Enums\RepairStatus;
 use App\Enums\UserRoles;
+use App\Models\RepairRequest;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -22,6 +23,14 @@ class CreateRepairRequestTest extends TestCase
     {
         parent::setUp(); // Call the parent setUp method
         $this->seed(class: DatabaseSeeder::class); // Seed the database
+    }
+    
+    public function test_repair_request_is_created_with_unique_receipt_number() {
+        $repairRequest = RepairRequest::factory()->create();
+        // dd($repairRequest);
+
+        $this->assertNotNull($repairRequest->receipt_number);
+        $this->assertMatchesRegularExpression('/^RR-\d{12}$/', $repairRequest->receipt_number);
     }
 
     public function test_an_authenticated_admin_user_can_create_repair_requests()
