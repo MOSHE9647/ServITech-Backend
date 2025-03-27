@@ -24,7 +24,6 @@ class CreateRepairRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'customer_name'         => 'required|string|min:3',
             'customer_phone'        => 'required|string|min:8',
             'customer_email'        => 'required|email',
             'article_name'          => 'required|string|min:3',
@@ -35,19 +34,21 @@ class CreateRepairRequest extends FormRequest
             'article_accesories'    => 'nullable|string|min:3',
             'article_problem'       => 'required|string|min:3',
             'repair_status'         => [
-                'required', 'string', 
+                'required', 'string',
                 new Enum(RepairStatus::class)
             ],
             'repair_details'        => 'nullable|string|min:3',
             'repair_price'          => 'nullable|numeric',
             'received_at'           => 'required|date',
             'repaired_at'           => 'nullable|date',
-        ];
+         ];
+
+
     }
 
     /**
      * Get the validation messages that apply to the request.
-     * 
+     *
      * @return array<string, string>
      */
     public function messages(): array

@@ -55,7 +55,7 @@ class User extends Authenticatable implements JWTSubject
 
     /**
      * Get the user's initials from the first name and the last name
-     * 
+     *
      * @return string
      */
     public function initials(): string
@@ -94,5 +94,9 @@ class User extends Authenticatable implements JWTSubject
         $email = urlencode($this->email);
         $url = "{$appUrl}/reset-password?token={$token}&email={$email}";
         $this->notify(new ResetPasswordNotification($url));
+    }
+    public function supportRequests()
+    {
+        return $this->hasMany(SupportRequest::class);
     }
 }
