@@ -45,11 +45,11 @@ class DatabaseSeeder extends Seeder
         });
 
         // Create repair requests and attach related images
-        RepairRequest::factory(10)->create()->each(function ($repairRequest) {
-            $repairRequest->images()->createMany(
-                Image::factory(2)->make()->toArray() // Generate and attach 2 images per repair request
-            );
-        });
+        // RepairRequest::factory(10)->create()->each(function ($repairRequest) {
+        //     $repairRequest->images()->createMany(
+        //         Image::factory(2)->make()->toArray() // Generate and attach 2 images per repair request
+        //     );
+        // });
 
         // Create an article and associate it with a random category and subcategory
         $category = Category::inRandomOrder()->first();
