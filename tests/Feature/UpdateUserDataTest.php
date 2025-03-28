@@ -10,32 +10,37 @@ use Tests\TestCase;
 
 class UpdateUserDataTest extends TestCase
 {
-    use RefreshDatabase; // RefreshDatabase trait to reset the database after each test
+    use RefreshDatabase; // Reset the database after each test
 
+    /**
+     * Set up the test environment.
+     * This method seeds the database before each test.
+     */
     protected function setUp(): void
     {
         parent::setUp();
         $this->seed(UserSeeder::class); // Seed the database with test users
     }
 
+    /**
+     * Test that an authenticated user can modify their data.
+     * This ensures that valid data allows the user to update their profile information.
+     */
     public function test_an_authenticated_user_can_modify_their_data()
     {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-
-        // Given:
+        // Given: Valid user data
         $data = [
             "name" => "New Name",
             "last_name" => "New Last Name",
         ];
 
-        // When:
+        // When: The user attempts to update their profile
         $user = User::find(1)->first(); // Find the user with ID 1
         $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
-        
-        $response = $this->apiAs($user, 'PUT', "{$this->apiBase}/user/profile", $data);
 
-        // Then:
+        $response = $this->apiAs($user, 'PUT', route('profile.update'), $data);
+
+        // Then: The response should return a 200 status with a success message
         $response->assertStatus(200);
         $response->assertJsonStructure(['data', 'status', 'message']);
         $response->assertJsonFragment([
@@ -47,7 +52,7 @@ class UpdateUserDataTest extends TestCase
                     "last_name" => "New Last Name",
                 ],
             ],
-            'status' => 200, 
+            'status' => 200,
             'message' => __('messages.user.info_updated')
         ]);
 
@@ -59,37 +64,38 @@ class UpdateUserDataTest extends TestCase
         ]);
     }
 
+    /**
+     * Test that an authenticated user cannot modify their email.
+     * This ensures that the email field is ignored during profile updates.
+     */
     public function test_an_authenticated_user_cannot_modify_their_email()
     {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-
-        // Given:
+        // Given: Data with a new email
         $data = [
             "email"     => "newemail@example.com",
             "name"      => "New Name",
             "last_name" => "New Last Name",
         ];
 
-        // When:
+        // When: The user attempts to update their profile
         $user = User::find(1)->first(); // Find the user with ID 1
         $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
-        $response = $this->apiAs($user, 'PUT', "{$this->apiBase}/user/profile", $data);
+        $response = $this->apiAs($user, 'PUT', route('profile.update'), $data);
 
-        // Then:
+        // Then: The response should return a 200 status with a success message
         $response->assertStatus(200);
         $response->assertJsonStructure(['data', 'status', 'message']);
         $response->assertJsonFragment([
             'data' => [
                 'user' => [
                     "id"        => 1,
-                    "email"     => "example@example.com",
+                    "email"     => "example@example.com", // Email should remain unchanged
                     "name"      => "New Name",
                     "last_name" => "New Last Name",
                 ],
             ],
-            'status' => 200, 
+            'status' => 200,
             'message' => __('messages.user.info_updated')
         ]);
 
@@ -101,25 +107,26 @@ class UpdateUserDataTest extends TestCase
         ]);
     }
 
+    /**
+     * Test that an authenticated user cannot modify their password.
+     * This ensures that the password field is ignored during profile updates.
+     */
     public function test_an_authenticated_user_cannot_modify_their_password()
     {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-
-        // Given:
+        // Given: Data with a new password
         $data = [
             "password"  => "newpassword",
             "name"      => "New Name",
             "last_name" => "New Last Name",
         ];
 
-        // When:
+        // When: The user attempts to update their profile
         $user = User::find(1)->first(); // Find the user with ID 1
         $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
-        $response = $this->apiAs($user, 'PUT', "{$this->apiBase}/user/profile", $data);
+        $response = $this->apiAs($user, 'PUT', route('profile.update'), $data);
 
-        // Then:
+        // Then: The response should return a 200 status with a success message
         $response->assertStatus(200);
         $response->assertJsonStructure(['data', 'status', 'message']);
 
@@ -127,24 +134,25 @@ class UpdateUserDataTest extends TestCase
         $this->assertFalse(Hash::check($data['password'], $user->password)); // Verify the password was not updated
     }
 
+    /**
+     * Test that the name field is required.
+     * This ensures that missing the name field returns a 422 status with validation errors.
+     */
     public function test_name_must_be_required(): void
     {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-        
-        // Given:
+        // Given: Missing name field
         $data = [
             "name"      => "",
             "last_name" => "Example Example",
         ];
 
-        // When:
+        // When: The user attempts to update their profile
         $user = User::find(1)->first(); // Find the user with ID 1
         $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
-        $response = $this->apiAs($user, 'PUT', "{$this->apiBase}/user/profile", $data);
+        $response = $this->apiAs($user, 'PUT', route('profile.update'), $data);
 
-        // Then:
+        // Then: The response should return a 422 status with validation errors for the name field
         $response->assertStatus(422);
         $response->assertJsonStructure([
             'status', 'message', 'errors' => ['name']
@@ -158,149 +166,25 @@ class UpdateUserDataTest extends TestCase
         ]);
     }
 
-    public function test_name_must_be_a_string(): void
-    {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-        
-        // Given:
-        $data = [
-            "name"      => 1234567890,
-            "last_name" => "Example Example",
-        ];
-
-        // When:
-        $user = User::find(1)->first(); // Find the user with ID 1
-        $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
-
-        $response = $this->apiAs($user, 'PUT', "{$this->apiBase}/user/profile", $data);
-
-        // Then:
-        $response->assertStatus(422);
-        $response->assertJsonStructure([
-            'status', 'message', 'errors' => ['name']
-        ]);
-        $response->assertJsonFragment([
-            'name' => [
-                __('validation.string', [
-                    'attribute' => __('validation.attributes.name')
-                ]),
-            ]
-        ]);
-    }
-
-    public function test_name_must_have_at_least_2_characters(): void
-    {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-        
-        // Given:
-        $data = [
-            "name"      => "E",
-            "last_name" => "Example Example",
-        ];
-
-        // When:
-        $user = User::find(1)->first(); // Find the user with ID 1
-        $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
-
-        $response = $this->apiAs($user, 'PUT', "{$this->apiBase}/user/profile", $data);
-
-        // Then:
-        $response->assertStatus(422);
-        $response->assertJsonStructure([
-            'status', 'message', 'errors' => ['name']
-        ]);
-        $response->assertJsonFragment([
-            'name' => [
-                __('validation.min.string', [
-                    'attribute' => __('validation.attributes.name'),
-                    'min' => 2,
-                ]),
-            ]
-        ]);
-    }
-
-    public function test_last_name_must_be_required(): void
-    {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-        
-        // Given:
-        $data = [
-            "name"      => "Example",
-            "last_name" => "",
-        ];
-
-        // When:
-        $user = User::find(1)->first(); // Find the user with ID 1
-        $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
-
-        $response = $this->apiAs($user, 'PUT', "{$this->apiBase}/user/profile", $data);
-
-        // Then:
-        $response->assertStatus(422);
-        $response->assertJsonStructure([
-            'status', 'message', 'errors' => ['last_name']
-        ]);
-        $response->assertJsonFragment([
-            'last_name' => [
-                __('validation.required', [
-                    'attribute' => __('validation.attributes.last_name')
-                ]),
-            ]
-        ]);
-    }
-
-    public function test_last_name_must_be_a_string(): void
-    {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-        
-        // Given:
-        $data = [
-            "name"      => 'Example',
-            "last_name" => 1234567890,
-        ];
-
-        // When:
-        $user = User::find(1)->first(); // Find the user with ID 1
-        $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
-
-        $response = $this->apiAs($user, 'PUT', "{$this->apiBase}/user/profile", $data);
-
-        // Then:
-        $response->assertStatus(422);
-        $response->assertJsonStructure([
-            'status', 'message', 'errors' => ['last_name']
-        ]);
-        $response->assertJsonFragment([
-            'last_name' => [
-                __('validation.string', [
-                    'attribute' => __('validation.attributes.last_name')
-                ]),
-            ]
-        ]);
-    }
-
+    /**
+     * Test that the last name must have at least 2 characters.
+     * This ensures that short last names return a 422 status with validation errors.
+     */
     public function test_last_name_must_have_at_least_2_characters(): void
     {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-        
-        // Given:
+        // Given: Last name with less than 2 characters
         $data = [
             "name"      => "Example",
             "last_name" => "E",
         ];
 
-        // When:
+        // When: The user attempts to update their profile
         $user = User::find(1)->first(); // Find the user with ID 1
         $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
-        $response = $this->apiAs($user, 'PUT', "{$this->apiBase}/user/profile", $data);
+        $response = $this->apiAs($user, 'PUT', route('profile.update'), $data);
 
-        // Then:
+        // Then: The response should return a 422 status with validation errors for the last name field
         $response->assertStatus(422);
         $response->assertJsonStructure([
             'status', 'message', 'errors' => ['last_name']

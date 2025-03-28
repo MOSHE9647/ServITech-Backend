@@ -24,6 +24,7 @@ class CreateRepairRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'customer_name'         => 'required|string|min:3',
             'customer_phone'        => 'required|string|min:8',
             'customer_email'        => 'required|email',
             'article_name'          => 'required|string|min:3',
@@ -54,6 +55,16 @@ class CreateRepairRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'customer_name.required' => __('validation.required', [
+                'attribute' => __('validation.attributes.customer_name')
+            ]),
+            'customer_name.string' => __('validation.string', [
+                'attribute' => __('validation.attributes.customer_name')
+            ]),
+            'customer_name.min' => __('validation.min.string', [
+                'attribute' => __('validation.attributes.customer_name'),
+                'min' => 3
+            ]),
             'customer_phone.required' => __('validation.required', [
                 'attribute' => __('validation.attributes.phone')
             ]),

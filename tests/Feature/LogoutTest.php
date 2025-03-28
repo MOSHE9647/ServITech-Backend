@@ -8,56 +8,70 @@ use Tests\TestCase;
 
 class LogoutTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase; // Reset the database after each test
 
+    /**
+     * Set up the test environment.
+     * This method seeds the database before each test.
+     */
     protected function setUp(): void
     {
-        parent::setUp();
-        $this->seed(UserSeeder::class);
+        parent::setUp(); // Call the parent setUp method
+        $this->seed(UserSeeder::class); // Seed the database with test users
     }
 
+    /**
+     * Test that a user can log out successfully.
+     * This ensures that a logged-in user can log out and receive a 200 status with a success message.
+     */
     public function test_an_user_can_logout_successfully()
     {
-        // Given:
+        // Given: Valid user credentials
         $credentials = [
             "email"     => "example@example.com",
             "password"  => "password",
         ];
 
-        $this->postJson("{$this->apiBase}/auth/login", $credentials);
+        // Log in the user
+        $this->postJson(route('auth.login'), $credentials);
 
-        // When:
-        $response = $this->postJson("{$this->apiBase}/auth/logout");
+        // When: The user attempts to log out
+        $response = $this->postJson(route('auth.logout'));
 
-        // Then:
+        // Then: The response should return a 200 status with a success message
         $response->assertStatus(200);
         $response->assertJsonStructure(['status', 'message', 'data']);
         $response->assertJsonFragment([
-            'status'=> 200,
-            'message'=> __('messages.user.logged_out'),
+            'status' => 200,
+            'message' => __('messages.user.logged_out'),
         ]);
     }
 
+    /**
+     * Test that a user who is already logged out cannot log out again.
+     * This ensures that attempting to log out without an active session returns a 401 status.
+     */
     public function test_an_user_is_already_logged_out()
     {
-        // Given:
+        // Given: Valid user credentials
         $credentials = [
             "email"     => "example@example.com",
             "password"  => "password",
         ];
 
-        $this->postJson("{$this->apiBase}/auth/login", $credentials);
-        $this->postJson("{$this->apiBase}/auth/logout");
+        // Log in and log out the user
+        $this->postJson(route('auth.login'), $credentials);
+        $this->postJson(route('auth.logout'));
 
-        // When:
-        $response = $this->postJson("{$this->apiBase}/auth/logout");
+        // When: The user attempts to log out again
+        $response = $this->postJson(route('auth.logout'));
 
-        // Then:
+        // Then: The response should return a 401 status with an appropriate error message
         $response->assertStatus(401);
         $response->assertJsonStructure(['status', 'message', 'errors']);
         $response->assertJsonFragment([
-            'status'=> 401,
-            'message'=> __('messages.user.already_logged_out'),
+            'status' => 401,
+            'message' => __('messages.user.already_logged_out'),
         ]);
     }
 }

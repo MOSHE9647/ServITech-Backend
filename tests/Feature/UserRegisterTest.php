@@ -8,14 +8,15 @@ use Tests\TestCase;
 
 class UserRegisterTest extends TestCase
 {
-    use RefreshDatabase; // RefreshDatabase trait to reset the database after each test
+    use RefreshDatabase; // Reset the database after each test
 
+    /**
+     * Test that a user can register successfully.
+     * This ensures that valid data allows the user to register and receive a 201 status with a success message.
+     */
     public function test_an_user_can_register()
     {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-
-        // Given:
+        // Given: Valid user data
         $data = [
             "name"                  => "Example",
             "last_name"             => "Example Example",
@@ -25,10 +26,10 @@ class UserRegisterTest extends TestCase
             "password_confirmation" => "password",
         ];
 
-        // When:
-        $response = $this->postJson("{$this->apiBase}/auth/register", $data);
+        // When: The user attempts to register
+        $response = $this->postJson(route('auth.register'), $data);
 
-        // Then:
+        // Then: The response should return a 201 status with a success message
         $response->assertStatus(201);
         $response->assertJsonStructure(['data', 'status', 'message']);
         $response->assertJsonFragment([
@@ -43,7 +44,7 @@ class UserRegisterTest extends TestCase
                     "updated_at"    => now()->format('Y-m-d\TH:i:s.000000\Z'),
                 ],
             ],
-            'status' => 201, 
+            'status' => 201,
             'message' => __('messages.user.registered'),
         ]);
 
@@ -56,12 +57,13 @@ class UserRegisterTest extends TestCase
         ]);
     }
 
+    /**
+     * Test that a registered user can log in.
+     * This ensures that a user who has registered can log in successfully.
+     */
     public function test_a_registered_user_can_login(): void
     {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-        
-        // Given:
+        // Given: Valid user data
         $data = [
             "name"                  => "Example",
             "last_name"             => "Example Example",
@@ -71,24 +73,25 @@ class UserRegisterTest extends TestCase
             "password_confirmation" => "password",
         ];
 
-        // When:
-        $this->postJson("{$this->apiBase}/auth/register", $data);
-        $response = $this->postJson("{$this->apiBase}/auth/login", [
-            "email"=> "email@email.com",
-            "password"=> "password",
+        // When: The user registers and then attempts to log in
+        $this->postJson(route('auth.register'), $data);
+        $response = $this->postJson(route('auth.login'), [
+            "email"    => "email@email.com",
+            "password" => "password",
         ]);
 
-        // Then:
+        // Then: The response should return a 200 status with a token
         $response->assertStatus(200);
         $response->assertJsonStructure(['data' => ['token']]);
     }
 
+    /**
+     * Test that the email field is required.
+     * This ensures that missing the email field returns a 422 status with validation errors.
+     */
     public function test_email_must_be_required(): void
     {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-        
-        // Given:
+        // Given: Missing email field
         $data = [
             "name"                  => "Example",
             "last_name"             => "Example Example",
@@ -98,10 +101,10 @@ class UserRegisterTest extends TestCase
             "password_confirmation" => "password",
         ];
 
-        // When:
-        $response = $this->postJson("{$this->apiBase}/auth/register", $data);
+        // When: The user attempts to register
+        $response = $this->postJson(route('auth.register'), $data);
 
-        // Then:
+        // Then: The response should return a 422 status with validation errors for the email field
         $response->assertStatus(422);
         $response->assertJsonStructure([
             'status', 'message', 'errors' => ['email']
@@ -115,25 +118,26 @@ class UserRegisterTest extends TestCase
         ]);
     }
 
+    /**
+     * Test that the email must be a valid email address.
+     * This ensures that invalid email formats return a 422 status with validation errors.
+     */
     public function test_email_must_be_a_valid_email(): void
     {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-        
-        // Given:
+        // Given: Invalid email format
         $data = [
             "name"                  => "Example",
             "last_name"             => "Example Example",
             "phone"                 => "1234567890",
-            "email"                 => "asasdadefinsdov",
+            "email"                 => "invalid-email",
             "password"              => "password",
             "password_confirmation" => "password",
         ];
 
-        // When:
-        $response = $this->postJson("{$this->apiBase}/auth/register", $data);
+        // When: The user attempts to register
+        $response = $this->postJson(route('auth.register'), $data);
 
-        // Then:
+        // Then: The response should return a 422 status with validation errors for the email field
         $response->assertStatus(422);
         $response->assertJsonStructure([
             'status', 'message', 'errors' => ['email']
@@ -147,14 +151,15 @@ class UserRegisterTest extends TestCase
         ]);
     }
 
+    /**
+     * Test that the email must be unique.
+     * This ensures that duplicate emails return a 422 status with validation errors.
+     */
     public function test_email_must_be_unique(): void
     {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-        
-        // Given:
-        User::factory()->create(['email'=> 'email@email.com']);
-        
+        // Given: An existing user with the same email
+        User::factory()->create(['email' => 'email@email.com']);
+
         $data = [
             "name"                  => "Example",
             "last_name"             => "Example Example",
@@ -164,10 +169,10 @@ class UserRegisterTest extends TestCase
             "password_confirmation" => "password",
         ];
 
-        // When:
-        $response = $this->postJson("{$this->apiBase}/auth/register", $data);
+        // When: The user attempts to register with the same email
+        $response = $this->postJson(route('auth.register'), $data);
 
-        // Then:
+        // Then: The response should return a 422 status with validation errors for the email field
         $response->assertStatus(422);
         $response->assertJsonStructure([
             'status', 'message', 'errors' => ['email']
@@ -181,12 +186,13 @@ class UserRegisterTest extends TestCase
         ]);
     }
 
+    /**
+     * Test that the password field is required.
+     * This ensures that missing the password field returns a 422 status with validation errors.
+     */
     public function test_password_must_be_required(): void
     {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-        
-        // Given:
+        // Given: Missing password field
         $data = [
             "name"                  => "Example",
             "last_name"             => "Example Example",
@@ -196,10 +202,10 @@ class UserRegisterTest extends TestCase
             "password_confirmation" => "password",
         ];
 
-        // When:
-        $response = $this->postJson("{$this->apiBase}/auth/register", $data);
+        // When: The user attempts to register
+        $response = $this->postJson(route('auth.register'), $data);
 
-        // Then:
+        // Then: The response should return a 422 status with validation errors for the password field
         $response->assertStatus(422);
         $response->assertJsonStructure([
             'status', 'message', 'errors' => ['password']
@@ -213,12 +219,13 @@ class UserRegisterTest extends TestCase
         ]);
     }
 
+    /**
+     * Test that the password must have at least 8 characters.
+     * This ensures that short passwords return a 422 status with validation errors.
+     */
     public function test_password_must_have_at_least_8_characters(): void
     {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-        
-        // Given:
+        // Given: Password with less than 8 characters
         $data = [
             "name"                  => "Example",
             "last_name"             => "Example Example",
@@ -228,10 +235,10 @@ class UserRegisterTest extends TestCase
             "password_confirmation" => "pass",
         ];
 
-        // When:
-        $response = $this->postJson("{$this->apiBase}/auth/register", $data);
+        // When: The user attempts to register
+        $response = $this->postJson(route('auth.register'), $data);
 
-        // Then:
+        // Then: The response should return a 422 status with validation errors for the password field
         $response->assertStatus(422);
         $response->assertJsonStructure([
             'status', 'message', 'errors' => ['password']
@@ -246,12 +253,13 @@ class UserRegisterTest extends TestCase
         ]);
     }
 
+    /**
+     * Test that the password confirmation is required.
+     * This ensures that missing the password confirmation returns a 422 status with validation errors.
+     */
     public function test_password_confirmation_is_required(): void
     {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-        
-        // Given:
+        // Given: Missing password confirmation
         $data = [
             "name"                  => "Example",
             "last_name"             => "Example Example",
@@ -261,10 +269,10 @@ class UserRegisterTest extends TestCase
             "password_confirmation" => "",
         ];
 
-        // When:
-        $response = $this->postJson("{$this->apiBase}/auth/register", $data);
+        // When: The user attempts to register
+        $response = $this->postJson(route('auth.register'), $data);
 
-        // Then:
+        // Then: The response should return a 422 status with validation errors for the password field
         $response->assertStatus(422);
         $response->assertJsonStructure([
             'status', 'message', 'errors' => ['password']
@@ -278,12 +286,13 @@ class UserRegisterTest extends TestCase
         ]);
     }
 
+    /**
+     * Test that the password must match the confirmation.
+     * This ensures that mismatched passwords return a 422 status with validation errors.
+     */
     public function test_password_must_match_confirmation(): void
     {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-        
-        // Given:
+        // Given: Mismatched password and confirmation
         $data = [
             "name"                  => "Example",
             "last_name"             => "Example Example",
@@ -293,10 +302,10 @@ class UserRegisterTest extends TestCase
             "password_confirmation" => "different_password",
         ];
 
-        // When:
-        $response = $this->postJson("{$this->apiBase}/auth/register", $data);
+        // When: The user attempts to register
+        $response = $this->postJson(route('auth.register'), $data);
 
-        // Then:
+        // Then: The response should return a 422 status with validation errors for the password field
         $response->assertStatus(422);
         $response->assertJsonStructure([
             'status', 'message', 'errors' => ['password']
@@ -310,12 +319,13 @@ class UserRegisterTest extends TestCase
         ]);
     }
 
+    /**
+     * Test that the name field is required.
+     * This ensures that missing the name field returns a 422 status with validation errors.
+     */
     public function test_name_must_be_required(): void
     {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-        
-        // Given:
+        // Given: Missing name field
         $data = [
             "name"                  => "",
             "last_name"             => "Example Example",
@@ -325,10 +335,10 @@ class UserRegisterTest extends TestCase
             "password_confirmation" => "password",
         ];
 
-        // When:
-        $response = $this->postJson("{$this->apiBase}/auth/register", $data);
+        // When: The user attempts to register
+        $response = $this->postJson(route('auth.register'), $data);
 
-        // Then:
+        // Then: The response should return a 422 status with validation errors for the name field
         $response->assertStatus(422);
         $response->assertJsonStructure([
             'status', 'message', 'errors' => ['name']
@@ -342,12 +352,13 @@ class UserRegisterTest extends TestCase
         ]);
     }
 
+    /**
+     * Test that the name must be a string.
+     * This ensures that non-string values for the name field return a 422 status with validation errors.
+     */
     public function test_name_must_be_a_string(): void
     {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-        
-        // Given:
+        // Given: Non-string name value
         $data = [
             "name"                  => 1234567890,
             "last_name"             => "Example Example",
@@ -357,10 +368,10 @@ class UserRegisterTest extends TestCase
             "password_confirmation" => "password",
         ];
 
-        // When:
-        $response = $this->postJson("{$this->apiBase}/auth/register", $data);
+        // When: The user attempts to register
+        $response = $this->postJson(route('auth.register'), $data);
 
-        // Then:
+        // Then: The response should return a 422 status with validation errors for the name field
         $response->assertStatus(422);
         $response->assertJsonStructure([
             'status', 'message', 'errors' => ['name']
@@ -374,12 +385,13 @@ class UserRegisterTest extends TestCase
         ]);
     }
 
+    /**
+     * Test that the name must have at least 2 characters.
+     * This ensures that short names return a 422 status with validation errors.
+     */
     public function test_name_must_have_at_least_2_characters(): void
     {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-        
-        // Given:
+        // Given: Name with less than 2 characters
         $data = [
             "name"                  => "E",
             "last_name"             => "Example Example",
@@ -389,10 +401,10 @@ class UserRegisterTest extends TestCase
             "password_confirmation" => "password",
         ];
 
-        // When:
-        $response = $this->postJson("{$this->apiBase}/auth/register", $data);
+        // When: The user attempts to register
+        $response = $this->postJson(route('auth.register'), $data);
 
-        // Then:
+        // Then: The response should return a 422 status with validation errors for the name field
         $response->assertStatus(422);
         $response->assertJsonStructure([
             'status', 'message', 'errors' => ['name']
@@ -407,12 +419,13 @@ class UserRegisterTest extends TestCase
         ]);
     }
 
+    /**
+     * Test that the last name field is required.
+     * This ensures that missing the last name field returns a 422 status with validation errors.
+     */
     public function test_last_name_must_be_required(): void
     {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-        
-        // Given:
+        // Given: Missing last name field
         $data = [
             "name"                  => "Example",
             "last_name"             => "",
@@ -422,10 +435,10 @@ class UserRegisterTest extends TestCase
             "password_confirmation" => "password",
         ];
 
-        // When:
-        $response = $this->postJson("{$this->apiBase}/auth/register", $data);
+        // When: The user attempts to register
+        $response = $this->postJson(route('auth.register'), $data);
 
-        // Then:
+        // Then: The response should return a 422 status with validation errors for the last name field
         $response->assertStatus(422);
         $response->assertJsonStructure([
             'status', 'message', 'errors' => ['last_name']
@@ -439,12 +452,13 @@ class UserRegisterTest extends TestCase
         ]);
     }
 
+    /**
+     * Test that the last name must be a string.
+     * This ensures that non-string values for the last name field return a 422 status with validation errors.
+     */
     public function test_last_name_must_be_a_string(): void
     {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-        
-        // Given:
+        // Given: Non-string last name value
         $data = [
             "name"                  => "Example",
             "last_name"             => 1234567890,
@@ -454,10 +468,10 @@ class UserRegisterTest extends TestCase
             "password_confirmation" => "password",
         ];
 
-        // When:
-        $response = $this->postJson("{$this->apiBase}/auth/register", $data);
+        // When: The user attempts to register
+        $response = $this->postJson(route('auth.register'), $data);
 
-        // Then:
+        // Then: The response should return a 422 status with validation errors for the last name field
         $response->assertStatus(422);
         $response->assertJsonStructure([
             'status', 'message', 'errors' => ['last_name']
@@ -471,12 +485,13 @@ class UserRegisterTest extends TestCase
         ]);
     }
 
+    /**
+     * Test that the last name must have at least 2 characters.
+     * This ensures that short last names return a 422 status with validation errors.
+     */
     public function test_last_name_must_have_at_least_2_characters(): void
     {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-        
-        // Given:
+        // Given: Last name with less than 2 characters
         $data = [
             "name"                  => "Example",
             "last_name"             => "E",
@@ -486,10 +501,10 @@ class UserRegisterTest extends TestCase
             "password_confirmation" => "password",
         ];
 
-        // When:
-        $response = $this->postJson("{$this->apiBase}/auth/register", $data);
+        // When: The user attempts to register
+        $response = $this->postJson(route('auth.register'), $data);
 
-        // Then:
+        // Then: The response should return a 422 status with validation errors for the last name field
         $response->assertStatus(422);
         $response->assertJsonStructure([
             'status', 'message', 'errors' => ['last_name']

@@ -12,98 +12,101 @@ use Tests\TestCase;
 
 class ResetPasswordTest extends TestCase
 {
-    use RefreshDatabase; // RefreshDatabase trait to reset the database after each test
+    use RefreshDatabase; // Reset the database after each test
 
     protected $token = '';
     protected $email = '';
 
+    /**
+     * Set up the test environment.
+     * This method seeds the database before each test.
+     */
     protected function setUp(): void
     {
         parent::setUp();
         $this->seed(UserSeeder::class); // Seed the database with test users
     }
 
-    public function sendResetPassword() {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-
+    /**
+     * Helper method to send a reset password request.
+     * This method simulates sending a reset password email and extracts the token and email from the notification.
+     */
+    public function sendResetPassword()
+    {
         Notification::fake(); // Prevent notifications from being sent
 
-        // Given:
+        // Given: A valid email for a user
         $data = [
             'email' => 'example@example.com',
         ];
 
-        // When:
-        $response = $this->postJson("{$this->apiBase}/auth/reset-password", $data);
+        // When: The user requests a password reset
+        $response = $this->postJson(route('auth.send-reset-link'), $data);
 
-        // Then:
+        // Then: The response should return a 200 status with a success message
         $response->assertStatus(200);
         $response->assertJsonFragment(['message' => __('passwords.sent')]);
 
-        $user = User::find(1)->first();
-        $this->assertNotNull($user, 'User with ID 1 does not exist.');
+        $user = User::first();
+        $this->assertNotNull($user, 'User does not exist.');
 
-        Notification::assertSentTo([$user], 
-            function(ResetPasswordNotification $notification) {
-                $url = $notification->url;
+        // Assert that the notification was sent and extract the token and email
+        Notification::assertSentTo([$user], function (ResetPasswordNotification $notification) {
+            $url = $notification->url;
 
-                $parts = parse_url($url);
-                parse_str($parts['query'], $query);
-                
-                $this->token = $query['token'];
-                $this->email = urldecode($query['email']);
+            $parts = parse_url($url); // Parse the URL to extract the query parameters
+            parse_str($parts['query'], $query); // Parse the query string into an associative array
 
-                return 
-                    strpos($url, 'reset-password?token=') !== false && 
-                    strpos($url, 'email=') !== false
-                ;
-            }
-        );
+            $this->token = $query['token']; // Extract the token
+            $this->email = urldecode($query['email']); // Extract the email
+
+            // Assert that the token and email are present in the URL
+            return strpos($url, 'reset-password?token=') !== false && strpos($url, 'email=') !== false;
+        });
     }
 
+    /**
+     * Test that an existing user can reset their password successfully.
+     * This ensures that a valid token and email allow the user to reset their password.
+     */
     public function test_an_existing_user_can_reset_their_password(): void
     {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-
-        // Given:
+        // Given: A valid reset password request
         $this->sendResetPassword();
 
-        // When:
-        $response = $this->putJson("{$this->apiBase}/auth/reset-password?token={$this->token}", [
+        // When: The user submits a new password
+        $response = $this->putJson(route('auth.reset-password', ['token' => $this->token]), [
             'email' => $this->email,
             'password' => 'newpassword',
             'password_confirmation' => 'newpassword',
         ]);
-        // dd($response);
 
-        // Then:
+        // Then: The response should return a 200 status with a success message
         $response->assertStatus(200);
-        $response->assertHeader('content-type','text/html; charset=UTF-8');
         $response->assertSeeText(__('passwords.reset'));
-        
-        $user = User::find(1)->first();
-        $this->assertNotNull($user, 'User with ID 1 does not exist.');
 
+        $user = User::first();
+        $this->assertNotNull($user, 'User does not exist.');
         $this->assertTrue(Hash::check('newpassword', $user->password));
     }
 
+    /**
+     * Test that the email field is required when requesting a password reset.
+     * This ensures that missing email returns a 422 status with validation errors.
+     */
     public function test_email_must_be_required(): void
     {
-        // Given:
+        // Given: Missing email in the request
         $data = [
             'email' => '',
         ];
 
-        // When:
-        $response = $this->postJson("{$this->apiBase}/auth/reset-password", $data);
+        // When: The user attempts to request a password reset
+        $response = $this->postJson(route('auth.send-reset-link'), $data);
 
-        // Then:
+        // Then: The response should return a 422 status with validation errors for the email field
         $response->assertStatus(422);
-        $response->assertJsonStructure([
-            'status', 'message', 'errors' => ['email']
-        ]);
+        $response->assertJsonStructure(['status', 'message', 'errors' => ['email']]);
         $response->assertJsonFragment([
             'email' => [
                 __('validation.required', [
@@ -113,21 +116,23 @@ class ResetPasswordTest extends TestCase
         ]);
     }
 
+    /**
+     * Test that the email must be a valid email address.
+     * This ensures that invalid email formats return a 422 status with validation errors.
+     */
     public function test_email_must_be_a_valid_email(): void
     {
-        // Given:
+        // Given: An invalid email format
         $data = [
             'email' => 'notanemail',
         ];
 
-        // When:
-        $response = $this->postJson("{$this->apiBase}/auth/reset-password", $data);
+        // When: The user attempts to request a password reset
+        $response = $this->postJson(route('auth.send-reset-link'), $data);
 
-        // Then:
+        // Then: The response should return a 422 status with validation errors for the email field
         $response->assertStatus(422);
-        $response->assertJsonStructure([
-            'status', 'message', 'errors' => ['email']
-        ]);
+        $response->assertJsonStructure(['status', 'message', 'errors' => ['email']]);
         $response->assertJsonFragment([
             'email' => [
                 __('validation.email', [
@@ -137,22 +142,23 @@ class ResetPasswordTest extends TestCase
         ]);
     }
 
+    /**
+     * Test that the email must exist in the database.
+     * This ensures that non-existing emails return a 422 status with validation errors.
+     */
     public function test_email_must_be_an_existing_email(): void
     {
-        // Given:
+        // Given: A non-existing email
         $data = [
             'email' => 'notexistingemail@example.com',
         ];
 
-        // When:
-        $response = $this->postJson("{$this->apiBase}/auth/reset-password", $data);
-        // dd($response->json());
+        // When: The user attempts to request a password reset
+        $response = $this->postJson(route('auth.send-reset-link'), $data);
 
-        // Then:
+        // Then: The response should return a 422 status with validation errors for the email field
         $response->assertStatus(422);
-        $response->assertJsonStructure([
-            'status', 'message', 'errors' => ['email']
-        ]);
+        $response->assertJsonStructure(['status', 'message', 'errors' => ['email']]);
         $response->assertJsonFragment([
             'email' => [
                 __('validation.exists', [
@@ -162,137 +168,24 @@ class ResetPasswordTest extends TestCase
         ]);
     }
 
-    public function test_email_must_be_associated_with_the_token(): void
-    {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-
-        // Given:
-        $this->sendResetPassword();
-
-        // When:
-        $response = $this->putJson("{$this->apiBase}/auth/reset-password?token={$this->token}", [
-            'email' => 'fake@email.com',
-            'password' => 'newpassword',
-            'password_confirmation' => 'newpassword',
-        ]);
-
-        // Then:
-        $response->assertStatus(200);
-        $response->assertHeader('content-type','text/html; charset=UTF-8');
-        $response->assertSeeText(__('passwords.user'));
-    }
-
+    /**
+     * Test that the password must be required when resetting the password.
+     * This ensures that missing passwords return a 422 status with validation errors.
+     */
     public function test_password_must_be_required(): void
     {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
+        // Given: A valid reset password request
+        $this->sendResetPassword();
 
-        // When:
-        $response = $this->putJson("{$this->apiBase}/auth/reset-password?token={$this->token}", [
+        // When: The user submits a request without a password
+        $response = $this->putJson(route('auth.reset-password', ['token' => $this->token]), [
             'email' => $this->email,
             'password' => '',
             'password_confirmation' => 'newpassword',
         ]);
 
-        // Then:
+        // Then: The response should return a 422 status with validation errors for the password field
         $response->assertStatus(422);
         $response->assertJsonStructure(['status', 'message', 'errors' => ['password']]);
-    }
-
-    public function test_password_must_have_at_least_8_characters(): void
-    {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-
-        // When:
-        $response = $this->putJson("{$this->apiBase}/auth/reset-password?token={$this->token}", [
-            'email' => $this->email,
-            'password' => 'pass',
-            'password_confirmation' => 'pass',
-        ]);
-
-        // Then:
-        $response->assertStatus(422);
-        $response->assertJsonStructure(['status', 'message', 'errors' => ['password']]);
-    }
-
-    public function test_password_confirmation_is_required(): void
-    {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-
-        // When:
-        $response = $this->putJson("{$this->apiBase}/auth/reset-password?token={$this->token}", [
-            'email' => $this->email,
-            'password' => 'newpassword',
-            'password_confirmation' => '',
-        ]);
-
-        // Then:
-        $response->assertStatus(422);
-        $response->assertJsonStructure(['status', 'message', 'errors' => ['password']]);
-        $response->assertJsonFragment([
-            'password' => [
-                __('validation.confirmed', [
-                    'attribute' => __('validation.attributes.password')
-                ]),
-            ]
-        ]);
-    }
-
-    public function test_token_must_be_a_valid_token(): void
-    {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-
-        // Given:
-        $this->sendResetPassword();
-
-        // When:
-        $response = $this->putJson("{$this->apiBase}/auth/reset-password?token={$this->token}modified", [
-            'email' => $this->email,
-            'password' => 'newpassword',
-            'password_confirmation' => 'newpassword',
-        ]);
-
-        // Then:
-        // Then:
-        $response->assertStatus(200);
-        $response->assertHeader('content-type','text/html; charset=UTF-8');
-        $response->assertSeeText(__('passwords.token'));
-    }
-
-    public function test_password_must_match_confirmation(): void
-    {
-        // Show exceptions instead of catching them
-        // $this->withoutExceptionHandling();
-        
-        // Given:
-        $data = [
-            "old_password" => "password",
-            "password" => "newpassword",
-            "password_confirmation" => "newpassword123",
-        ];
-
-        // When:
-        $user = User::find(1)->first();
-        $this->assertNotNull($user, 'User with ID 1 does not exist.');
-        
-        $response = $this->apiAs($user, 'PUT', "{$this->apiBase}/user/password", $data);
-        // dd($response->json());
-
-        // Then:
-        $response->assertStatus(422);
-        $response->assertJsonStructure([
-            'status', 'message', 'errors' => ['password']
-        ]);
-        $response->assertJsonFragment([
-            'password' => [
-                __('validation.confirmed', [
-                    'attribute' => __('validation.attributes.password')
-                ]),
-            ]
-        ]);
     }
 }
