@@ -383,6 +383,330 @@
                 }
             }
         },
+        "/api/{version}/articles": {
+            "get": {
+                "tags": [
+                    "Articles"
+                ],
+                "summary": "Get all articles",
+                "description": "Display a listing of the resource.",
+                "operationId": "3d8605f3811d0d58847f6034ff9dc20f",
+                "parameters": [
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "description": "API version",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "v1"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of articles retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Articles retrieved successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "articles": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/Article"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Articles"
+                ],
+                "summary": "Create a new article",
+                "description": "Store a newly created resource in storage.",
+                "operationId": "6fdd8fa2d3667dea628e53be834e693a",
+                "parameters": [
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "description": "API version",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "v1"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateArticleRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Article created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 201
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Article created successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "article": {
+                                                    "$ref": "#/components/schemas/Article"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/{version}/articles/{id}": {
+            "get": {
+                "tags": [
+                    "Articles"
+                ],
+                "summary": "Get a specific article",
+                "description": "Display the specified resource.",
+                "operationId": "5123ce53ff3225955c396002f351e8c3",
+                "parameters": [
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "description": "API version",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "v1"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the article",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Article retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Article retrieved successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "article": {
+                                                    "$ref": "#/components/schemas/Article"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Articles"
+                ],
+                "summary": "Update an article",
+                "description": "Update the specified resource in storage.",
+                "operationId": "fd4101783153e54ab4b6c86eb1637093",
+                "parameters": [
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "description": "API version",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "v1"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the article",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateArticleRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Article updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Article updated successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "article": {
+                                                    "$ref": "#/components/schemas/Article"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Articles"
+                ],
+                "summary": "Delete an article",
+                "description": "Remove the specified resource from storage.",
+                "operationId": "74e0813e26538e2d3d88280919da78df",
+                "parameters": [
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "description": "API version",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "v1"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the article",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Article deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Article deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
         "/categories": {
             "get": {
                 "tags": [
@@ -1102,6 +1426,177 @@
                 },
                 "type": "object"
             },
+            "CreateArticleRequest": {
+                "required": [
+                    "name",
+                    "description",
+                    "price",
+                    "category_id",
+                    "subcategory_id"
+                ],
+                "properties": {
+                    "name": {
+                        "description": "Class ArticleController for managing articles.",
+                        "type": "string",
+                        "example": "Laptop"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "A high-performance laptop with 16GB RAM and 512GB SSD."
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 1200.5
+                    },
+                    "category_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "subcategory_id": {
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "images": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "path": {
+                                    "type": "string",
+                                    "example": "/images/articles/laptop.jpg"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateArticleRequest": {
+                "required": [
+                    "name",
+                    "description",
+                    "price",
+                    "category_id",
+                    "subcategory_id"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "Updated Laptop"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "An updated high-performance laptop with 32GB RAM and 1TB SSD."
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 1500.75
+                    },
+                    "category_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "subcategory_id": {
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "images": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "path": {
+                                    "type": "string",
+                                    "example": "/images/articles/updated-laptop.jpg"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "Article": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Laptop"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "A high-performance laptop with 16GB RAM and 512GB SSD."
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 1200.5
+                    },
+                    "category_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "subcategory_id": {
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "images": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "path": {
+                                    "type": "string",
+                                    "example": "/images/articles/laptop.jpg"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "category": {
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "name": {
+                                "type": "string",
+                                "example": "Electronics"
+                            },
+                            "description": {
+                                "type": "string",
+                                "example": "All electronic items"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "subcategory": {
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "example": 2
+                            },
+                            "name": {
+                                "type": "string",
+                                "example": "Laptops"
+                            },
+                            "description": {
+                                "type": "string",
+                                "example": "All types of laptops"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
             "Category": {
                 "properties": {
                     "id": {
@@ -1196,6 +1691,11 @@
             }
         },
         "securitySchemes": {
+            "BearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            },
             "bearerAuth": {
                 "type": "http",
                 "scheme": "bearer",
@@ -1207,6 +1707,10 @@
         {
             "name": "Auth",
             "description": "Auth"
+        },
+        {
+            "name": "Articles",
+            "description": "Articles"
         },
         {
             "name": "Categories",

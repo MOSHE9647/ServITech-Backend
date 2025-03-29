@@ -12,9 +12,83 @@ use Illuminate\Http\JsonResponse;
 /**
  * Class ArticleController for managing articles.
  *
- * @OA\Tag(
- *     name="Articles",
- *     description="API Endpoints for managing articles"
+ * @OA\SecurityScheme(
+ *     securityScheme="BearerAuth",
+ *     type="http",
+ *     scheme="bearer",
+ *     bearerFormat="JWT"
+ * )
+ *
+ * @OA\Schema(
+ *     schema="CreateArticleRequest",
+ *     type="object",
+ *     required={"name", "description", "price", "category_id", "subcategory_id"},
+ *     @OA\Property(property="name", type="string", example="Laptop"),
+ *     @OA\Property(property="description", type="string", example="A high-performance laptop with 16GB RAM and 512GB SSD."),
+ *     @OA\Property(property="price", type="number", format="float", example=1200.50),
+ *     @OA\Property(property="category_id", type="integer", example=1),
+ *     @OA\Property(property="subcategory_id", type="integer", example=2),
+ *     @OA\Property(
+ *         property="images",
+ *         type="array",
+ *         @OA\Items(
+ *             type="object",
+ *             @OA\Property(property="path", type="string", example="/images/articles/laptop.jpg")
+ *         )
+ *     )
+ * )
+ *
+ * @OA\Schema(
+ *     schema="UpdateArticleRequest",
+ *     type="object",
+ *     required={"name", "description", "price", "category_id", "subcategory_id"},
+ *     @OA\Property(property="name", type="string", example="Updated Laptop"),
+ *     @OA\Property(property="description", type="string", example="An updated high-performance laptop with 32GB RAM and 1TB SSD."),
+ *     @OA\Property(property="price", type="number", format="float", example=1500.75),
+ *     @OA\Property(property="category_id", type="integer", example=1),
+ *     @OA\Property(property="subcategory_id", type="integer", example=2),
+ *     @OA\Property(
+ *         property="images",
+ *         type="array",
+ *         @OA\Items(
+ *             type="object",
+ *             @OA\Property(property="path", type="string", example="/images/articles/updated-laptop.jpg")
+ *         )
+ *     )
+ * )
+ * 
+ * @OA\Schema(
+ *     schema="Article",
+ *     type="object",
+ *     @OA\Property(property="id", type="integer", example=1),
+ *     @OA\Property(property="name", type="string", example="Laptop"),
+ *     @OA\Property(property="description", type="string", example="A high-performance laptop with 16GB RAM and 512GB SSD."),
+ *     @OA\Property(property="price", type="number", format="float", example=1200.50),
+ *     @OA\Property(property="category_id", type="integer", example=1),
+ *     @OA\Property(property="subcategory_id", type="integer", example=2),
+ *     @OA\Property(
+ *         property="images",
+ *         type="array",
+ *         @OA\Items(
+ *             type="object",
+ *             @OA\Property(property="id", type="integer", example=1),
+ *             @OA\Property(property="path", type="string", example="/images/articles/laptop.jpg"),
+ *         )
+ *     ),
+ *     @OA\Property(
+ *         property="category",
+ *         type="object",
+ *         @OA\Property(property="id", type="integer", example=1),
+ *         @OA\Property(property="name", type="string", example="Electronics"),
+ *         @OA\Property(property="description", type="string", example="All electronic items"),
+ *     ),
+ *     @OA\Property(
+ *         property="subcategory",
+ *         type="object",
+ *         @OA\Property(property="id", type="integer", example=2),
+ *         @OA\Property(property="name", type="string", example="Laptops"),
+ *         @OA\Property(property="description", type="string", example="All types of laptops"),
+ *     )
  * )
  */
 class ArticleController extends Controller
@@ -26,6 +100,7 @@ class ArticleController extends Controller
      *     path="/api/{version}/articles",
      *     summary="Get all articles",
      *     tags={"Articles"},
+     *     security={{"BearerAuth":{}}},
      *     @OA\Parameter(
      *         name="version",
      *         in="path",
@@ -66,6 +141,7 @@ class ArticleController extends Controller
      *     path="/api/{version}/articles",
      *     summary="Create a new article",
      *     tags={"Articles"},
+     *     security={{"BearerAuth":{}}},
      *     @OA\Parameter(
      *         name="version",
      *         in="path",
@@ -109,6 +185,7 @@ class ArticleController extends Controller
      *     path="/api/{version}/articles/{id}",
      *     summary="Get a specific article",
      *     tags={"Articles"},
+     *     security={{"BearerAuth":{}}},
      *     @OA\Parameter(
      *         name="version",
      *         in="path",
@@ -152,6 +229,7 @@ class ArticleController extends Controller
      *     path="/api/{version}/articles/{id}",
      *     summary="Update an article",
      *     tags={"Articles"},
+     *     security={{"BearerAuth":{}}},
      *     @OA\Parameter(
      *         name="version",
      *         in="path",
@@ -202,6 +280,7 @@ class ArticleController extends Controller
      *     path="/api/{version}/articles/{id}",
      *     summary="Delete an article",
      *     tags={"Articles"},
+     *     security={{"BearerAuth":{}}},
      *     @OA\Parameter(
      *         name="version",
      *         in="path",
