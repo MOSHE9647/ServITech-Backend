@@ -32,6 +32,10 @@ class CreateArticleRequest extends FormRequest
         ];
     }
 
+    /**
+     * Get the validation error messages.
+     * @return array{category_id.exists: array|string|null, category_id.min: array|string|null, category_id.required: array|string|null, category_id.string: array|string|null, images.*.image: array|string|null, images.*.max: array|string|null, images.*.mimes: array|string|null, subcategory_id.exists: array|string|null, subcategory_id.min: array|string|null, subcategory_id.required: array|string|null, subcategory_id.string: array|string|null}
+     */
     public function messages(): array
     {
         return [

@@ -247,7 +247,7 @@ class ArticleController extends Controller
     public function show(Article $article): JsonResponse
     {
         return ApiResponse::success(
-            data: compact('article'),
+            data: $article->load(['images'])->toArray(),
             message: __('messages.article.retrieved')
         );
     }
@@ -294,12 +294,29 @@ class ArticleController extends Controller
      */
     public function update(UpdateArticleRequest $request, Article $article): JsonResponse
     {
+        // Validate the request
         $data = $request->validated();
         $article->update($data);
 
+        // Check if new images are provided
+        if ($request->hasFile('images')) {
+            // Delete current images
+            $article->images->each(function ($image) {
+                Storage::delete(str_replace('/storage/', '', $image->path));
+                $image->delete();
+            });
+
+            $images = array_map(function ($image) {
+                $path = Storage::put('articles', $image);
+                return ['path' => Storage::url($path)];
+            }, $request->file('images'));
+
+            $article->images()->createMany($images);
+        }
+
         return ApiResponse::success(
             message: __('messages.article.updated'),
-            data: compact('article'),
+            data: ['article' => ArticleResource::make($article->load('images'))],
         );
     }
 
