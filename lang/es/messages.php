@@ -1,8 +1,10 @@
 <?php
 
 return [
+    'not_found'                => 'No se encontraron resultados para el modelo :attribute.',
     'article' => [
         'creation_failed'      => 'Error al crear el artículo.',
+        'not_found'            => 'Artículo no encontrado.',
         'retrieved_all'        => 'Lista de artículos obtenida exitosamente.',
         'retrieved'            => 'Artículo obtenido exitosamente.',
         'created'              => 'Artículo creado exitosamente.',

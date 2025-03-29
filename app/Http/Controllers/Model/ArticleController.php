@@ -135,7 +135,7 @@ class ArticleController extends Controller
         $articles = Article::orderBy('id', 'desc')->with(['category', 'subcategory', 'images'])->get();
 
         return ApiResponse::success(
-            data: compact('articles'),
+            data: ['articles' => $articles],
             message: __('messages.article.retrieved_all')
         );
     }
@@ -355,6 +355,13 @@ class ArticleController extends Controller
      */
     public function destroy(Article $article): JsonResponse
     {
+        // Delete all related images
+        $article->images->each(function ($image) {
+            Storage::delete(str_replace('/storage/', '', $image->path));
+            $image->delete();
+        });
+
+        // Delete the article
         $article->delete();
 
         return ApiResponse::success(
