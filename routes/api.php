@@ -2,6 +2,7 @@
 
 use App\Enums\UserRoles;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Model\ArticleController;
 use App\Http\Controllers\Model\CategoryController;
 use App\Http\Controllers\Model\RepairRequestController;
 use App\Http\Controllers\Model\SubcategoryController;
@@ -48,4 +49,14 @@ Route::middleware('auth:api')->group(function () {
         Route::put('{repairRequest:receipt_number}', [RepairRequestController::class, 'update'])->name('repair-request.update');
         Route::delete('{repairRequest:receipt_number}', [RepairRequestController::class, 'destroy'])->name('repair-request.destroy');
     });
+
 });
+
+    // Article routes
+    Route::prefix('articles')->group(function () {
+        Route::get('', [ArticleController::class, 'index'])->name('articles.index');
+        Route::post('', [ArticleController::class, 'store'])->name('articles.store');
+        Route::get('{article}', [ArticleController::class, 'show'])->name('articles.show');
+        Route::put('{article}', [ArticleController::class, 'update'])->name('articles.update');
+        Route::delete('{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
+    });
