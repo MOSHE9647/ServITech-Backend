@@ -15,7 +15,7 @@ class ArticleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index() 
+    public function index(): JsonResponse 
     {
         // Fetch all articles with their associated category and subcategory
         $articles = Article::orderBy('id', 'desc')->with(['category', 'subcategory', 'images'])->get();
@@ -30,7 +30,7 @@ class ArticleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CreateArticleRequest $request)
+    public function store(CreateArticleRequest $request): JsonResponse
     {
         $data = $request->validated();
         $article = Article::create($data);
@@ -45,7 +45,7 @@ class ArticleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Article $article)
+    public function show(Article $article): JsonResponse
     {
         return ApiResponse::success(
             data: compact('article'),
@@ -69,7 +69,7 @@ class ArticleController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Article $article)
+    public function destroy(Article $article): JsonResponse
     {
         $article->delete();
         return ApiResponse::success(message: __('messages.article.deleted'));

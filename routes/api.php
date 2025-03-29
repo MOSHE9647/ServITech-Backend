@@ -40,18 +40,11 @@ Route::middleware('auth:api')->group(function () {
     // Subcategory routes
     Route::prefix('subcategories')->group(function () {
         Route::get('', [SubcategoryController::class, 'index'])->name('subcategories.index');
+        Route::post('', [SubcategoryController::class, 'store'])->name('subcategories.store');
+        Route::get('{subcategory}', [SubcategoryController::class, 'show'])->name('subcategories.show');
+        Route::put('{subcategory}', [SubcategoryController::class, 'update'])->name('subcategories.update');
+        Route::delete('{subcategory}', [SubcategoryController::class, 'destroy'])->name('subcategories.destroy');
     });
-
-    // RepairRequest routes
-    Route::prefix('repair-request')->middleware("role:" . UserRoles::ADMIN->value)->group(function () {
-        Route::get('', [RepairRequestController::class, 'index'])->name('repair-request.index');
-        Route::post('', [RepairRequestController::class, 'store'])->name('repair-request.store');
-        Route::get('{repairRequest:receipt_number}', [RepairRequestController::class, 'show'])->name('repair-request.show');
-        Route::put('{repairRequest:receipt_number}', [RepairRequestController::class, 'update'])->name('repair-request.update');
-        Route::delete('{repairRequest:receipt_number}', [RepairRequestController::class, 'destroy'])->name('repair-request.destroy');
-    });
-
-});
 
     // Article routes
     Route::prefix('articles')->group(function () {
@@ -62,6 +55,15 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
     });
 
+    // RepairRequest routes
+    Route::prefix('repair-request')->group(function () {
+        Route::get('', [RepairRequestController::class, 'index'])->name('repair-request.index');
+        Route::post('', [RepairRequestController::class, 'store'])->name('repair-request.store');
+        Route::get('{repairRequest:receipt_number}', [RepairRequestController::class, 'show'])->name('repair-request.show');
+        Route::put('{repairRequest:receipt_number}', [RepairRequestController::class, 'update'])->name('repair-request.update');
+        Route::delete('{repairRequest:receipt_number}', [RepairRequestController::class, 'destroy'])->name('repair-request.destroy');
+    });
+    
     // SupportRequest routes
     Route::prefix('support-request')->group(function () {
         Route::get('', [SupportRequestController::class, 'index'])->name('support-request.index');
@@ -70,3 +72,9 @@ Route::middleware('auth:api')->group(function () {
         Route::put('{supportRequest}', [SupportRequestController::class, 'update'])->name('support-request.update');
         Route::delete('{supportRequest}', [SupportRequestController::class, 'destroy'])->name('support-request.destroy');
     });
+
+    // ADMIN Role Routes
+    Route::middleware("role:" . UserRoles::ADMIN->value)->group(function () {
+        // TODO: Need to add admin-specific routes here
+    });
+});
