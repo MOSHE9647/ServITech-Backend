@@ -27,42 +27,6 @@ Route::middleware('auth:api')->group(function () {
         Route::put('profile', [UserController::class, 'updateBasicInformation'])->name('profile.update');
         Route::put('password', [UserController::class, 'updatePassword'])->name('password.update');
     });
-
-    // Category routes
-    Route::prefix('category')->group(function () {
-        Route::get('', [CategoryController::class,'index'])->name('category.index');
-        Route::post('', [CategoryController::class,'store'])->name('category.store');
-        Route::get('{category:name}', [CategoryController::class,'show'])->name('category.show');
-        Route::put('{category:name}', [CategoryController::class,'update'])->name('category.update');
-        Route::delete('{category:name}', [CategoryController::class,'destroy'])->name('category.destroy');
-    });
-
-    // Subcategory routes
-    Route::prefix('subcategories')->group(function () {
-        Route::get('', [SubcategoryController::class, 'index'])->name('subcategories.index');
-        Route::post('', [SubcategoryController::class, 'store'])->name('subcategories.store');
-        Route::get('{subcategory}', [SubcategoryController::class, 'show'])->name('subcategories.show');
-        Route::put('{subcategory}', [SubcategoryController::class, 'update'])->name('subcategories.update');
-        Route::delete('{subcategory}', [SubcategoryController::class, 'destroy'])->name('subcategories.destroy');
-    });
-
-    // Article routes
-    Route::prefix('articles')->group(function () {
-        Route::get('', [ArticleController::class, 'index'])->name('articles.index');
-        Route::post('', [ArticleController::class, 'store'])->name('articles.store');
-        Route::get('{article}', [ArticleController::class, 'show'])->name('articles.show');
-        Route::put('{article}', [ArticleController::class, 'update'])->name('articles.update');
-        Route::delete('{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
-    });
-
-    // RepairRequest routes
-    Route::prefix('repair-request')->group(function () {
-        Route::get('', [RepairRequestController::class, 'index'])->name('repair-request.index');
-        Route::post('', [RepairRequestController::class, 'store'])->name('repair-request.store');
-        Route::get('{repairRequest:receipt_number}', [RepairRequestController::class, 'show'])->name('repair-request.show');
-        Route::put('{repairRequest:receipt_number}', [RepairRequestController::class, 'update'])->name('repair-request.update');
-        Route::delete('{repairRequest:receipt_number}', [RepairRequestController::class, 'destroy'])->name('repair-request.destroy');
-    });
     
     // SupportRequest routes
     Route::prefix('support-request')->group(function () {
@@ -75,6 +39,40 @@ Route::middleware('auth:api')->group(function () {
 
     // ADMIN Role Routes
     Route::middleware("role:" . UserRoles::ADMIN->value)->group(function () {
-        // TODO: Need to add admin-specific routes here
+        // Category routes
+        Route::prefix('category')->group(function () {
+            Route::get('', [CategoryController::class,'index'])->name('category.index');
+            Route::post('', [CategoryController::class,'store'])->name('category.store');
+            Route::get('{category:name}', [CategoryController::class,'show'])->name('category.show');
+            Route::put('{category:name}', [CategoryController::class,'update'])->name('category.update');
+            Route::delete('{category:name}', [CategoryController::class,'destroy'])->name('category.destroy');
+        });
+    
+        // Subcategory routes
+        Route::prefix('subcategories')->group(function () {
+            Route::get('', [SubcategoryController::class, 'index'])->name('subcategories.index');
+            Route::post('', [SubcategoryController::class, 'store'])->name('subcategories.store');
+            Route::get('{subcategory}', [SubcategoryController::class, 'show'])->name('subcategories.show');
+            Route::put('{subcategory}', [SubcategoryController::class, 'update'])->name('subcategories.update');
+            Route::delete('{subcategory}', [SubcategoryController::class, 'destroy'])->name('subcategories.destroy');
+        });
+    
+        // Article routes
+        Route::prefix('articles')->group(function () {
+            Route::get('', [ArticleController::class, 'index'])->name('articles.index');
+            Route::post('', [ArticleController::class, 'store'])->name('articles.store');
+            Route::get('{article}', [ArticleController::class, 'show'])->name('articles.show');
+            Route::put('{article}', [ArticleController::class, 'update'])->name('articles.update');
+            Route::delete('{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
+        });
+
+        // RepairRequest routes
+        Route::prefix('repair-request')->group(function () {
+            Route::get('', [RepairRequestController::class, 'index'])->name('repair-request.index');
+            Route::post('', [RepairRequestController::class, 'store'])->name('repair-request.store');
+            Route::get('{repairRequest:receipt_number}', [RepairRequestController::class, 'show'])->name('repair-request.show');
+            Route::put('{repairRequest:receipt_number}', [RepairRequestController::class, 'update'])->name('repair-request.update');
+            Route::delete('{repairRequest:receipt_number}', [RepairRequestController::class, 'destroy'])->name('repair-request.destroy');
+        });
     });
 });
