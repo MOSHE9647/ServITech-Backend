@@ -2,6 +2,7 @@
 
 return [
     'article' => [
+        'creation_failed'      => 'Error al crear el artículo.',
         'retrieved_all'        => 'Lista de artículos obtenida exitosamente.',
         'retrieved'            => 'Artículo obtenido exitosamente.',
         'created'              => 'Artículo creado exitosamente.',

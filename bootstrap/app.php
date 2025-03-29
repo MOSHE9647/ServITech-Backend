@@ -55,4 +55,12 @@ return Application::configure(basePath: dirname(__DIR__))
                 message: $translatedMessage
             );
         });
+
+        // Handle unauthenticated exceptions:
+        $exceptions->render(function(\Illuminate\Auth\AuthenticationException $exception): JsonResponse {            
+            return ApiResponse::error(
+                status: Response::HTTP_UNAUTHORIZED,
+                message: __('auth.unauthenticated')
+            );
+        });
     })->create();

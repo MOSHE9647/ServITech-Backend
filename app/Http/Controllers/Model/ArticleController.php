@@ -5,9 +5,15 @@ namespace App\Http\Controllers\Model;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ArticleRequest\CreateArticleRequest;
 use App\Http\Requests\ArticleRequest\UpdateArticleRequest;
+use App\Http\Resources\ArticleResource;
+use App\Http\Resources\ImageResource;
 use App\Http\Responses\ApiResponse;
 use App\Models\Article;
+use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class ArticleController for managing articles.
@@ -170,12 +176,36 @@ class ArticleController extends Controller
     public function store(CreateArticleRequest $request): JsonResponse
     {
         $data = $request->validated();
-        $article = Article::create($data);
 
-        return ApiResponse::success(
-            data: compact('article'),
-            message: __('messages.article.created')
-        );
+        DB::beginTransaction();
+        try {
+            $article = Article::create($data);
+
+            if ($request->hasFile('images')) {
+                $images = array_map(function ($image) {
+                    $path = Storage::put('articles', $image);
+                    return ['path' => Storage::url($path)];
+                }, $request->file('images'));
+
+                $article->images()->createMany($images);
+            }
+
+            DB::commit();
+
+            return ApiResponse::success(
+                status: Response::HTTP_CREATED,
+                data: ['article' => ArticleResource::make($article->load('images'))],
+                message: __('messages.article.created')
+            );
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            return ApiResponse::error(
+                status: Response::HTTP_INTERNAL_SERVER_ERROR,
+                message: __('messages.article.creation_failed'),
+                errors: ['exception' => $e->getMessage()]
+            );
+        }
     }
 
     /**
