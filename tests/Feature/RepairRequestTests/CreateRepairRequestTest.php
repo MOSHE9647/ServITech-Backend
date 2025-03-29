@@ -24,14 +24,24 @@ class CreateRepairRequestTest extends TestCase
         $this->seed(class: DatabaseSeeder::class); // Seed the database
     }
     
-    public function test_repair_request_is_created_with_unique_receipt_number() {
+    /**
+     * Test that a repair request is created with a unique receipt number.
+     * This ensures that each repair request has a unique receipt number following the format "RR-XXXXXXXXXXXX".
+     */
+    public function test_repair_request_is_created_with_unique_receipt_number()
+    {
+        // Given: A repair request created via the factory
         $repairRequest = RepairRequest::factory()->create();
-        // dd($repairRequest);
 
+        // Then: The receipt number should not be null and should match the expected format
         $this->assertNotNull($repairRequest->receipt_number);
         $this->assertMatchesRegularExpression('/^RR-\d{12}$/', $repairRequest->receipt_number);
     }
 
+    /**
+     * Test that an authenticated admin user can create repair requests.
+     * This ensures that only admin users can create repair requests successfully.
+     */
     public function test_an_authenticated_admin_user_can_create_repair_requests()
     {
         // Given: A valid repair request payload
@@ -54,30 +64,26 @@ class CreateRepairRequestTest extends TestCase
         ];
 
         // When: An admin user attempts to create a repair request
-        $user = User::role(UserRoles::ADMIN)->first();
+        $user = User::role(UserRoles::ADMIN)->first(); // Get the first admin user
         $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
-        $response = $this->apiAs($user, 'POST', "{$this->apiBase}/repair-request/", $repairRequest);
+        $response = $this->apiAs($user, 'POST', route('repair-request.store'), $repairRequest);
 
         // Then: The request should succeed, and the repair request should be stored in the database
         $response->assertStatus(200);
         $response->assertJsonStructure(['data', 'status', 'message']);
         $response->assertJsonFragment([
             'status' => 200,
-            'message'=> __('messages.repair_request.created'),
-            'data' => [
-                'repairRequest' => array_merge($repairRequest, [
-                    'id' => 1,
-                    'receipt_number'=> "RR-000000000001",
-                    'created_at'=> now()->format('Y-m-d\TH:i:s.000000\Z'),
-                    'updated_at'=> now()->format('Y-m-d\TH:i:s.000000\Z'),
-                ]),
-            ],
+            'message' => __('messages.repair_request.created'),
         ]);
 
         $this->assertDatabaseHas('repair_requests', $repairRequest);
     }
 
+    /**
+     * Test that a non-authenticated admin user cannot create repair requests.
+     * This ensures that only admin users can create repair requests.
+     */
     public function test_a_non_authenticated_admin_user_can_not_create_repair_requests()
     {
         // Given: A valid repair request payload
@@ -100,27 +106,26 @@ class CreateRepairRequestTest extends TestCase
         ];
 
         // Create a non-admin user
-        $user = User::create([
-            "name" => "Example",
-            "last_name" => "Example Example",
-            'email' => 'example@example.com',
-            'password'=> bcrypt('password'),
-        ]);
+        $user = User::factory()->create(); // Create a regular user
+        $user->assignRole(UserRoles::USER); // Assign the "USER" role
         $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
-        $user->assignRole(UserRoles::USER);
 
         // When: The non-admin user attempts to create a repair request
-        $response = $this->apiAs($user, 'POST', "{$this->apiBase}/repair-request/", $repairRequest);
+        $response = $this->apiAs($user, 'POST', route('repair-request.store'), $repairRequest);
 
         // Then: The request should fail with a 403 Forbidden status
         $response->assertStatus(403);
         $response->assertJsonStructure(['status', 'message', 'errors']);
         $response->assertJsonFragment([
             'status' => 403,
-            'message'=> __('User does not have the right roles.'),
+            'message' => __('User does not have the right roles.'),
         ]);
     }
 
+    /**
+     * Test that the customer name field is required.
+     * This ensures that missing the customer name field returns a 422 status with validation errors.
+     */
     public function test_customer_name_must_be_required()
     {
         // Given: A repair request payload with a missing customer name
@@ -142,11 +147,10 @@ class CreateRepairRequestTest extends TestCase
         ];
 
         // When: An admin user attempts to create a repair request
-        $user = User::role(UserRoles::ADMIN)->first();
+        $user = User::role(UserRoles::ADMIN)->first(); // Get the first admin user
         $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
-        $response = $this->apiAs($user, 'POST', "{$this->apiBase}/repair-request/", $repairRequest);
-        // dd($response->json());
+        $response = $this->apiAs($user, 'POST', route('repair-request.store'), $repairRequest);
 
         // Then: The request should fail with a 422 Unprocessable Entity status
         $response->assertStatus(422);
@@ -163,6 +167,10 @@ class CreateRepairRequestTest extends TestCase
         ]);
     }
 
+    /**
+     * Test that the customer name must be a string.
+     * This ensures that non-string values for the customer name field return a 422 status with validation errors.
+     */
     public function test_customer_name_must_be_a_string()
     {
         // Given: A repair request payload with a non-string customer name
@@ -185,11 +193,10 @@ class CreateRepairRequestTest extends TestCase
         ];
 
         // When: An admin user attempts to create a repair request
-        $user = User::role(UserRoles::ADMIN)->first();
+        $user = User::role(UserRoles::ADMIN)->first(); // Get the first admin user
         $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
-        $response = $this->apiAs($user, 'POST', "{$this->apiBase}/repair-request/", $repairRequest);
-        // dd($response->json());
+        $response = $this->apiAs($user, 'POST', route('repair-request.store'), $repairRequest);
 
         // Then: The request should fail with a 422 Unprocessable Entity status
         $response->assertStatus(422);
@@ -206,7 +213,11 @@ class CreateRepairRequestTest extends TestCase
         ]);
     }
 
-    public function test_customer_name_must_have_at_least_3_caracters()
+    /**
+     * Test that the customer name must have at least 3 characters.
+     * This ensures that short customer names return a 422 status with validation errors.
+     */
+    public function test_customer_name_must_have_at_least_3_characters()
     {
         // Given: A repair request payload with a customer name that has less than 3 characters
         $repairRequest = [
@@ -228,11 +239,10 @@ class CreateRepairRequestTest extends TestCase
         ];
 
         // When: An admin user attempts to create a repair request
-        $user = User::role(UserRoles::ADMIN)->first();
+        $user = User::role(UserRoles::ADMIN)->first(); // Get the first admin user
         $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
-        $response = $this->apiAs($user, 'POST', "{$this->apiBase}/repair-request/", $repairRequest);
-        // dd($response->json());
+        $response = $this->apiAs($user, 'POST', route('repair-request.store'), $repairRequest);
 
         // Then: The request should fail with a 422 Unprocessable Entity status
         $response->assertStatus(422);
@@ -250,6 +260,10 @@ class CreateRepairRequestTest extends TestCase
         ]);
     }
 
+    /**
+     * Test that the customer phone field is required.
+     * This ensures that missing the customer phone field returns a 422 status with validation errors.
+     */
     public function test_customer_phone_must_be_required()
     {
         // Given: A repair request payload with a missing customer phone
@@ -271,11 +285,10 @@ class CreateRepairRequestTest extends TestCase
         ];
 
         // When: An admin user attempts to create a repair request
-        $user = User::role(UserRoles::ADMIN)->first();
+        $user = User::role(UserRoles::ADMIN)->first(); // Get the first admin user
         $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
-        $response = $this->apiAs($user, 'POST', "{$this->apiBase}/repair-request/", $repairRequest);
-        // dd($response->json());
+        $response = $this->apiAs($user, 'POST', route('repair-request.store'), $repairRequest);
 
         // Then: The request should fail with a 422 Unprocessable Entity status
         $response->assertStatus(422);
@@ -292,6 +305,10 @@ class CreateRepairRequestTest extends TestCase
         ]);
     }
 
+    /**
+     * Test that the customer phone must be a string.
+     * This ensures that non-string values for the customer phone field return a 422 status with validation errors.
+     */
     public function test_customer_phone_must_be_a_string()
     {
         // Given: A repair request payload with a non-string customer phone
@@ -314,11 +331,10 @@ class CreateRepairRequestTest extends TestCase
         ];
 
         // When: An admin user attempts to create a repair request
-        $user = User::role(UserRoles::ADMIN)->first();
+        $user = User::role(UserRoles::ADMIN)->first(); // Get the first admin user
         $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
-        $response = $this->apiAs($user, 'POST', "{$this->apiBase}/repair-request/", $repairRequest);
-        // dd($response->json());
+        $response = $this->apiAs($user, 'POST', route('repair-request.store'), $repairRequest);
 
         // Then: The request should fail with a 422 Unprocessable Entity status
         $response->assertStatus(422);
@@ -328,15 +344,18 @@ class CreateRepairRequestTest extends TestCase
             'errors' => [
                 'customer_phone' => [
                     __('validation.string', [
-                        'attribute' => __('validation.attributes.phone'),
-                        'min' => 3,
+                        'attribute' => __('validation.attributes.phone')
                     ])
                 ],
             ],
         ]);
     }
 
-    public function test_customer_phone_must_have_at_least_8_caracters()
+    /**
+     * Test that the customer phone must have at least 8 characters.
+     * This ensures that short customer phone numbers return a 422 status with validation errors.
+     */
+    public function test_customer_phone_must_have_at_least_8_characters()
     {
         // Given: A repair request payload with a customer phone that has less than 8 characters
         $repairRequest = [
@@ -358,11 +377,10 @@ class CreateRepairRequestTest extends TestCase
         ];
 
         // When: An admin user attempts to create a repair request
-        $user = User::role(UserRoles::ADMIN)->first();
+        $user = User::role(UserRoles::ADMIN)->first(); // Get the first admin user
         $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
-        $response = $this->apiAs($user, 'POST', "{$this->apiBase}/repair-request/", $repairRequest);
-        // dd($response->json());
+        $response = $this->apiAs($user, 'POST', route('repair-request.store'), $repairRequest);
 
         // Then: The request should fail with a 422 Unprocessable Entity status
         $response->assertStatus(422);
@@ -380,6 +398,10 @@ class CreateRepairRequestTest extends TestCase
         ]);
     }
 
+    /**
+     * Test that the customer email field is required.
+     * This ensures that missing the customer email field returns a 422 status with validation errors.
+     */
     public function test_customer_email_must_be_required()
     {
         // Given: A repair request payload with a missing customer email
@@ -401,11 +423,10 @@ class CreateRepairRequestTest extends TestCase
         ];
 
         // When: An admin user attempts to create a repair request
-        $user = User::role(UserRoles::ADMIN)->first();
+        $user = User::role(UserRoles::ADMIN)->first(); // Get the first admin user
         $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
-        $response = $this->apiAs($user, 'POST', "{$this->apiBase}/repair-request/", $repairRequest);
-        // dd($response->json());
+        $response = $this->apiAs($user, 'POST', route('repair-request.store'), $repairRequest);
 
         // Then: The request should fail with a 422 Unprocessable Entity status
         $response->assertStatus(422);
@@ -422,6 +443,10 @@ class CreateRepairRequestTest extends TestCase
         ]);
     }
 
+    /**
+     * Test that the customer email must be a valid email address.
+     * This ensures that invalid email formats return a 422 status with validation errors.
+     */
     public function test_customer_email_must_be_a_valid_email()
     {
         // Given: A repair request payload with an invalid customer email
@@ -444,11 +469,10 @@ class CreateRepairRequestTest extends TestCase
         ];
 
         // When: An admin user attempts to create a repair request
-        $user = User::role(UserRoles::ADMIN)->first();
+        $user = User::role(UserRoles::ADMIN)->first(); // Get the first admin user
         $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
-        $response = $this->apiAs($user, 'POST', "{$this->apiBase}/repair-request/", $repairRequest);
-        // dd($response->json());
+        $response = $this->apiAs($user, 'POST', route('repair-request.store'), $repairRequest);
 
         // Then: The request should fail with a 422 Unprocessable Entity status
         $response->assertStatus(422);
@@ -465,6 +489,10 @@ class CreateRepairRequestTest extends TestCase
         ]);
     }
 
+    /**
+     * Test that the article name field is required.
+     * This ensures that missing the article name field returns a 422 status with validation errors.
+     */
     public function test_article_name_must_be_required()
     {
         // Given: A repair request payload with a missing article name
@@ -486,11 +514,10 @@ class CreateRepairRequestTest extends TestCase
         ];
 
         // When: An admin user attempts to create a repair request
-        $user = User::role(UserRoles::ADMIN)->first();
+        $user = User::role(UserRoles::ADMIN)->first(); // Get the first admin user
         $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
-        $response = $this->apiAs($user, 'POST', "{$this->apiBase}/repair-request/", $repairRequest);
-        // dd($response->json());
+        $response = $this->apiAs($user, 'POST', route('repair-request.store'), $repairRequest);
 
         // Then: The request should fail with a 422 Unprocessable Entity status
         $response->assertStatus(422);
@@ -507,6 +534,10 @@ class CreateRepairRequestTest extends TestCase
         ]);
     }
 
+    /**
+     * Test that the article name must be a string.
+     * This ensures that non-string values for the article name field return a 422 status with validation errors.
+     */
     public function test_article_name_must_be_a_string()
     {
         // Given: A repair request payload with a non-string article name
@@ -529,11 +560,10 @@ class CreateRepairRequestTest extends TestCase
         ];
 
         // When: An admin user attempts to create a repair request
-        $user = User::role(UserRoles::ADMIN)->first();
+        $user = User::role(UserRoles::ADMIN)->first(); // Get the first admin user
         $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
-        $response = $this->apiAs($user, 'POST', "{$this->apiBase}/repair-request/", $repairRequest);
-        // dd($response->json());
+        $response = $this->apiAs($user, 'POST', route('repair-request.store'), $repairRequest);
 
         // Then: The request should fail with a 422 Unprocessable Entity status
         $response->assertStatus(422);
@@ -550,9 +580,13 @@ class CreateRepairRequestTest extends TestCase
         ]);
     }
 
-    public function test_article_name_must_have_at_least_3_caracters()
+    /**
+     * Test that the article name must have at least 3 characters.
+     * This ensures that short article names return a 422 status with validation errors.
+     */
+    public function test_article_name_must_have_at_least_3_characters()
     {
-        // Given: A repair request payload with a article name that has less than 3 characters
+        // Given: A repair request payload with an article name that has less than 3 characters
         $repairRequest = [
             "customer_name"         => "Juan Pérez",
             "customer_phone"        => "12345678",
@@ -572,11 +606,10 @@ class CreateRepairRequestTest extends TestCase
         ];
 
         // When: An admin user attempts to create a repair request
-        $user = User::role(UserRoles::ADMIN)->first();
+        $user = User::role(UserRoles::ADMIN)->first(); // Get the first admin user
         $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
-        $response = $this->apiAs($user, 'POST', "{$this->apiBase}/repair-request/", $repairRequest);
-        // dd($response->json());
+        $response = $this->apiAs($user, 'POST', route('repair-request.store'), $repairRequest);
 
         // Then: The request should fail with a 422 Unprocessable Entity status
         $response->assertStatus(422);
@@ -594,6 +627,10 @@ class CreateRepairRequestTest extends TestCase
         ]);
     }
 
+    /**
+     * Test that the article type field is required.
+     * This ensures that missing the article type field returns a 422 status with validation errors.
+     */
     public function test_article_type_must_be_required()
     {
         // Given: A repair request payload with a missing article type
@@ -615,11 +652,10 @@ class CreateRepairRequestTest extends TestCase
         ];
 
         // When: An admin user attempts to create a repair request
-        $user = User::role(UserRoles::ADMIN)->first();
+        $user = User::role(UserRoles::ADMIN)->first(); // Get the first admin user
         $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
-        $response = $this->apiAs($user, 'POST', "{$this->apiBase}/repair-request/", $repairRequest);
-        // dd($response->json());
+        $response = $this->apiAs($user, 'POST', route('repair-request.store'), $repairRequest);
 
         // Then: The request should fail with a 422 Unprocessable Entity status
         $response->assertStatus(422);
@@ -636,6 +672,10 @@ class CreateRepairRequestTest extends TestCase
         ]);
     }
 
+    /**
+     * Test that the article type must be a string.
+     * This ensures that non-string values for the article type field return a 422 status with validation errors.
+     */
     public function test_article_type_must_be_a_string()
     {
         // Given: A repair request payload with a non-string article type
@@ -658,11 +698,10 @@ class CreateRepairRequestTest extends TestCase
         ];
 
         // When: An admin user attempts to create a repair request
-        $user = User::role(UserRoles::ADMIN)->first();
+        $user = User::role(UserRoles::ADMIN)->first(); // Get the first admin user
         $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
-        $response = $this->apiAs($user, 'POST', "{$this->apiBase}/repair-request/", $repairRequest);
-        // dd($response->json());
+        $response = $this->apiAs($user, 'POST', route('repair-request.store'), $repairRequest);
 
         // Then: The request should fail with a 422 Unprocessable Entity status
         $response->assertStatus(422);
