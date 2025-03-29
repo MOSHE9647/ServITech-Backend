@@ -31,10 +31,12 @@ class SupportRequestController extends Controller
         'location' => 'required|string',
         'detail' => 'required|string',
       ]);
+        //when creating a new support request, the user_id is the authenticated user
+        $data['user_id'] = auth()->guard('api')->user()->id;
         $supportRequest = SupportRequest::create($data);
         return ApiResponse::success(
             data: compact('supportRequest'),
-            status: 201
+            status: 200
         );
     }
 

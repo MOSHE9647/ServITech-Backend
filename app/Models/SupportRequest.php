@@ -14,7 +14,9 @@ class SupportRequest extends Model
     protected $fillable =[
         "date","location","detail",
     ];
-    protected $casts=[];
+    protected $casts = [    // convert to date
+        'date' => 'datetime',
+    ];
 
    public function user(): BelongsTo
    {

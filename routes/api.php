@@ -6,6 +6,7 @@ use App\Http\Controllers\Model\ArticleController;
 use App\Http\Controllers\Model\CategoryController;
 use App\Http\Controllers\Model\RepairRequestController;
 use App\Http\Controllers\Model\SubcategoryController;
+use App\Http\Controllers\Model\SupportRequestController;
 use App\Http\Controllers\Model\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -59,4 +60,13 @@ Route::middleware('auth:api')->group(function () {
         Route::get('{article}', [ArticleController::class, 'show'])->name('articles.show');
         Route::put('{article}', [ArticleController::class, 'update'])->name('articles.update');
         Route::delete('{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
+    });
+
+    // SupportRequest routes
+    Route::prefix('support-request')->group(function () {
+        Route::get('', [SupportRequestController::class, 'index'])->name('support-request.index');
+        Route::post('', [SupportRequestController::class, 'store'])->name('support-request.store');
+        Route::get('{supportRequest}', [SupportRequestController::class, 'show'])->name('support-request.show');
+        Route::put('{supportRequest}', [SupportRequestController::class, 'update'])->name('support-request.update');
+        Route::delete('{supportRequest}', [SupportRequestController::class, 'destroy'])->name('support-request.destroy');
     });
