@@ -35,6 +35,13 @@ return [
         'updated'              => 'Subcategoría actualizada exitosamente.',
         'deleted'              => 'Subcategoría eliminada exitosamente.',
     ],
+    'support_request' => [
+        'retrieved_all'       => 'Lista de solicitudes de soporte obtenida exitosamente.',
+        'retrieved'            => 'Solicitud de soporte obtenida exitosamente.',
+        'created'              => 'Solicitud de soporte creada exitosamente.',
+        'updated'              => 'Solicitud de soporte actualizada exitosamente.',
+        'deleted'              => 'Solicitud de soporte eliminada exitosamente.',
+    ],
     'user' => [
         'info_updated'         => 'Información del usuario actualizada con éxito.',
         'password_updated'     => 'Contraseña del usuario actualizada con éxito.',

@@ -12,7 +12,7 @@ class SupportRequest extends Model
     /** @use HasFactory<\Database\Factories\SupportRequestFactory> */
     use HasFactory, SoftDeletes;
     protected $fillable =[
-        "date","location","detail",
+        "date", "location", "detail",
     ];
     protected $casts = [    // convert to date
         'date' => 'datetime',

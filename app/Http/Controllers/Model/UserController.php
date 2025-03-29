@@ -113,7 +113,7 @@ class UserController extends Controller
      * @param \App\Http\Requests\UpdateUserRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function updateBasicInformation(UpdateUserRequest $request)
+    public function updateBasicInformation(UpdateUserRequest $request): JsonResponse
     {
         auth()->guard('api')->user()->update($request->validated());
         $user = UserResource::make(auth()->guard('api')->user()->fresh() ?? []);
@@ -153,7 +153,7 @@ class UserController extends Controller
      * @param \App\Http\Requests\UpdatePasswordRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function updatePassword(UpdatePasswordRequest $request)
+    public function updatePassword(UpdatePasswordRequest $request): JsonResponse
     {
         auth()->guard('api')->user()->update([
             'password'=> bcrypt($request->get('password')),

@@ -16,7 +16,6 @@ use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
 use OpenApi\Annotations as OA;
-use Throwable;
 
 /**
  * Class AuthController for handling user authentication.

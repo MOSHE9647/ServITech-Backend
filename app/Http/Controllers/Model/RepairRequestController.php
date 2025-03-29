@@ -7,13 +7,14 @@ use App\Http\Requests\RepairRequest\CreateRepairRequest;
 use App\Http\Requests\RepairRequest\UpdateRepairRequest;
 use App\Http\Responses\ApiResponse;
 use App\Models\RepairRequest;
+use Illuminate\Http\JsonResponse;
 
 class RepairRequestController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): JsonResponse
     {
         $repairRequests = RepairRequest::orderBy("id", "desc")->get();
         return ApiResponse::success(
@@ -25,7 +26,7 @@ class RepairRequestController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CreateRepairRequest $request)
+    public function store(CreateRepairRequest $request): JsonResponse
     {
         $data = $request->validated();
         $repairRequest = RepairRequest::create($data);
@@ -39,7 +40,7 @@ class RepairRequestController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(RepairRequest $repairRequest)
+    public function show(RepairRequest $repairRequest): JsonResponse
     {
         return ApiResponse::success(
             data: compact('repairRequest'),
@@ -50,7 +51,7 @@ class RepairRequestController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateRepairRequest $request, RepairRequest $repairRequest)
+    public function update(UpdateRepairRequest $request, RepairRequest $repairRequest): JsonResponse
     {
         $data = $request->validated();
         $repairRequest->update($data);
@@ -63,7 +64,7 @@ class RepairRequestController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(RepairRequest $repairRequest)
+    public function destroy(RepairRequest $repairRequest): JsonResponse
     {
         $repairRequest->delete();
         return ApiResponse::success(message: __('messages.repair_request.deleted'));
