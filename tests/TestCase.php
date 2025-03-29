@@ -8,12 +8,9 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 abstract class TestCase extends BaseTestCase
 {
-    protected $apiBase;
-
     protected function setUp(): void
     {
         parent::setUp();
-        $this->apiBase = env("API_BASE", "/api/v1");
     }
 
     protected function apiAs(User $user, string $method, string $uri, array $data = [])

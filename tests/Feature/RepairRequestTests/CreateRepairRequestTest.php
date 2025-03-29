@@ -1332,7 +1332,7 @@ class CreateRepairRequestTest extends TestCase
         $user = User::role(UserRoles::ADMIN)->first();
         $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
 
-        $response = $this->apiAs($user, 'POST', "{$this->apiBase}/repair-request/", $repairRequest);
+        $response = $this->apiAs($user, 'POST', route('repair-request.store'), $repairRequest);
 
         // Then: The request should fail with a 422 Unprocessable Entity status
         $response->assertStatus(422);

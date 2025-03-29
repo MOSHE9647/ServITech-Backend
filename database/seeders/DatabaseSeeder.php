@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             ArticleSeeder::class,
+            SupportRequestSeeder::class,
         ]);
 
         // Create repair requests and attach related images

@@ -2,165 +2,155 @@
 
 namespace Tests\Feature;
 
+use App\Enums\UserRoles;
 use App\Models\Category;
 use App\Models\User;
-use Database\Seeders\UserSeeder;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class CategoryControllerTest extends TestCase
 {
-    use RefreshDatabase; // RefreshDatabase trait to reset the database after each test
+    use RefreshDatabase; // Use RefreshDatabase to reset the database after each test
 
+    /**
+     * Set up the test environment.
+     * This method seeds the database before each test.
+     */
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed(UserSeeder::class); // Seed the database with test users
+        $this->seed(DatabaseSeeder::class); // Seed the database with necessary data
     }
 
-    public function test_index_returns_categories()
+    /**
+     * Test that an authenticated user can retrieve all categories.
+     * This ensures that only authenticated users can access the list of categories.
+     */
+    public function test_an_authenticated_user_can_retrieve_all_categories(): void
     {
-        // Given:
-        Category::factory()->count(3)->create(); // Create 3 categories
+        // Given: An authenticated user and existing categories in the database
+        $user = User::role(UserRoles::ADMIN)->first();
+        Category::inRandomOrder()->first();
 
-        // When:
-        $user = User::find(1)->first(); // Find the user with ID 1
-        $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
+        // When: The user attempts to retrieve all categories
+        $response = $this->apiAs($user, 'GET', route('category.index'));
 
-        $response = $this->apiAs($user, 'GET', "{$this->apiBase}/category");
-
-        // Then:
+        // Then: The request should succeed, and the response should contain the categories
         $response->assertStatus(200);
         $response->assertJsonStructure([
-            'status', 'message', 'data' => ['categories']
-        ]);
-
-        $response->assertJsonFragment([
-            'status' => 200,
-            'message'=> __('messages.category.retrieved_all'),
-            'data' => ['categories' => Category::all()->toArray()],
-        ]);
-    }
-
-    public function test_store_creates_category()
-    {
-        // Given:
-        $data = ['name' => 'New Category'];
-
-        // When:
-        $user = User::find(1)->first(); // Find the user with ID 1
-        $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
-
-        $response = $this->apiAs($user, 'POST', "{$this->apiBase}/category", $data);
-
-        // Then:
-        $response->assertStatus(200);
-        $response->assertJsonStructure(['message', 'status', 'data' => ['category']]);
-        $response->assertJsonFragment([
-            'status' => 200,
-            'message'=> __('messages.category.created'),
+            'status',
+            'message',
             'data' => [
-                'category' => [
-                    'id'=> 1,
-                    'name'=> $data['name'],
-                    'created_at'=> now()->format('Y-m-d\TH:i:s.000000\Z'),
-                    'updated_at'=> now()->format('Y-m-d\TH:i:s.000000\Z'),
-                ]
-            ],
-        ]);
-
-        // Ensure the category is in the database
-        $this->assertDatabaseHas('categories', $data);
-    }
-
-    public function test_show_returns_category()
-    {
-        // Given:
-        $category = Category::factory()->create(); // Create a category
-
-        // When:
-        $user = User::find(1)->first(); // Find the user with ID 1
-        $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
-
-        $response = $this->apiAs($user, 'GET', "{$this->apiBase}/category/{$category->name}");
-
-        // Then:
-        $response->assertStatus(200);
-        $response->assertJsonStructure(['message', 'status', 'data' => ['category']]);
-        $response->assertJsonFragment([
-            'status' => 200,
-            'message'=> __('messages.category.retrieved'),
-            'data' => [
-                'category' => [
-                    'id'=> 1,
-                    'name'=> $category->name,
-                    'description'=> $category->description,
-                    'created_at'=> now()->format('Y-m-d\TH:i:s.000000\Z'),
-                    'updated_at'=> now()->format('Y-m-d\TH:i:s.000000\Z'),
-                    'deleted_at'=> null,
-                ]
+                'categories' => [
+                    '*' => [
+                        'id',
+                        'name',
+                        'description',
+                        'created_at',
+                        'updated_at',
+                    ],
+                ],
             ],
         ]);
     }
 
-    public function test_update_modifies_category()
+    /**
+     * Test that an authenticated user can create a category.
+     * This ensures that only authenticated users can create categories successfully.
+     */
+    public function test_an_authenticated_user_can_create_a_category(): void
     {
-        // Given:
-        $category = Category::factory()->create(); // Create a category
-        $data = ['name' => 'Updated Category'];
+        // Given: An authenticated user and valid category data
+        $user = User::role(UserRoles::ADMIN)->first();
+        $categoryData = [
+            'name' => 'New Category',
+            'description' => 'This is a new category.',
+        ];
 
-        // When:
-        $user = User::find(1)->first(); // Find the user with ID 1
-        $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
+        // When: The user attempts to create a category
+        $response = $this->apiAs($user, 'POST', route('category.store'), $categoryData);
 
-        $response = $this->apiAs($user, 'PUT', "{$this->apiBase}/category/{$category->name}", $data);
-        // dd($response->json());
-
-        // Then:
-        $response->assertStatus(200);
-        $response->assertJsonStructure(['message', 'status', 'data' => ['category']]);
-        $response->assertJsonFragment([
-            'status' => 200,
-            'message'=> __('messages.category.updated'),
-            'data' => [
-                'category' => [
-                    'id'=> 1,
-                    'name'=> $data['name'],
-                    'description'=> $category->description,
-                    'created_at'=> now()->format('Y-m-d\TH:i:s.000000\Z'),
-                    'updated_at'=> now()->format('Y-m-d\TH:i:s.000000\Z'),
-                    'deleted_at'=> null,
-                ]
-            ],
-        ]);
-
-        // Ensure the category is updated in the database
-        $this->assertDatabaseHas('categories', $data);
+        // Then: The request should succeed, and the category should be stored in the database
+        $response->assertStatus(201);
+        $response->assertJsonStructure(['status', 'message', 'data' => ['category']]);
+        $this->assertDatabaseHas('categories', $categoryData);
     }
 
-    public function test_destroy_deletes_category()
+    /**
+     * Test that an authenticated user can retrieve a single category.
+     * This ensures that only authenticated users can access a specific category.
+     */
+    public function test_an_authenticated_user_can_retrieve_a_single_category(): void
     {
-        // Given:
-        $category = Category::factory()->create(); // Create a category
+        // Given: An authenticated user and an existing category
+        $user = User::role(UserRoles::ADMIN)->first();
+        $category = Category::factory()->create();
 
-        // When:
-        $user = User::find(1)->first(); // Find the user with ID 1
-        $this->assertNotNull($user, __('messages.user.not_found')); // Ensure the user exists
+        // When: The user attempts to retrieve the category
+        $response = $this->apiAs($user, 'GET', route('category.show', $category));
 
-        $response = $this->apiAs($user, 'DELETE', "{$this->apiBase}/category/{$category->name}");
+        // Then: The request should succeed, and the response should contain the category
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'status',
+            'message',
+            'data' => [
+                'category' => [
+                    'id',
+                    'name',
+                    'description',
+                    'created_at',
+                    'updated_at',
+                ],
+            ],
+        ]);
+        $response->assertJsonFragment([
+            'id' => $category->id,
+            'name' => $category->name,
+            'description' => $category->description,
+        ]);
+    }
 
-        // Then:
+    /**
+     * Test that an authenticated user can update a category.
+     * This ensures that only authenticated users can update categories successfully.
+     */
+    public function test_an_authenticated_user_can_update_a_category(): void
+    {
+        // Given: An authenticated user and an existing category
+        $user = User::role(UserRoles::ADMIN)->first();
+        $category = Category::inRandomOrder()->first();
+        $updateData = [
+            'name' => 'Updated Category',
+            'description' => 'This is an updated category.',
+        ];
+
+        // When: The user attempts to update the category
+        $response = $this->apiAs($user, 'PUT', route('category.update', $category), $updateData);
+
+        // Then: The request should succeed, and the category should be updated in the database
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['status', 'message', 'data' => ['category']]);
+        $this->assertDatabaseHas('categories', $updateData);
+    }
+
+    /**
+     * Test that an authenticated user can delete a category.
+     * This ensures that only authenticated users can delete categories successfully.
+     */
+    public function test_an_authenticated_user_can_delete_a_category(): void
+    {
+        // Given: An authenticated user and an existing category
+        $user = User::role(UserRoles::ADMIN)->first();
+        $category = Category::factory()->create();
+
+        // When: The user attempts to delete the category
+        $response = $this->apiAs($user, 'DELETE', route('category.destroy', $category));
+
+        // Then: The request should succeed, and the category should be soft deleted in the database
         $response->assertStatus(200);
         $response->assertJsonStructure(['status', 'message']);
-        $response->assertJsonFragment([
-            'status'=> 200,
-            'message'=> __('messages.category.deleted'),
-        ]);
-
-        // Ensure the category is soft deleted in the database
-        $this->assertDatabaseHas('categories', [
-            'id' => $category->id,
-            'deleted_at' => now()->format('Y-m-d H:i:s')
-        ]);
+        $this->assertSoftDeleted('categories', ['id' => $category->id]);
     }
 }

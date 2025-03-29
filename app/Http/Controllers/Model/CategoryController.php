@@ -7,6 +7,7 @@ use App\Http\Responses\ApiResponse;
 use App\Models\Category;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * 
@@ -143,12 +144,14 @@ class CategoryController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|string|max:255', // Needs to verify if the category name is unique
+            'description' => 'nullable|string|max:255',
         ]);
         $category = Category::create($data);
 
         return ApiResponse::success(
             data: compact('category'),
-            message: __('messages.category.created')
+            message: __('messages.category.created'),
+            status: Response::HTTP_CREATED
         );
     }
 
@@ -282,6 +285,7 @@ class CategoryController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
+            'description'=> 'nullable|string|max:255',
         ]);
         $category->update($data);
 
