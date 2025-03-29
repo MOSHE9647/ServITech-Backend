@@ -37,7 +37,7 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('{supportRequest}', [SupportRequestController::class, 'destroy'])->name('support-request.destroy');
     });
 
-    // ADMIN Role Routes
+    // ADMIN Role Protected Routes
     Route::middleware("role:" . UserRoles::ADMIN->value)->group(function () {
         // Category routes
         Route::prefix('category')->group(function () {

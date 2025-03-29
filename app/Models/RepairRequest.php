@@ -13,6 +13,12 @@ class RepairRequest extends Model
     /** @use HasFactory<\Database\Factories\RepairRequestFactory> */
     use HasFactory, SoftDeletes;
 
+    // Fillable properties for mass assignment
+    // These are the attributes that are mass assignable.
+    // This means you can use the create() method to insert data into these fields.
+    // For example:
+    // Article::create(['name' => 'Sample Article', 'description' => 'Sample Description']);
+    // This will insert a new article with the name and description provided.
     protected $fillable = [
         'customer_name',
         'customer_phone',
@@ -31,8 +37,22 @@ class RepairRequest extends Model
         'repaired_at',
     ];
 
+    /**
+     * The attributes that should be mutated to dates.
+     * This means that when you retrieve these attributes from the database,
+     * they will be automatically converted to Carbon instances.
+     * @var array
+     */
     protected $dates = ['received_at', 'repaired_at'];
 
+    /**
+     * The attributes that should be cast to native types.
+     * This means that when you retrieve these attributes from the database,
+     * they will be automatically converted to the specified types.
+     * For example, 'repair_price' will be cast to a decimal with 2 decimal places,
+     * and 'repair_status' will be cast to the RepairStatus enum.
+     * @var array
+     */
     protected $casts = [
         'repair_price' => 'decimal:2',
         'repair_status' => RepairStatus::class,

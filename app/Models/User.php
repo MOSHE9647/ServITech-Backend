@@ -17,11 +17,12 @@ class User extends Authenticatable implements JWTSubject
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, SoftDeletes, HasRoles;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    // Fillable properties for mass assignment
+    // These are the attributes that are mass assignable.
+    // This means you can use the create() method to insert data into these fields.
+    // For example:
+    // Article::create(['name' => 'Sample Article', 'description' => 'Sample Description']);
+    // This will insert a new article with the name and description provided.
     protected $fillable = [
         'name',
         'last_name',
@@ -95,6 +96,12 @@ class User extends Authenticatable implements JWTSubject
         $url = "{$appUrl}/reset-password?token={$token}&email={$email}";
         $this->notify(new ResetPasswordNotification($url));
     }
+
+    /**
+     * Define a one-to-many relationship with the SupportRequest model.
+     * This means that each user can have multiple support requests.
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<SupportRequest, User>
+     */
     public function supportRequests()
     {
         return $this->hasMany(SupportRequest::class);

@@ -7,6 +7,14 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ApiResponse
 {
+    /**
+     * Generate a successful JSON response.
+     * 
+     * @param array $data
+     * @param int $status
+     * @param string $message
+     * @return JsonResponse|mixed
+     */
     public static function success(array $data = [], int $status = Response::HTTP_OK, string $message = 'OK'): JsonResponse
     {
         return response()->json([
@@ -16,6 +24,13 @@ class ApiResponse
         ], $status);
     }
 
+    /**
+     * Generate an error JSON response.
+     * @param string $message
+     * @param array $errors
+     * @param int $status
+     * @return JsonResponse|mixed
+     */
     public static function error(string $message = 'Error', array $errors = [], int $status = Response::HTTP_BAD_REQUEST): JsonResponse
     {
         return response()->json([

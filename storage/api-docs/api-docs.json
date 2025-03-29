@@ -1144,6 +1144,654 @@
                 }
             }
         },
+        "/api/{version}/repair-requests": {
+            "get": {
+                "tags": [
+                    "Repair Requests"
+                ],
+                "summary": "Get all repair requests",
+                "description": "Display a listing of the resource.",
+                "operationId": "5e93c748f953da0ca89bedf0ad92f340",
+                "parameters": [
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "description": "API version",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "v1"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of repair requests retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Repair requests retrieved successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "repairRequests": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/CreateRepairRequest"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Repair Requests"
+                ],
+                "summary": "Create a new repair request",
+                "description": "Store a newly created resource in storage.",
+                "operationId": "5d8cc82b95b3d73078647c65e1355b7c",
+                "parameters": [
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "description": "API version",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "v1"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateRepairRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Repair request created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 201
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Repair request created successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "repairRequest": {
+                                                    "$ref": "#/components/schemas/CreateRepairRequest"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/{version}/repair-requests/{receipt_number}": {
+            "get": {
+                "tags": [
+                    "Repair Requests"
+                ],
+                "summary": "Get a specific repair request",
+                "description": "Display the specified resource.",
+                "operationId": "da4b715d6403b659a955fec344a6bd8b",
+                "parameters": [
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "description": "API version",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "v1"
+                        }
+                    },
+                    {
+                        "name": "receipt_number",
+                        "in": "path",
+                        "description": "Receipt number of the repair request",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "RR-000000000001"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Repair request retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Repair request retrieved successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "repairRequest": {
+                                                    "$ref": "#/components/schemas/CreateRepairRequest"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Repair Requests"
+                ],
+                "summary": "Update a repair request",
+                "description": "Update the specified resource in storage.",
+                "operationId": "c7c54094bc4e89536220cffd9ff77978",
+                "parameters": [
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "description": "API version",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "v1"
+                        }
+                    },
+                    {
+                        "name": "receipt_number",
+                        "in": "path",
+                        "description": "Receipt number of the repair request",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "RR-000000000001"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateRepairRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Repair request updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Repair request updated successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "repairRequest": {
+                                                    "$ref": "#/components/schemas/UpdateRepairRequest"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Repair Requests"
+                ],
+                "summary": "Delete a repair request",
+                "description": "Remove the specified resource from storage.",
+                "operationId": "3014a31fc30f6901a20e8f225c270ca1",
+                "parameters": [
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "description": "API version",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "v1"
+                        }
+                    },
+                    {
+                        "name": "receipt_number",
+                        "in": "path",
+                        "description": "Receipt number of the repair request",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "RR-000000000001"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Repair request deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Repair request deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/{version}/support-requests": {
+            "get": {
+                "tags": [
+                    "Support Requests"
+                ],
+                "summary": "Get all support requests",
+                "description": "Display a listing of the resource.",
+                "operationId": "588c0f5c9326046c2a9cecb43aac5028",
+                "parameters": [
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "description": "API version",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "v1"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of support requests retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Support requests retrieved successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "supportRequests": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/CreateSupportRequest"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Support Requests"
+                ],
+                "summary": "Create a new support request",
+                "description": "Store a newly created resource in storage.",
+                "operationId": "e111111528f9a0e9b1fcbf7b15564b2f",
+                "parameters": [
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "description": "API version",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "v1"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateSupportRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Support request created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 201
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Support request created successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "supportRequest": {
+                                                    "$ref": "#/components/schemas/CreateSupportRequest"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/{version}/support-requests/{id}": {
+            "get": {
+                "tags": [
+                    "Support Requests"
+                ],
+                "summary": "Get a specific support request",
+                "description": "Display the specified resource.",
+                "operationId": "c775f6f707c95ff486b43e89eec85b01",
+                "parameters": [
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "description": "API version",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "v1"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the support request",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Support request retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Support request retrieved successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "supportRequest": {
+                                                    "$ref": "#/components/schemas/CreateSupportRequest"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Support Requests"
+                ],
+                "summary": "Update a support request",
+                "description": "Update the specified resource in storage.",
+                "operationId": "660eea955163af59d266360cfebdac98",
+                "parameters": [
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "description": "API version",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "v1"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the support request",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateSupportRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Support request updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Support request updated successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "supportRequest": {
+                                                    "$ref": "#/components/schemas/UpdateSupportRequest"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Support Requests"
+                ],
+                "summary": "Delete a support request",
+                "description": "Remove the specified resource from storage.",
+                "operationId": "3d032457af2cb6a3dea41eef6937da74",
+                "parameters": [
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "description": "API version",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "v1"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the support request",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Support request deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Support request deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/{version}/user/profile": {
             "get": {
                 "tags": [
@@ -1624,6 +2272,168 @@
                 },
                 "type": "object"
             },
+            "CreateRepairRequest": {
+                "required": [
+                    "customer_name",
+                    "customer_phone",
+                    "customer_email",
+                    "article_name",
+                    "article_type",
+                    "article_brand",
+                    "article_model",
+                    "article_problem",
+                    "repair_status",
+                    "received_at"
+                ],
+                "properties": {
+                    "customer_name": {
+                        "description": "Class RepairRequestController for managing repair requests.",
+                        "type": "string",
+                        "example": "John Doe"
+                    },
+                    "customer_phone": {
+                        "type": "string",
+                        "example": "123456789"
+                    },
+                    "customer_email": {
+                        "type": "string",
+                        "example": "johndoe@example.com"
+                    },
+                    "article_name": {
+                        "type": "string",
+                        "example": "Laptop"
+                    },
+                    "article_type": {
+                        "type": "string",
+                        "example": "Electronics"
+                    },
+                    "article_brand": {
+                        "type": "string",
+                        "example": "Dell"
+                    },
+                    "article_model": {
+                        "type": "string",
+                        "example": "Inspiron 15"
+                    },
+                    "article_serialnumber": {
+                        "type": "string",
+                        "example": "SN123456"
+                    },
+                    "article_accesories": {
+                        "type": "string",
+                        "example": "Charger, Bag"
+                    },
+                    "article_problem": {
+                        "type": "string",
+                        "example": "Screen not working"
+                    },
+                    "repair_status": {
+                        "type": "string",
+                        "example": "Pending"
+                    },
+                    "repair_details": {
+                        "type": "string",
+                        "example": "Screen replacement required"
+                    },
+                    "repair_price": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 150.75
+                    },
+                    "received_at": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2025-03-29"
+                    },
+                    "repaired_at": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2025-04-05"
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateRepairRequest": {
+                "required": [
+                    "repair_status"
+                ],
+                "properties": {
+                    "article_serialnumber": {
+                        "type": "string",
+                        "example": "SN123456"
+                    },
+                    "article_accesories": {
+                        "type": "string",
+                        "example": "Charger, Bag"
+                    },
+                    "repair_status": {
+                        "type": "string",
+                        "example": "Completed"
+                    },
+                    "repair_details": {
+                        "type": "string",
+                        "example": "Screen replaced successfully"
+                    },
+                    "repair_price": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 150.75
+                    },
+                    "repaired_at": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2025-04-05"
+                    }
+                },
+                "type": "object"
+            },
+            "CreateSupportRequest": {
+                "required": [
+                    "date",
+                    "location",
+                    "detail"
+                ],
+                "properties": {
+                    "date": {
+                        "description": "Class SupportRequestController for managing support requests.",
+                        "type": "string",
+                        "format": "date",
+                        "example": "2025-03-29"
+                    },
+                    "location": {
+                        "type": "string",
+                        "example": "New York"
+                    },
+                    "detail": {
+                        "type": "string",
+                        "example": "The system is not responding."
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateSupportRequest": {
+                "required": [
+                    "date",
+                    "location",
+                    "detail"
+                ],
+                "properties": {
+                    "date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2025-03-30"
+                    },
+                    "location": {
+                        "type": "string",
+                        "example": "Los Angeles"
+                    },
+                    "detail": {
+                        "type": "string",
+                        "example": "The issue has been updated."
+                    }
+                },
+                "type": "object"
+            },
             "UpdateUserRequest": {
                 "required": [
                     "name",
@@ -1691,11 +2501,6 @@
             }
         },
         "securitySchemes": {
-            "BearerAuth": {
-                "type": "http",
-                "bearerFormat": "JWT",
-                "scheme": "bearer"
-            },
             "bearerAuth": {
                 "type": "http",
                 "scheme": "bearer",
@@ -1715,6 +2520,14 @@
         {
             "name": "Categories",
             "description": "Categories"
+        },
+        {
+            "name": "Repair Requests",
+            "description": "Repair Requests"
+        },
+        {
+            "name": "Support Requests",
+            "description": "Support Requests"
         },
         {
             "name": "User",

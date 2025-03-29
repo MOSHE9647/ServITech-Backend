@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Model;
 
+use App\Enums\UserRoles;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ArticleRequest\CreateArticleRequest;
 use App\Http\Requests\ArticleRequest\UpdateArticleRequest;
@@ -17,13 +18,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class ArticleController for managing articles.
- *
- * @OA\SecurityScheme(
- *     securityScheme="BearerAuth",
- *     type="http",
- *     scheme="bearer",
- *     bearerFormat="JWT"
- * )
  *
  * @OA\Schema(
  *     schema="CreateArticleRequest",
@@ -132,8 +126,11 @@ class ArticleController extends Controller
      */
     public function index(): JsonResponse
     {
+        // Get all articles with their categories, subcategories, and images
+        // Order by ID in descending order
         $articles = Article::orderBy('id', 'desc')->with(['category', 'subcategory', 'images'])->get();
 
+        // Return the articles
         return ApiResponse::success(
             data: ['articles' => $articles],
             message: __('messages.article.retrieved_all')
@@ -175,13 +172,21 @@ class ArticleController extends Controller
      */
     public function store(CreateArticleRequest $request): JsonResponse
     {
+        // Validate the request
         $data = $request->validated();
 
+        // Begin a database transaction to ensure data integrity
+        // If any part of the transaction fails, all changes will be rolled back
         DB::beginTransaction();
         try {
+            // Create the article
             $article = Article::create($data);
 
+            // Check if images are provided
             if ($request->hasFile('images')) {
+                // Store each image and create a record in the database
+                // The images are stored in the 'articles' directory
+                // The path is stored in the database
                 $images = array_map(function ($image) {
                     $path = Storage::put('articles', $image);
                     return ['path' => Storage::url($path)];
@@ -190,16 +195,19 @@ class ArticleController extends Controller
                 $article->images()->createMany($images);
             }
 
-            DB::commit();
+            DB::commit(); // Commit the transaction if everything is successful
 
+            // Return a success response with the created article
+            // The article is loaded with its images for the response
             return ApiResponse::success(
                 status: Response::HTTP_CREATED,
                 data: ['article' => ArticleResource::make($article->load('images'))],
                 message: __('messages.article.created')
             );
         } catch (Exception $e) {
-            DB::rollBack();
+            DB::rollBack(); // Rollback the transaction if an error occurs
 
+            // Return an error response
             return ApiResponse::error(
                 status: Response::HTTP_INTERNAL_SERVER_ERROR,
                 message: __('messages.article.creation_failed'),
@@ -246,6 +254,16 @@ class ArticleController extends Controller
      */
     public function show(Article $article): JsonResponse
     {
+        // Check if the article exists
+        if (! $article->exists) {
+            return ApiResponse::error(
+                message: __('messages.not_found', ['attribute' => Article::class]),
+                status: Response::HTTP_NOT_FOUND
+            );
+        }
+
+        // Return the article with its images
+        // The article is loaded with its images for the response
         return ApiResponse::success(
             data: $article->load(['images'])->toArray(),
             message: __('messages.article.retrieved')
@@ -306,6 +324,7 @@ class ArticleController extends Controller
                 $image->delete();
             });
 
+            // Store each new image and create a record in the database
             $images = array_map(function ($image) {
                 $path = Storage::put('articles', $image);
                 return ['path' => Storage::url($path)];
@@ -314,6 +333,7 @@ class ArticleController extends Controller
             $article->images()->createMany($images);
         }
 
+        // Return a success response with the updated article
         return ApiResponse::success(
             message: __('messages.article.updated'),
             data: ['article' => ArticleResource::make($article->load('images'))],

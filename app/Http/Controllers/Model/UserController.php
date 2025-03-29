@@ -73,6 +73,8 @@ class UserController extends Controller
      */
     public function profile(): JsonResponse
     {
+        // Get the authenticated user
+        // and return the user resource
         $user = UserResource::make(auth()->guard('api')->user());
         return ApiResponse::success(data: compact('user'), message: __('messages.user.info_retrieved'));
     }
@@ -115,7 +117,14 @@ class UserController extends Controller
      */
     public function updateBasicInformation(UpdateUserRequest $request): JsonResponse
     {
+        // Validate the request
+        // and update the user information
+        // using the authenticated user
         auth()->guard('api')->user()->update($request->validated());
+
+        // Refresh the user instance
+        // to get the updated information
+        // and return the user resource
         $user = UserResource::make(auth()->guard('api')->user()->fresh() ?? []);
         return ApiResponse::success(compact('user'), message: __('messages.user.info_updated'));
     }
@@ -155,10 +164,14 @@ class UserController extends Controller
      */
     public function updatePassword(UpdatePasswordRequest $request): JsonResponse
     {
+        // Validate the request
+        // and update the user password
+        // using the authenticated user
         auth()->guard('api')->user()->update([
             'password'=> bcrypt($request->get('password')),
         ]);
 
+        // Return a success response
         return ApiResponse::success(message: __('messages.user.password_updated'));
     }
 }
