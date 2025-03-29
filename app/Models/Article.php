@@ -11,11 +11,8 @@ class Article extends Model
     /** @use HasFactory<\Database\Factories\ArticleFactory> */
     use HasFactory, SoftDeletes;
 
-    protected $fillable = [
-        'name',
-        'description',
-        'price',
-    ];
+    protected $fillable = ['name', 'description', 'price', 'category_id', 'subcategory_id'];
+
 
     /**
      * Polymorphic relationship: An article can have multiple images.
