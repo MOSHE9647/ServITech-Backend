@@ -38,7 +38,7 @@ class GetSupportRequestsTest extends TestCase
             'status',
             'message',
             'data' => [
-                'supportRequest' => [
+                'supportRequests' => [
                     '*' => [
                         'id',
                         'date',

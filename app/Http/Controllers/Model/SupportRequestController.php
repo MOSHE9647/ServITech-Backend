@@ -122,6 +122,26 @@ class SupportRequestController extends Controller
      */
     public function destroy(SupportRequest $supportRequest): JsonResponse
     {
+        if (! auth()->guard('api')->check()) {
+            return ApiResponse::error(
+                message: __('auth.unauthenticated'),
+                status: Response::HTTP_UNAUTHORIZED,
+            );
+        }
+
+        // Check if the authenticated user is the owner of the support request
+        if ($supportRequest->user_id !== auth()->guard('api')->user()->id) {
+            return ApiResponse::error(
+                message: __('messages.not_found', ['attribute' => SupportRequest::class]),
+                status: Response::HTTP_NOT_FOUND,
+            );
+        }
+
+        // Soft delete the support request
+        $supportRequest->delete();
+
+        // Return the response
+        // The response should indicate that the support request was deleted successfully
         return ApiResponse::success(
             data: compact('supportRequest'),
             message: __('messages.support_request.deleted'),
