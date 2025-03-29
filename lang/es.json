@@ -235,6 +235,8 @@
     "User": "Usuario",
     "User details": "Detalles del usuario",
     "User not found": "Usuario no encontrado",
+    "User does not have the right roles.": "El usuario no tiene los roles adecuados.",
+    "User does not have the right permissions.": "El usuario no tiene los permisos adecuados.",
     "User logged in successfully": "Usuario conectado con éxito",
     "User registered successfully": "Usuario registrado con éxito",
     "Variant Also Negotiates": "Variante También Negocia",

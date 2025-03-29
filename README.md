@@ -1,11 +1,11 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# ServITech
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+[![Laravel Logo](https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg)](https://laravel.com)
+
+[![Build Status](https://github.com/laravel/framework/workflows/tests/badge.svg)](https://github.com/laravel/framework/actions)
+[![Total Downloads](https://img.shields.io/packagist/dt/laravel/framework)](https://packagist.org/packages/laravel/framework)
+[![Latest Stable Version](https://img.shields.io/packagist/v/laravel/framework)](https://packagist.org/packages/laravel/framework)
+[![License](https://img.shields.io/packagist/l/laravel/framework)](https://packagist.org/packages/laravel/framework)
 
 ## Sobre el Proyecto
 
@@ -20,29 +20,34 @@ Antes de ejecutar la aplicación, asegúrate de que tu máquina local tenga inst
 Para ejecutar el proyecto localmente, sigue estos pasos:
 
 1. Clona el repositorio:
+
     ```sh
     git clone https://github.com/tu-usuario/servitech.git
     cd servitech
     ```
 
-3. Crea un archivo `.env` basado en el ejemplo proporcionado:
+2. Crea un archivo `.env` basado en el ejemplo proporcionado:
+
     ```sh
     cp .env.example .env
     ```
 
-4. Genera la clave de la aplicación:
+3. Genera la clave de la aplicación:
+
     ```sh
     php artisan key:generate
     ```
 
-5. Configura tu archivo `.env` con las credenciales de tu base de datos y otros servicios.
+4. Configura tu archivo `.env` con las credenciales de tu base de datos y otros servicios.
 
-6. Ejecuta las migraciones de la base de datos:
+5. Ejecuta las migraciones de la base de datos:
+
     ```sh
     php artisan migrate
     ```
 
-7. Inicia el servidor de desarrollo:
+6. Inicia el servidor de desarrollo:
+
     ```sh
     composer run dev
     ```
@@ -50,14 +55,17 @@ Para ejecutar el proyecto localmente, sigue estos pasos:
 ## Cómo Buildear el Proyecto
 
 Para buildear el proyecto para producción, ejecuta:
+
 ```sh
 npm run build
 ```
 
-# Acceder a la Documentación de la API  
-La documentación de la API está disponible en la ruta `/api/doc`. Puedes acceder a ella visitando:  
+## Acceder a la Documentación de la API
+
+La documentación de la API está disponible en la ruta `/api/docs`. Puedes acceder a ella visitando:  
 
 ## Ejemplo de Archivo .env  
+
 Aquí tienes un ejemplo de cómo debería verse tu archivo `.env`:
 
 ```sh
@@ -110,11 +118,14 @@ L5_FORMAT_TO_USE_FOR_DOCS=json
 VITE_APP_NAME="${APP_NAME}"
 ```
 
-## Contribuyendo  
+## Contribuyendo
+
 Gracias por considerar contribuir al proyecto **ServITech**. La guía de contribución se puede encontrar en la documentación de Laravel.  
 
-## Código de Conducta  
+## Código de Conducta
+
 Para asegurar que la comunidad de **ServITech** sea acogedora para todos, por favor revisa y cumple con el **Código de Conducta**.  
 
-## Licencia  
+## Licencia
+
 El framework **Laravel** es un software de código abierto licenciado bajo la licencia **MIT**.  

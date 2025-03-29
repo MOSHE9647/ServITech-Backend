@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\UserRoles;
 use File;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -39,7 +40,7 @@ class PermissionSeeder extends Seeder
         }
 
         // Assign the permissions to the admin role
-        $adminRole = Role::where('name','admin')->first();
+        $adminRole = Role::where('name',UserRoles::ADMIN)->first();
         $adminRole->syncPermissions($adminPermissions);
     }
 }

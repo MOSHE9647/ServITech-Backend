@@ -7,21 +7,21 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ApiResponse
 {
-    public static function success(string $message = 'Success', array $data = [], int $status = Response::HTTP_OK): JsonResponse
+    public static function success(array $data = [], int $status = Response::HTTP_OK, string $message = 'OK'): JsonResponse
     {
         return response()->json([
-            'success' => true,
+            'status' => $status,
             'message' => $message,
-            'data'    => $data,
+            'data' => $data,
         ], $status);
     }
 
     public static function error(string $message = 'Error', array $errors = [], int $status = Response::HTTP_BAD_REQUEST): JsonResponse
     {
         return response()->json([
-            'success' => false,
+            'status' => $status,
             'message' => $message,
-            'errors'  => $errors,
+            'errors' => $errors,
         ], $status);
     }
 }

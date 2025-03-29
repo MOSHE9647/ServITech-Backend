@@ -1,15 +1,40 @@
 <?php
 
 return [
-    'user_registered' => 'Usuario registrado con éxito',
-    'user_logged_in' => 'Usuario ha iniciado sesión con éxito',
-    'user_details' => 'Detalles del usuario',
-    'unauthorized' => 'No autorizado',
-    'successfully_logged_out' => 'Cierre de sesión exitoso',
-    'password_reset_link_sent' => 'Enlace de restablecimiento de contraseña enviado con éxito',
-    'password_reset_success' => 'Contraseña restablecida con éxito',
-    'user_not_found' => 'Usuario no encontrado',
-    'email_not_found' => 'Correo electrónico no encontrado. Por favor, regístrese primero',
-    'password_mismatch' => 'La contraseña no coincide. Por favor, inténtelo de nuevo',
-    'invalid_or_expired_token' => 'Token inválido o expirado',
+    'user' => [
+        'info_updated'         => 'Información del usuario actualizada con éxito.',
+        'password_updated'     => 'Contraseña del usuario actualizada con éxito.',
+        'not_found'            => 'Usuario no encontrado.',
+        'registered'           => 'Usuario registrado con éxito',
+        'logged_in'            => 'Usuario conectado con éxito.',
+        'logged_out'           => 'Usuario desconectado con éxito.',
+        'info_retrieved'       => 'Información del usuario obtenida con éxito.',
+        'invalid_credentials'  => 'Credenciales inválidas.',
+        'already_logged_out'   => 'El usuario ya está desconectado.',
+        'logout_failed'        => 'Error al cerrar la sesión.',
+    ],
+    'category' => [
+        'retrieved_all'        => 'Lista de categorías obtenida exitosamente.',
+        'retrieved'            => 'Categoría obtenida exitosamente.',
+        'created'              => 'Categoría creada exitosamente.',
+        'updated'              => 'Categoría actualizada exitosamente.',
+        'deleted'              => 'Categoría eliminada exitosamente.',
+    ],
+    'subcategory' => [
+        'retrieved_all'        => 'Lista de subcategorías obtenida exitosamente.',
+        'retrieved'            => 'Subcategoría obtenida exitosamente.',
+        'created'              => 'Subcategoría creada exitosamente.',
+        'updated'              => 'Subcategoría actualizada exitosamente.',
+        'deleted'              => 'Subcategoría eliminada exitosamente.',
+    ],
+    'password' => [
+        'reset_success'        => 'Contraseña restablecida con éxito',
+    ],
+    'repair_request' => [
+        'retrieved_list'       => 'Lista de solicitudes de reparación obtenida exitosamente.',
+        'retrieved'            => 'Solicitud de reparación obtenida exitosamente.',
+        'created'              => 'Solicitud de reparación creada exitosamente.',
+        'updated'              => 'Solicitud de reparación actualizada exitosamente.',
+        'deleted'              => 'Solicitud de reparación eliminada exitosamente.',
+    ],
 ];
