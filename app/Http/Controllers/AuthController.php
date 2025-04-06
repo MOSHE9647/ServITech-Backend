@@ -16,7 +16,6 @@ use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
 use OpenApi\Annotations as OA;
-use Throwable;
 
 /**
  * Class AuthController for handling user authentication.
@@ -106,12 +105,29 @@ class AuthController extends Controller
      */
     public function login(LoginUserRequest $request): JsonResponse 
     {
+        // Validate the request and get the credentials
+        // The request is validated using the LoginUserRequest class
+        // which contains the validation rules for the login request
+        // The credentials are extracted from the request
+        // using the request() helper function
         $request->validated();
         $credentials = request(['email', 'password']);
 
+        // Attempt to authenticate the user using the credentials
+        // The auth() helper function is used to get the authentication guard
+        // The attempt() method is called on the guard to check if the credentials are valid
+        // If the credentials are valid, a token is generated
+        // If the credentials are invalid, an error response is returned
+        // The error response contains a status code and a message
+        // indicating that the credentials are invalid
+        // The message is translated using the __() helper function
+        // The messages are defined in the lang/en and lang/es folder
         if (! $token = auth()->guard('api')->attempt($credentials)) {
+            // If the token is not generated, it means the credentials are invalid
             $user = User::where('email', $request->email)->first();
             
+            // If the user is not found, return an error response
+            // indicating that the user does not exist
             if (!$user) {
                 return ApiResponse::error(
                     status: Response::HTTP_UNAUTHORIZED,
@@ -119,12 +135,16 @@ class AuthController extends Controller
                 );
             }
     
+            // If the user is found, return an error response
+            // indicating that the credentials are invalid
             return ApiResponse::error(
                 status: Response::HTTP_UNAUTHORIZED,
                 message: __('messages.user.invalid_credentials')
             );
         }
 
+        // If the token is generated, it means the credentials are valid
+        // The token is returned in the response
         return ApiResponse::success(message: __('messages.user.logged_in'),
         data:[
             'token' => $token,
@@ -174,7 +194,12 @@ class AuthController extends Controller
      */
     public function register(RegisterUserRequest $request): JsonResponse
     {
+        // Validate the request and create a new user
+        // The request is validated using the RegisterUserRequest class
+        // which contains the validation rules for the registration request
         $user = User::create($request->validated());
+
+        // If the user is created successfully, a success response is returned
         return ApiResponse::success(
             message: __('messages.user.registered'),
             status: Response::HTTP_CREATED,
@@ -229,14 +254,20 @@ class AuthController extends Controller
      */
     public function sendResetLink(Request $request): JsonResponse
     {
+        // Validate the request
         $request->validate([
             'email' => 'required|email|exists:users,email'
         ]);
 
+        // Send the password reset link
+        // The sendResetLink() method is called on the Password facade
         $status = Password::sendResetLink(
             $request->only('email')
         );
 
+        // Check if the password reset link was sent successfully
+        // The status is checked against the Password::RESET_LINK_SENT constant
+        // If the status is Password::RESET_LINK_SENT, a success response is returned
         $sent = $status === Password::RESET_LINK_SENT;
         return $sent 
             ? ApiResponse::success(status: Response::HTTP_OK, message: __('passwords.sent')) 
@@ -288,9 +319,11 @@ class AuthController extends Controller
      */
     public function resetPassword(ResetPasswordRequest $request): View
     {
+        // Validate the request
         $status = Password::reset(
             $request->validated(),
             function ($user, $password) {
+                // Update the user's password
                 $user->forceFill([
                     'password' => bcrypt($password)
                 ])->setRememberToken(Str::random(60));
@@ -300,6 +333,9 @@ class AuthController extends Controller
             }
         );
 
+        // Check the status of the password reset
+        // The status is checked against the Password::PASSWORD_RESET constant
+        // If the status is Password::PASSWORD_RESET, a success message is returned
         $message = match ($status) {
             Password::PASSWORD_RESET => __('passwords.reset'),
             Password::INVALID_USER => __('passwords.user'),
@@ -307,6 +343,9 @@ class AuthController extends Controller
             default => __('passwords.failed'),
         };
 
+        // Determine the type of message to display
+        // The type is determined based on the status of the password reset
+        // If the status is Password::PASSWORD_RESET, the type is success
         $type = match ($status) {
             Password::PASSWORD_RESET => MessageResponse::TYPE_SUCCESS,
             default => __(MessageResponse::TYPE_ERROR),
@@ -362,7 +401,10 @@ class AuthController extends Controller
             );
         }
 
+        // Logs out the user
         auth()->guard('api')->logout();
+
+        // Returns a success response
         return ApiResponse::success(
             message: __('messages.user.logged_out'),
             status: Response::HTTP_OK

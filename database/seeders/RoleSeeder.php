@@ -14,6 +14,9 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
+        // Obtain all the roles from the UserRoles enum
+        // and create them in the database
+        // using the Spatie Permission package
         $roles = UserRoles::cases();
         foreach ($roles as $role) {
             Role::create(['name' => $role]);

@@ -33,9 +33,11 @@ use Illuminate\Http\JsonResponse;
  *     schema="UserResource",
  *     type="object",
  *     @OA\Property(property="id", type="integer", example=1),
- *     @OA\Property(property="email", type="string", format="email", example="john.doe@example.com"),
  *     @OA\Property(property="name", type="string", example="John"),
- *     @OA\Property(property="last_name", type="string", example="Doe")
+ *     @OA\Property(property="last_name", type="string", example="Doe"),
+ *     @OA\Property(property="email", type="string", format="email", example="john.doe@example.com"),
+ *     @OA\Property(property="phone", type="string", example="+1234567890"),
+ *     @OA\Property(property="role", type="string", example="user"),
  * )
  */
 class UserController extends Controller
@@ -73,6 +75,8 @@ class UserController extends Controller
      */
     public function profile(): JsonResponse
     {
+        // Get the authenticated user
+        // and return the user resource
         $user = UserResource::make(auth()->guard('api')->user());
         return ApiResponse::success(data: compact('user'), message: __('messages.user.info_retrieved'));
     }
@@ -113,9 +117,16 @@ class UserController extends Controller
      * @param \App\Http\Requests\UpdateUserRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function updateBasicInformation(UpdateUserRequest $request)
+    public function updateBasicInformation(UpdateUserRequest $request): JsonResponse
     {
+        // Validate the request
+        // and update the user information
+        // using the authenticated user
         auth()->guard('api')->user()->update($request->validated());
+
+        // Refresh the user instance
+        // to get the updated information
+        // and return the user resource
         $user = UserResource::make(auth()->guard('api')->user()->fresh() ?? []);
         return ApiResponse::success(compact('user'), message: __('messages.user.info_updated'));
     }
@@ -153,12 +164,16 @@ class UserController extends Controller
      * @param \App\Http\Requests\UpdatePasswordRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function updatePassword(UpdatePasswordRequest $request)
+    public function updatePassword(UpdatePasswordRequest $request): JsonResponse
     {
+        // Validate the request
+        // and update the user password
+        // using the authenticated user
         auth()->guard('api')->user()->update([
             'password'=> bcrypt($request->get('password')),
         ]);
 
+        // Return a success response
         return ApiResponse::success(message: __('messages.user.password_updated'));
     }
 }

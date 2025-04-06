@@ -55,4 +55,27 @@ return Application::configure(basePath: dirname(__DIR__))
                 message: $translatedMessage
             );
         });
+
+        // Handle unauthenticated exceptions:
+        $exceptions->render(function(\Illuminate\Auth\AuthenticationException $exception): JsonResponse {            
+            return ApiResponse::error(
+                status: Response::HTTP_UNAUTHORIZED,
+                message: __('auth.unauthenticated')
+            );
+        });
+
+        // Handle NotFoundHttpException:
+        $exceptions->render(function(\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $exception): JsonResponse {
+            $message = $exception->getMessage();
+            if (str_starts_with($message, 'No query results for model')) {
+                preg_match('/\[([^\]]+)\]/', $message, $matches);
+                $attribute = $matches[1] ?? $message;
+                $message = __('messages.not_found', ['attribute' => "[$attribute]"]);
+            }
+
+            return ApiResponse::error(
+                status: Response::HTTP_NOT_FOUND,
+                message: $message
+            );
+        });
     })->create();

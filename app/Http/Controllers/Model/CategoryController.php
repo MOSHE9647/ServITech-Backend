@@ -7,6 +7,7 @@ use App\Http\Responses\ApiResponse;
 use App\Models\Category;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * 
@@ -76,7 +77,15 @@ class CategoryController extends Controller
      */
     public function index(): JsonResponse
     {
+        // Fetch all categories from the database
+        // and order them by ID in descending order
+        // You can also use pagination if needed
+        // Example: $categories = Category::orderBy('id', 'desc')->paginate(10);
+        // For now, we will just fetch all categories
+        // and return them in the response
         $categories = Category::orderBy('id', 'desc')->get();
+
+        // Return the response using the ApiResponse class
         return ApiResponse::success(
             data: compact('categories'),
             message: __('messages.category.retrieved_all')
@@ -141,14 +150,20 @@ class CategoryController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        // Validate the request data
         $data = $request->validate([
             'name' => 'required|string|max:255', // Needs to verify if the category name is unique
+            'description' => 'nullable|string|max:255',
         ]);
+
+        // Create a new category in the database
         $category = Category::create($data);
 
+        // Return the response using the ApiResponse class
         return ApiResponse::success(
             data: compact('category'),
-            message: __('messages.category.created')
+            message: __('messages.category.created'),
+            status: Response::HTTP_CREATED
         );
     }
 
@@ -209,6 +224,16 @@ class CategoryController extends Controller
      */
     public function show(Category $category): JsonResponse
     {
+        // Check if the category exists
+        // If it doesn't, return an error response
+        if (! $category->exists) {
+            return ApiResponse::error(
+                message: __('messages.not_found', ['attribute'=> Category::class]),
+                status: Response::HTTP_NOT_FOUND
+            );
+        }
+
+        // Return the category data in the response
         return ApiResponse::success(
             data: compact('category'),
             message: __('messages.category.retrieved')
@@ -280,11 +305,16 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category): JsonResponse
     {
+        // Validate the request data
         $data = $request->validate([
             'name' => 'required|string|max:255',
+            'description'=> 'nullable|string|max:255',
         ]);
+
+        // Update the category in the database
         $category->update($data);
 
+        // Return the response using the ApiResponse class
         return ApiResponse::success(
             data: compact('category'),
             message: __('messages.category.updated')
@@ -340,6 +370,14 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category): JsonResponse
     {
+        if (! $category->exists) {
+            return ApiResponse::error(
+                message: __('messages.not_found', ['attribute'=> Category::class]),
+                status: Response::HTTP_NOT_FOUND
+            );
+        }
+
+        // Delete the category from the database
         $category->delete();
         return ApiResponse::success(message: __('messages.category.deleted'));
     }
