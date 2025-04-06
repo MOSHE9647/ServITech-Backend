@@ -2483,11 +2483,6 @@
                         "type": "integer",
                         "example": 1
                     },
-                    "email": {
-                        "type": "string",
-                        "format": "email",
-                        "example": "john.doe@example.com"
-                    },
                     "name": {
                         "type": "string",
                         "example": "John"
@@ -2495,6 +2490,19 @@
                     "last_name": {
                         "type": "string",
                         "example": "Doe"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "john.doe@example.com"
+                    },
+                    "phone": {
+                        "type": "string",
+                        "example": "+1234567890"
+                    },
+                    "role": {
+                        "type": "string",
+                        "example": "user"
                     }
                 },
                 "type": "object"

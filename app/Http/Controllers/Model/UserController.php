@@ -33,9 +33,11 @@ use Illuminate\Http\JsonResponse;
  *     schema="UserResource",
  *     type="object",
  *     @OA\Property(property="id", type="integer", example=1),
- *     @OA\Property(property="email", type="string", format="email", example="john.doe@example.com"),
  *     @OA\Property(property="name", type="string", example="John"),
- *     @OA\Property(property="last_name", type="string", example="Doe")
+ *     @OA\Property(property="last_name", type="string", example="Doe"),
+ *     @OA\Property(property="email", type="string", format="email", example="john.doe@example.com"),
+ *     @OA\Property(property="phone", type="string", example="+1234567890"),
+ *     @OA\Property(property="role", type="string", example="user"),
  * )
  */
 class UserController extends Controller
