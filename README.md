@@ -1,74 +1,196 @@
-# ServITech
+# ServITech – Backend
 
-[![Laravel Logo](https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg)](https://laravel.com)
+![Laravel Logo](https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg)
 
-[![Build Status](https://github.com/laravel/framework/workflows/tests/badge.svg)](https://github.com/laravel/framework/actions)
-[![Total Downloads](https://img.shields.io/packagist/dt/laravel/framework)](https://packagist.org/packages/laravel/framework)
-[![Latest Stable Version](https://img.shields.io/packagist/v/laravel/framework)](https://packagist.org/packages/laravel/framework)
-[![License](https://img.shields.io/packagist/l/laravel/framework)](https://packagist.org/packages/laravel/framework)
+## 📚 Tabla de Contenidos
 
-## Sobre el Proyecto
+1. [Sobre el Proyecto](#sobre-el-proyecto)
+2. [Arquitectura del Sistema](#arquitectura-del-sistema)
+3. [Tecnologías Usadas](#tecnologías-usadas)
+4. [Instalación](#instalación)
+5. [Documentación de la API](#documentación-de-la-api)
+6. [Uso de Gitflow](#uso-de-gitflow)
+7. [Buildeo para Producción](#buildeo-para-producción)
+8. [Ejecución de Pruebas](#ejecución-de-pruebas)
+9. [Contribuyendo](#contribuyendo)
+10. [Licencia](#licencia)
+11. [Autores](#autores)
 
-ServITech es una aplicación web desarrollada con el framework Laravel. Este proyecto tiene como objetivo proporcionar una plataforma robusta y escalable para la gestión de servicios técnicos.
+## 🛠️ Sobre el Proyecto
 
-## Instalación de PHP
+**ServITech** es una aplicación diseñada para gestionar cotizaciones de artículos tecnológicos, artículos de anime y solicitudes de soporte técnico. Este repositorio contiene únicamente el backend del sistema.
 
-Antes de ejecutar la aplicación, asegúrate de que tu máquina local tenga instalados [PHP](https://www.php.net/ "PHP") y [Composer](https://getcomposer.org/ "Composer"). Además, deberías instalar [Node y NPM](https://nodejs.org/en/download "Node y NPM") para poder compilar los recursos del frontend de la aplicación.
+Este proyecto fue desarrollado como parte de un curso universitario en la Universidad Nacional de Costa Rica para el curso **Diseño y Programación de Plataformas Móviles** durante el **I Ciclo Lectivo del año 2025**.
 
-## Cómo Ejecutar el Proyecto
+---
 
-Para ejecutar el proyecto localmente, sigue estos pasos:
+## 📊 Arquitectura del Sistema
+
+El sistema está compuesto por los siguientes componentes principales:
+- **Cliente móvil:** Implementado en Android (Kotlin), interactúa con el backend a través de la API REST.
+- **Backend:** Implementado en Laravel, gestiona la lógica de negocio, autenticación y acceso a la base de datos.
+- **Base de datos:** MySQL o SQLite, utilizada para almacenar datos de usuarios, artículos y solicitudes de soporte técnico.
+
+---
+
+## 🚀 Tecnologías Usadas
+
+- [PHP 8+](https://www.php.net/)
+- [Composer](https://getcomposer.org/)
+- [Laravel 12](https://laravel.com/)
+- [Node.js & NPM](https://nodejs.org/)
+- [MySQL](https://www.mysql.com/) / [SQLite](https://www.sqlite.org/)
+- [Swagger (L5-Swagger)](https://github.com/DarkaOnLine/L5-Swagger)
+- [JWT (jwt-auth)](https://jwt-auth.readthedocs.io/en/develop/)
+
+---
+
+## ⚙️ Instalación
 
 1. Clona el repositorio:
 
-    ```sh
-    git clone https://github.com/tu-usuario/servitech.git
-    cd servitech
+    ```bash
+    git clone https://github.com/MOSHE9647/ServITech-Backend.git
+    cd ServITech-Backend
     ```
 
-2. Crea un archivo `.env` basado en el ejemplo proporcionado:
+2. Crea el archivo de entorno:
 
-    ```sh
+    ```bash
     cp .env.example .env
     ```
 
 3. Genera la clave de la aplicación:
 
-    ```sh
+    ```bash
     php artisan key:generate
     ```
 
-4. Configura tu archivo `.env` con las credenciales de tu base de datos y otros servicios.
+4. Genera el ```secret``` de JWT Auth:
 
-5. Ejecuta las migraciones de la base de datos:
+    ```bash
+    php artisan jwt:secret
+    ```
 
-    ```sh
+5. Configura las variables del archivo `.env` (base de datos, correo, etc).
+
+6. Instala dependencias de PHP y Node:
+
+    ```bash
+    composer install
+    npm install
+    ```
+
+7. Ejecuta las migraciones:
+
+    ```bash
     php artisan migrate
     ```
 
-6. Inicia el servidor de desarrollo:
+8. Inicia el servidor:
 
-    ```sh
+    ```bash
     composer run dev
     ```
 
-## Cómo Buildear el Proyecto
+---
 
-Para buildear el proyecto para producción, ejecuta:
+## 📄 Documentación de la API
 
-```sh
-npm run build
+Puedes acceder a la documentación en:
+
+```
+${APP_URL}/api/docs
 ```
 
-## Acceder a la Documentación de la API
+Esta documentación es generada automáticamente con Swagger (`l5-swagger`) e incluye ejemplos de uso y detalles de cada endpoint.
 
-La documentación de la API está disponible en la ruta `/api/docs`. Puedes acceder a ella visitando:  
+La documentación está dividida en secciones para facilitar la navegación. Aquí tienes un resumen de las secciones más importantes:
 
-## Ejemplo de Archivo .env  
+- **Autenticación**: Métodos para iniciar sesión y obtener tokens JWT.
+- **Usuarios**: Endpoints para gestionar usuarios, roles y permisos.
+- **Artículos**: Métodos para gestionar artículos tecnológicos y de anime.
+- **Soporte Técnico**: Métodos para gestionar solicitudes de soporte técnico.
 
-Aquí tienes un ejemplo de cómo debería verse tu archivo `.env`:
+---
+## 🧠 Uso de Gitflow
 
-```sh
+Este proyecto usa **Gitflow** para organizar su desarrollo. Las ramas principales son:
+
+- `main`: Rama de producción
+- `dev`: Rama de desarrollo
+
+### Ramas adicionales que Gitflow utiliza:
+
+- `feature/*`: Nuevas funcionalidades
+- `release/*`: Versiones candidatas
+- `bugfix/*`: Correcciones de errores
+- `hotfix/*`: Correcciones críticas en producción
+
+### Cómo iniciar Gitflow:
+
+```bash
+git flow init -d
+```
+
+Esto configura Gitflow con los nombres por defecto que ya usamos (`main` y `dev`).
+
+#### Ejemplos:
+
+Crear una nueva funcionalidad:
+
+```bash
+git flow feature start nombre-de-tu-feature
+```
+
+Finalizar y fusionar una funcionalidad:
+
+```bash
+git flow feature finish nombre-de-tu-feature
+```
+
+Crear un release:
+
+```bash
+git flow release start v1.0.0
+git flow release finish v1.0.0
+```
+
+---
+
+## 🏗️ Buildeo para Producción
+
+```bash
+npm run build
+```
+Esto generará los archivos de producción en la carpeta `public/`.
+Asegúrate de que el servidor web esté configurado para servir estos archivos.
+
+## 🧪 Ejecución de Pruebas
+
+El proyecto incluye pruebas funcionales para asegurar la calidad del código. Las pruebas están ubicadas en el directorio `tests/`.
+
+Las pruebas están organizadas en subdirectorios para facilitar su localización. Cada prueba está diseñada para verificar una funcionalidad específica del sistema.
+
+Para ejecutar todas las pruebas del proyecto, utiliza el siguiente comando:
+
+```bash
+php artisan test
+```
+
+Esto ejecutará todas las pruebas funcionales definidas en el proyecto.
+
+O bien, para ejecutar pruebas específicas:
+
+```bash
+php artisan test --filter NombreDeLaPrueba
+```
+
+---
+
+## 📁 Ejemplo de `.env`
+
+```dotenv
 APP_NAME=ServITech
 APP_VERSION=1.0.0
 APP_ENV=local
@@ -83,21 +205,23 @@ APP_FAKER_LOCALE=en_US
 LOG_CHANNEL=stack
 LOG_LEVEL=debug
 
-## Si utilizas MySQL cambia 'sqlite' por 'mysql' y descomenta las variables DB_*
+## SQLite
 DB_CONNECTION=sqlite
-# DB_HOST=127.0.0.1
-# DB_PORT=3306
-# DB_DATABASE=laravel
-# DB_USERNAME=root
-# DB_PASSWORD=
+DB_DATABASE=/ruta/a/tu/base_de_datos/database.sqlite
+
+## MySQL
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=tu_base_de_datos
+DB_USERNAME=root
+DB_PASSWORD=tu_contraseña
 
 SESSION_DRIVER=database
 SESSION_LIFETIME=120
 
-BROADCAST_CONNECTION=log
-FILESYSTEM_DISK=local
 QUEUE_CONNECTION=database
-
+FILESYSTEM_DISK=public
 CACHE_STORE=database
 
 MAIL_MAILER=smtp
@@ -113,19 +237,55 @@ L5_SWAGGER_GENERATE_ALWAYS=true
 L5_SWAGGER_API_BASE_PATH=/
 L5_SWAGGER_API_ROUTE=/api/doc
 L5_SWAGGER_USE_ABSOLUTE_PATH=true
-L5_FORMAT_TO_USE_FOR_DOCS=json
 
+JWT_SECRET=tu_jwt_secret
 VITE_APP_NAME="${APP_NAME}"
 ```
 
-## Contribuyendo
+---
 
-Gracias por considerar contribuir al proyecto **ServITech**. La guía de contribución se puede encontrar en la documentación de Laravel.  
+## 🤝 Contribuyendo
 
-## Código de Conducta
+Gracias por considerar contribuir a **ServITech**. Por favor usa ramas `feature/*` y sigue el flujo Gitflow.Gracias por considerar contribuir a **ServITech**. Sigue estos pasos para contribuir:
 
-Para asegurar que la comunidad de **ServITech** sea acogedora para todos, por favor revisa y cumple con el **Código de Conducta**.  
+1. Haz un fork del repositorio.
+2. Crea una rama para tu funcionalidad o corrección:
 
-## Licencia
+    ```bash
+    git flow feature start nueva-funcionalidad
+    ```
 
-El framework **Laravel** es un software de código abierto licenciado bajo la licencia **MIT**.  
+3. Realiza tus cambios y asegúrate de que las pruebas pasen.
+4. Envía un pull request a la rama `dev`.
+
+> Nota: Actualmente no seguimos estándares de codificación específicos, pero planeamos adoptar [PSR-12](https://www.php-fig.org/psr/psr-12/) en futuras iteraciones del proyecto.
+
+---
+
+## 📜 Licencia
+
+Este proyecto está protegido por derechos de autor (c) 2025 Isaac Herrera, Carlos Orellana, David Padilla. Todos los derechos reservados.
+
+Consulta el archivo [LICENSE](LICENSE) para más detalles sobre las restricciones y términos de uso.
+
+---
+
+## 👤 Autores
+
+Este proyecto fue desarrollado por:
+
+- **Carlos Orellana**  
+  - Rol: Contribuidor  
+  - GitHub: [CarlosOrellanaEst](https://github.com/CarlosOrellanaEst)  
+  - Correo: [carlos.orellana.obando@est.una.ac.cr](mailto:carlos.orellana.obando@est.una.ac.cr)
+
+- **David Padilla**  
+  - Rol: Contribuidor  
+  - GitHub: [DavidPMCR](https://github.com/DavidPMCR)  
+  - Correo: [alleriaysebastian@gmail.com](mailto:alleriaysebastian@gmail.com)
+
+- **Isaac Herrera**  
+  - Rol: Creador del repositorio y desarrollador principal  
+  - GitHub: [MOSHE9647](https://github.com/MOSHE9647)  
+  - Correo personal: [isaacmhp2001@gmail.com](mailto:isaacmhp2001@gmail.com)  
+  - Correo institucional: [isaac.herrera.pastrana@est.una.ac.cr](mailto:isaac.herrera.pastrana@est.una.ac.cr)
