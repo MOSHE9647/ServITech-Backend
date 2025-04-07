@@ -2,19 +2,22 @@
 
 ![Laravel Logo](https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg)
 
+![Badge En Desarrollo](https://img.shields.io/badge/STATUS-EN%20DESARROLLO-green)
+
 ## 📚 Tabla de Contenidos
 
-1. [Sobre el Proyecto](#-sobre-el-proyecto)
+1. [Sobre el Proyecto](#%EF%B8%8F-sobre-el-proyecto)
 2. [Arquitectura del Sistema](#-arquitectura-del-sistema)
 3. [Tecnologías Usadas](#-tecnologías-usadas)
-4. [Instalación](#-instalación)
+4. [Instalación](#%EF%B8%8F-instalación)
 5. [Documentación de la API](#-documentación-de-la-api)
 6. [Uso de Gitflow](#-uso-de-gitflow)
-7. [Buildeo para Producción](#-buildeo-para-producción)
+7. [Buildeo para Producción](#%EF%B8%8F-buildeo-para-producción)
 8. [Ejecución de Pruebas](#-ejecución-de-pruebas)
-9. [Contribuyendo](#-contribuyendo)
-10. [Licencia](#-licencia)
-11. [Autores](#-autores)
+9. [Ejemplo de `.env`](#-ejemplo-de-env)
+10. [Contribuyendo](#-contribuyendo)
+11. [Licencia](#-licencia)
+12. [Autores](#-autores)
 
 ## 🛠️ Sobre el Proyecto
 
