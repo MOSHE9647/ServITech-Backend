@@ -4,17 +4,17 @@
 
 ## 📚 Tabla de Contenidos
 
-1. [Sobre el Proyecto](#sobre-el-proyecto)
-2. [Arquitectura del Sistema](#arquitectura-del-sistema)
-3. [Tecnologías Usadas](#tecnologías-usadas)
-4. [Instalación](#instalación)
-5. [Documentación de la API](#documentación-de-la-api)
-6. [Uso de Gitflow](#uso-de-gitflow)
-7. [Buildeo para Producción](#buildeo-para-producción)
-8. [Ejecución de Pruebas](#ejecución-de-pruebas)
-9. [Contribuyendo](#contribuyendo)
-10. [Licencia](#licencia)
-11. [Autores](#autores)
+1. [Sobre el Proyecto](#-sobre-el-proyecto)
+2. [Arquitectura del Sistema](#-arquitectura-del-sistema)
+3. [Tecnologías Usadas](#-tecnologías-usadas)
+4. [Instalación](#-instalación)
+5. [Documentación de la API](#-documentación-de-la-api)
+6. [Uso de Gitflow](#-uso-de-gitflow)
+7. [Buildeo para Producción](#-buildeo-para-producción)
+8. [Ejecución de Pruebas](#-ejecución-de-pruebas)
+9. [Contribuyendo](#-contribuyendo)
+10. [Licencia](#-licencia)
+11. [Autores](#-autores)
 
 ## 🛠️ Sobre el Proyecto
 
