@@ -21,7 +21,7 @@
 
 ## 🛠️ Sobre el Proyecto
 
-**ServITech** es una aplicación diseñada para gestionar cotizaciones de artículos tecnológicos, artículos de anime y solicitudes de soporte técnico. Este repositorio contiene únicamente el backend del sistema.
+**ServITech** es una aplicación diseñada para gestionar cotizaciones de artículos tecnológicos, artículos de anime y solicitudes de soporte técnico. Este repositorio contiene únicamente el backend del sistema. El frontend del proyecto está disponible en el siguiente repositorio: [ServITech – Frontend](https://github.com/MOSHE9647/ServITech-Frontend).
 
 Este proyecto fue desarrollado como parte de un curso universitario en la Universidad Nacional de Costa Rica para el curso **Diseño y Programación de Plataformas Móviles** durante el **I Ciclo Lectivo del año 2025**.
 
