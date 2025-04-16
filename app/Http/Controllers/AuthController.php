@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\UserRoles;
 use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\RegisterUserRequest;
 use App\Http\Requests\ResetPasswordRequest;
+use App\Http\Resources\UserResource;
 use App\Http\Responses\ApiResponse;
 use App\Http\Responses\MessageResponse;
 use App\Models\User;
@@ -131,7 +133,8 @@ class AuthController extends Controller
             if (!$user) {
                 return ApiResponse::error(
                     status: Response::HTTP_UNAUTHORIZED,
-                    message: __('passwords.user')
+                    message: __('passwords.user'),
+                    errors: ['email' => __('messages.user.not_found')]
                 );
             }
     
@@ -139,16 +142,21 @@ class AuthController extends Controller
             // indicating that the credentials are invalid
             return ApiResponse::error(
                 status: Response::HTTP_UNAUTHORIZED,
-                message: __('messages.user.invalid_credentials')
+                message: __('messages.user.invalid_credentials'),
+                errors: ['password' => __('messages.user.invalid_credentials')]
             );
         }
 
         // If the token is generated, it means the credentials are valid
-        // The token is returned in the response
+        // The token is returned in the response among with the user and the expiration time
+        $user = auth()->guard('api')->user();
+        $expiresIn = auth('api')->factory()->getTTL() * 60;
+
         return ApiResponse::success(message: __('messages.user.logged_in'),
-        data:[
+        data: [
+            'user' => UserResource::make($user),
             'token' => $token,
-            'expires_in' => auth('api')->factory()->getTTL() * 60,
+            'expires_in' => $expiresIn
         ]);
     }
 
@@ -198,12 +206,13 @@ class AuthController extends Controller
         // The request is validated using the RegisterUserRequest class
         // which contains the validation rules for the registration request
         $user = User::create($request->validated());
+        $user->assignRole(UserRoles::USER);
 
         // If the user is created successfully, a success response is returned
         return ApiResponse::success(
             message: __('messages.user.registered'),
             status: Response::HTTP_CREATED,
-            data: ['user' => $user]
+            data: ['user' => UserResource::make($user)]
         );
     }
 

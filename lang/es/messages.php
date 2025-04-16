@@ -50,7 +50,7 @@ return [
         'logged_in'            => 'Usuario conectado con éxito.',
         'logged_out'           => 'Usuario desconectado con éxito.',
         'info_retrieved'       => 'Información del usuario obtenida con éxito.',
-        'invalid_credentials'  => 'Credenciales inválidas.',
+        'invalid_credentials'  => 'Contraseña inválida.',
         'already_logged_out'   => 'El usuario ya está desconectado.',
         'logout_failed'        => 'Error al cerrar la sesión.',
     ],

@@ -20,7 +20,7 @@ class ApiResponse
         return response()->json([
             'status' => $status,
             'message' => $message,
-            'data' => $data,
+            'data' => empty($data) ? (object)[] : $data,
         ], $status);
     }
 
@@ -36,7 +36,7 @@ class ApiResponse
         return response()->json([
             'status' => $status,
             'message' => $message,
-            'errors' => $errors,
+            'errors' => empty($errors) ? (object)[] : $errors,
         ], $status);
     }
 }
