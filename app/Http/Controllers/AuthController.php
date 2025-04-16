@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\UserRoles;
 use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\RegisterUserRequest;
 use App\Http\Requests\ResetPasswordRequest;
@@ -205,7 +206,7 @@ class AuthController extends Controller
         // The request is validated using the RegisterUserRequest class
         // which contains the validation rules for the registration request
         $user = User::create($request->validated());
-        $user->assignRole($request->role);
+        $user->assignRole(UserRoles::USER);
 
         // If the user is created successfully, a success response is returned
         return ApiResponse::success(
