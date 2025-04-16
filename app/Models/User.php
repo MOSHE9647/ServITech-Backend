@@ -25,7 +25,6 @@ class User extends Authenticatable implements JWTSubject
     // This will insert a new article with the name and description provided.
     protected $fillable = [
         'name',
-        'last_name',
         'email',
         'phone',
         'password',
@@ -61,9 +60,7 @@ class User extends Authenticatable implements JWTSubject
      */
     public function initials(): string
     {
-        $firstNameInitial = Str::of($this->name)->substr(0, 1)->upper();
-        $lastNameInitial = Str::of($this->last_name)->substr(0, 1)->upper();
-        return "{$firstNameInitial}{$lastNameInitial}";
+        return $this->initials();
     }
 
     /**
