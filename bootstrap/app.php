@@ -35,7 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->mapWithKeys(
                     fn($messages, $field): array => 
                         [
-                            $field => array_map('__', $messages)
+                            $field => __($messages[0] ?? 'Error desconocido')
                         ]
                 )->toArray();
 

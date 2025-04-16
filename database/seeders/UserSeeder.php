@@ -23,7 +23,6 @@ class UserSeeder extends Seeder
         // Create a regular user with predefined credentials
         User::factory()->withRole(UserRoles::USER->value)->create([
             "name" => "Example",
-            "last_name" => "Example Example",
             'email' => 'example@example.com',
             'password'=> bcrypt('password'),
         ]);
