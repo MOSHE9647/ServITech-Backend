@@ -27,7 +27,7 @@ Route::middleware('auth:api')->group(function () {
         Route::put('profile', [UserController::class, 'updateBasicInformation'])->name('profile.update');
         Route::put('password', [UserController::class, 'updatePassword'])->name('password.update');
     });
-    
+
     // SupportRequest routes
     Route::prefix('support-request')->group(function () {
         Route::get('', [SupportRequestController::class, 'index'])->name('support-request.index');
@@ -47,7 +47,7 @@ Route::middleware('auth:api')->group(function () {
             Route::put('{category:name}', [CategoryController::class,'update'])->name('category.update');
             Route::delete('{category:name}', [CategoryController::class,'destroy'])->name('category.destroy');
         });
-    
+
         // Subcategory routes
         Route::prefix('subcategories')->group(function () {
             Route::get('', [SubcategoryController::class, 'index'])->name('subcategories.index');
@@ -55,15 +55,6 @@ Route::middleware('auth:api')->group(function () {
             Route::get('{subcategory}', [SubcategoryController::class, 'show'])->name('subcategories.show');
             Route::put('{subcategory}', [SubcategoryController::class, 'update'])->name('subcategories.update');
             Route::delete('{subcategory}', [SubcategoryController::class, 'destroy'])->name('subcategories.destroy');
-        });
-    
-        // Article routes
-        Route::prefix('articles')->group(function () {
-            Route::get('', [ArticleController::class, 'index'])->name('articles.index');
-            Route::post('', [ArticleController::class, 'store'])->name('articles.store');
-            Route::get('{article}', [ArticleController::class, 'show'])->name('articles.show');
-            Route::put('{article}', [ArticleController::class, 'update'])->name('articles.update');
-            Route::delete('{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
         });
 
         // RepairRequest routes
@@ -75,4 +66,14 @@ Route::middleware('auth:api')->group(function () {
             Route::delete('{repairRequest:receipt_number}', [RepairRequestController::class, 'destroy'])->name('repair-request.destroy');
         });
     });
+
+});
+
+// Article routes
+Route::prefix('articles')->group(function () {
+    Route::get('', [ArticleController::class, 'index'])->name('articles.index');
+    Route::post('', [ArticleController::class, 'store'])->name('articles.store');
+    Route::get('{article:category}', [ArticleController::class, 'show'])->name('articles.show');
+    Route::put('{article}', [ArticleController::class, 'update'])->name('articles.update');
+    Route::delete('{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
 });
