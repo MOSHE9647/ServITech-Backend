@@ -56,7 +56,7 @@ use Symfony\Component\HttpFoundation\Response;
  *         )
  *     )
  * )
- * 
+ *
  * @OA\Schema(
  *     schema="Article",
  *     type="object",
@@ -252,23 +252,45 @@ class ArticleController extends Controller
      *     )
      * )
      */
-    public function show(Article $article): JsonResponse
+    // public function show(Article $article): JsonResponse
+    // {
+    //     // Check if the article exists
+    //     if (! $article->exists) {
+    //         return ApiResponse::error(
+    //             message: __('messages.not_found', ['attribute' => Article::class]),
+    //             status: Response::HTTP_NOT_FOUND
+    //         );
+    //     }
+
+    //     // Return the article with its images
+    //     // The article is loaded with its images for the response
+    //     return ApiResponse::success(
+    //         data: $article->load(['images'])->toArray(),
+    //         message: __('messages.article.retrieved')
+    //     );
+    // }
+    public function show(string $category): JsonResponse
     {
-        // Check if the article exists
-        if (! $article->exists) {
+        // Trae todos los artículos cuya categoría (relacionada) tenga el nombre $category
+        $articles = Article::whereHas('category', function ($query) use ($category) {
+            $query->where('name', $category);
+        })
+        ->with(['images', 'category', 'subcategory'])
+        ->get();  // <-- aquí get() en lugar de first() para traer todo ojo :D
+
+        if ($articles->isEmpty()) {
             return ApiResponse::error(
-                message: __('messages.not_found', ['attribute' => Article::class]),
+                message: __('messages.not_found', ['attribute' => 'Article']),
                 status: Response::HTTP_NOT_FOUND
             );
         }
 
-        // Return the article with its images
-        // The article is loaded with its images for the response
         return ApiResponse::success(
-            data: $article->load(['images'])->toArray(),
+            data: ['articles' => ArticleResource::collection($articles)],
             message: __('messages.article.retrieved')
         );
     }
+
 
     /**
      * Update the specified resource in storage.
