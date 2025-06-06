@@ -43,7 +43,7 @@ class CreateRepairRequest extends FormRequest
             'received_at'           => 'required|date',
             'repaired_at'           => 'nullable|date',
             'images'                => 'nullable', // form name=images[]
-            'images.*'              => 'image|mimes:jpeg,png,jpg',
+            'images.*'              => 'file|mimes:jpeg,png,jpg',
          ];
     }
 

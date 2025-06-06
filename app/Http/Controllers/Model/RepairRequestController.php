@@ -8,8 +8,8 @@ use App\Http\Requests\RepairRequest\UpdateRepairRequest;
 use App\Http\Resources\RepairRequestResource;
 use App\Http\Responses\ApiResponse;
 use App\Models\RepairRequest;
+use App\Traits\HandleImageUploads;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response;
 use DB;
 
@@ -20,8 +20,17 @@ use DB;
  */
 class RepairRequestController extends Controller
 {
+    // Use the HandleImageUploads trait to manage image uploads
+    use HandleImageUploads;
+
     /**
      * Display a listing of the resource.
+     * 
+     * This method retrieves all repair requests from the database,
+     * orders them by ID in descending order, and returns them in a JSON response.
+     * 
+     * @return ApiResponse A JSON response containing the list of repair requests.
+     * @throws \Exception If there is an error retrieving the repair requests.
      */
     public function index(): JsonResponse
     {
@@ -37,12 +46,17 @@ class RepairRequestController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new repair request.
+     * 
+     * This method handles the creation of a new repair request
+     * by validating the request data and storing it in the database.
      * @requestMediaType multipart/form-data
      * 
      * @param CreateRepairRequest $request The request object containing the data 
      * for creating a repair request.
      * @return ApiResponse A JSON response indicating the success of the operation.
+     * @throws \Throwable If there is an error during the creation process,
+     * such as database transaction failure or file storage issues.
      */
     public function store(CreateRepairRequest $request): JsonResponse
     {
@@ -59,11 +73,12 @@ class RepairRequestController extends Controller
                 DB::beginTransaction();
 
                 // Store each image and create a record in the database
-                $images = [];
-                foreach ($request->file('images') as $image) {
-                    $path = Storage::put('repair_requests', $image);
-                    $images[] = ['path' => Storage::url($path)];
-                }
+                $images = $this->storeImages(
+                    images: $request->file('images'), 
+                    relatedId: $repairRequest->receipt_number,
+                    prefix: 'repair_request_image',
+                    directory: 'repair_requests'
+                );
                 $repairRequest->images()->createMany($images);
 
                 // Commit the transaction if all operations are successful
@@ -94,15 +109,20 @@ class RepairRequestController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display a specific repair request.
      * 
-     * @param RepairRequest $repairRequest The repair request to be displayed.
+     * This method retrieves a specific repair request by its Receipt Number
+     * and returns its details in a JSON response.
+     * 
+     * @param RepairRequest $repairRequest The receipt number of the repair request to be displayed.
      * @return ApiResponse A JSON response containing the details of the repair request.
+     * @throws \Exception If the repair request does not exist or if there is an error retrieving it.
      */
     public function show(RepairRequest $repairRequest): JsonResponse
     {
         // Check if the repair request exists
         if (!$repairRequest->exists()) {
+            // If the repair request does not exist, return an error response
             return ApiResponse::error(
                 message: __('messages.not_found', ['attribute' => RepairRequest::class]),
                 status: Response::HTTP_BAD_REQUEST
@@ -120,19 +140,23 @@ class RepairRequestController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     * @requestMediaType multipart/form-data
+     * Update an existing repair request.
+     * 
+     * This method handles the update of an existing repair request by its Receipt Number
+     * by validating the request data and updating the record in the database.
      *
-     * @param RepairRequest $repairRequest The repair request to be updated.
+     * @param RepairRequest $repairRequest The receipt number of the repair request to be updated.
      * @param UpdateRepairRequest $request The request object containing the data
      * for updating the repair request.
      * @return ApiResponse A JSON response indicating the success of the operation.
+     * @throws \Throwable If there is an error during the update process,
+     * such as database transaction failure or validation issues.
      */
     public function update(UpdateRepairRequest $request, RepairRequest $repairRequest): JsonResponse
     {
         // Check if the repair request exists
-        // If not, return an error response
         if (! $repairRequest->exists()) {
+            // If the repair request does not exist, return an error response
             return ApiResponse::error(
                 message: __('messages.not_found', ['attribute' => RepairRequest::class]),
                 status: Response::HTTP_BAD_REQUEST
@@ -145,41 +169,6 @@ class RepairRequestController extends Controller
         // Update the repair request in the database
         $repairRequest->update($data);
 
-        // Check if images are provided in the request
-        if ($request->hasFile('images')) {
-            try {
-                // Begin a database transaction to ensure atomicity
-                DB::beginTransaction();
-
-                // Delete existing images associated with the repair request
-                $repairRequest->images()->each(function ($image) {
-                    Storage::delete(str_replace('/storage/', '', $image->path));
-                    $image->delete();
-                });
-
-                // Store each new image and create a record in the database
-                $images = [];
-                foreach ($request->file('images') as $image) {
-                    $path = Storage::put('repair_requests', $image);
-                    $images[] = ['path' => Storage::url($path)];
-                }
-                $repairRequest->images()->createMany($images);
-
-                // Commit the transaction if all operations are successful
-                DB::commit();
-            } catch (\Throwable $th) {
-                // Rollback the transaction if any operation fails
-                DB::rollBack();
-
-                // Return an error response with the exception message
-                return ApiResponse::error(
-                    status: Response::HTTP_INTERNAL_SERVER_ERROR,
-                    message: __('messages.repair_request.update_failed'),
-                    errors: ['exception' => $th->getMessage()]
-                );
-            }
-        }
-
         // Return a successful response with the updated repair request
         return ApiResponse::success(
             message: __('messages.repair_request.updated'),
@@ -188,19 +177,24 @@ class RepairRequestController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove a specific repair request.
+     * 
+     * This method deletes a specific repair request by its Receipt Number from the database,
+     * including its associated images, if they exist, using a soft delete approach.
      *
-     * @param RepairRequest $repairRequest The repair request to be deleted.
+     * @param RepairRequest $repairRequest The receipt number of the repair request to be deleted.
      * @return ApiResponse A JSON response indicating the success of the operation.
+     * @throws \Throwable If there is an error during the deletion process,
+     * such as database transaction failure or file storage issues.
      */
     public function destroy(RepairRequest $repairRequest): JsonResponse
     {
         // Check if the repair request exists
-        // If not, return an error response
         if (!$repairRequest->exists()) {
+            // If the repair request does not exist, return an error response
             return ApiResponse::error(
+                status: Response::HTTP_BAD_REQUEST,
                 message: __('messages.not_found', ['attribute' => RepairRequest::class]),
-                status: Response::HTTP_BAD_REQUEST
             );
         }
         
@@ -210,12 +204,7 @@ class RepairRequestController extends Controller
             // Check if the repair request has associated images
             // If so, delete each image from storage and remove the record from the database
             if ($repairRequest->images()->exists()){
-                $repairRequest->images()->each(function ($image) {
-                    // Delete the image file from storage
-                    Storage::delete(str_replace('/storage/', '', $image->path));
-                    // Delete the image record from the database
-                    $image->delete();
-                });
+                $this->deleteImages($repairRequest->images->all());
             }
 
             // Attempt to delete the repair request
@@ -227,7 +216,7 @@ class RepairRequestController extends Controller
             // Commit the transaction if all operations are successful
             DB::commit();
             
-            // Delete the repair request from the database
+            // Return a successful response indicating the repair request was deleted
             return ApiResponse::success(message: __('messages.repair_request.deleted'));
         } catch (\Throwable $th) {
             // Rollback the transaction if any operation fails
