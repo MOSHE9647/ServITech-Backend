@@ -63,15 +63,15 @@ class RepairRequestController extends Controller
         // Validate the request data
         $data = $request->validated();
 
-        // Create a new repair request in the database
-        $repairRequest = RepairRequest::create($data);
+        try {
+            // Begin a database transaction to ensure atomicity
+            DB::beginTransaction();
 
-        // Check if images are provided in the request
-        if ($request->hasFile('images')) {
-            try {
-                // Begin a database transaction to ensure atomicity
-                DB::beginTransaction();
+            // Create a new repair request in the database
+            $repairRequest = RepairRequest::create($data);
 
+            // Check if images are provided in the request
+            if ($request->hasFile('images')) {
                 // Store each image and create a record in the database
                 $images = $this->storeImages(
                     images: $request->file('images'), 
@@ -80,32 +80,32 @@ class RepairRequestController extends Controller
                     directory: 'repair_requests'
                 );
                 $repairRequest->images()->createMany($images);
-
-                // Commit the transaction if all operations are successful
-                DB::commit();
-            } catch (\Throwable $th) {
-                // Rollback the transaction if any operation fails
-                DB::rollBack();
-
-                // Return an error response with the exception message
-                return ApiResponse::error(
-                    status: Response::HTTP_INTERNAL_SERVER_ERROR,
-                    message: __('messages.repair_request.creation_failed'),
-                    errors: ['exception' => $th->getMessage()]
-                );
             }
-        }
 
-        // Return a successful response with the created repair request
-        return ApiResponse::success(
-            status: Response::HTTP_CREATED,
-            message: __('messages.repair_request.created'),
-            data: [
-                'repairRequest' => RepairRequestResource::make(
-                    $repairRequest->load('images')
-                )
-            ]
-        );
+            // Commit the transaction if all operations are successful
+            DB::commit();
+
+            // Return a successful response with the created repair request
+            return ApiResponse::success(
+                status: Response::HTTP_CREATED,
+                message: __('messages.repair_request.created'),
+                data: [
+                    'repairRequest' => RepairRequestResource::make(
+                        $repairRequest->load('images')
+                    )
+                ]
+            );
+        } catch (\Throwable $th) {
+            // Rollback the transaction if any operation fails
+            DB::rollBack();
+
+            // Return an error response with the exception message
+            return ApiResponse::error(
+                status: Response::HTTP_INTERNAL_SERVER_ERROR,
+                message: __('messages.repair_request.creation_failed'),
+                errors: ['exception' => $th->getMessage()]
+            );
+        }
     }
 
     /**
@@ -197,10 +197,10 @@ class RepairRequestController extends Controller
                 message: __('messages.not_found', ['attribute' => RepairRequest::class]),
             );
         }
-        
-        // Begin a database transaction to ensure atomicity
-        DB::beginTransaction();
         try {
+            // Begin a database transaction to ensure atomicity
+            DB::beginTransaction();
+        
             // Check if the repair request has associated images
             // If so, delete each image from storage and remove the record from the database
             if ($repairRequest->images()->exists()){

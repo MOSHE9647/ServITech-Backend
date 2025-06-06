@@ -82,12 +82,11 @@ trait HandleImageUploads
     public function deleteImages(array $images): void
     {
         foreach ($images as $image) {
-            // Ensure the image path is correctly formatted for deletion by removing the '/storage/' prefix
-            // $imagePath = str_replace('/storage/', '', $image->path);
-            $imagePath = $image->path;
-            if (Storage::exists($imagePath)) {
-                Storage::delete($imagePath);
-                $image->delete();
+            $path = $image->path; //<- Store the path of the image before deleting
+            $image->delete(); //<- Delete the image record from the database
+            // Check if the image path exists in storage and delete it
+            if ($path && Storage::exists($path)) {
+                Storage::delete($path);
             }
         }
     }
