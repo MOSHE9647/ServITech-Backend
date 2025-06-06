@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Image>
@@ -17,7 +18,7 @@ class ImageFactory extends Factory
     public function definition(): array
     {
         return [
-            'path'  => "storage/images/{$this->faker->uuid()}.webp",
+            'path'  => Storage::url("articles/{$this->faker->uuid()}.webp"),
             "alt"   => $this->faker->sentence(),
             "title" => $this->faker->sentence(),
         ];

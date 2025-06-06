@@ -5,79 +5,23 @@ namespace App\Http\Controllers\Model;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RepairRequest\CreateRepairRequest;
 use App\Http\Requests\RepairRequest\UpdateRepairRequest;
+use App\Http\Resources\RepairRequestResource;
 use App\Http\Responses\ApiResponse;
 use App\Models\RepairRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response;
+use DB;
 
 /**
  * Class RepairRequestController for managing repair requests.
- *
- * @OA\Schema(
- *     schema="CreateRepairRequest",
- *     type="object",
- *     required={"customer_name", "customer_phone", "customer_email", "article_name", "article_type", "article_brand", "article_model", "article_problem", "repair_status", "received_at"},
- *     @OA\Property(property="customer_name", type="string", example="John Doe"),
- *     @OA\Property(property="customer_phone", type="string", example="123456789"),
- *     @OA\Property(property="customer_email", type="string", example="johndoe@example.com"),
- *     @OA\Property(property="article_name", type="string", example="Laptop"),
- *     @OA\Property(property="article_type", type="string", example="Electronics"),
- *     @OA\Property(property="article_brand", type="string", example="Dell"),
- *     @OA\Property(property="article_model", type="string", example="Inspiron 15"),
- *     @OA\Property(property="article_serialnumber", type="string", example="SN123456"),
- *     @OA\Property(property="article_accesories", type="string", example="Charger, Bag"),
- *     @OA\Property(property="article_problem", type="string", example="Screen not working"),
- *     @OA\Property(property="repair_status", type="string", example="Pending"),
- *     @OA\Property(property="repair_details", type="string", example="Screen replacement required"),
- *     @OA\Property(property="repair_price", type="number", format="float", example=150.75),
- *     @OA\Property(property="received_at", type="string", format="date", example="2025-03-29"),
- *     @OA\Property(property="repaired_at", type="string", format="date", example="2025-04-05")
- * )
- *
- * @OA\Schema(
- *     schema="UpdateRepairRequest",
- *     type="object",
- *     required={"repair_status"},
- *     @OA\Property(property="article_serialnumber", type="string", example="SN123456"),
- *     @OA\Property(property="article_accesories", type="string", example="Charger, Bag"),
- *     @OA\Property(property="repair_status", type="string", example="Completed"),
- *     @OA\Property(property="repair_details", type="string", example="Screen replaced successfully"),
- *     @OA\Property(property="repair_price", type="number", format="float", example=150.75),
- *     @OA\Property(property="repaired_at", type="string", format="date", example="2025-04-05")
- * )
+ * This controller handles CRUD operations for repair requests,
+ * including creating, retrieving, updating, and deleting repair requests.
  */
 class RepairRequestController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @OA\Get(
-     *     path="/api/{version}/repair-requests",
-     *     summary="Get all repair requests",
-     *     tags={"Repair Requests"},
-     *     security={{"BearerAuth":{}}},
-     *     @OA\Parameter(
-     *         name="version",
-     *         in="path",
-     *         required=true,
-     *         description="API version",
-     *         @OA\Schema(type="string", example="v1")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of repair requests retrieved successfully",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="status", type="integer", example=200),
-     *             @OA\Property(property="message", type="string", example="Repair requests retrieved successfully"),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="repairRequests", type="array",
-     *                     @OA\Items(ref="#/components/schemas/CreateRepairRequest")
-     *                 )
-     *             )
-     *         )
-     *     )
-     * )
      */
     public function index(): JsonResponse
     {
@@ -94,36 +38,11 @@ class RepairRequestController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @OA\Post(
-     *     path="/api/{version}/repair-requests",
-     *     summary="Create a new repair request",
-     *     tags={"Repair Requests"},
-     *     security={{"BearerAuth":{}}},
-     *     @OA\Parameter(
-     *         name="version",
-     *         in="path",
-     *         required=true,
-     *         description="API version",
-     *         @OA\Schema(type="string", example="v1")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/CreateRepairRequest")
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Repair request created successfully",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="status", type="integer", example=201),
-     *             @OA\Property(property="message", type="string", example="Repair request created successfully"),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="repairRequest", ref="#/components/schemas/CreateRepairRequest")
-     *             )
-     *         )
-     *     )
-     * )
+     * @requestMediaType multipart/form-data
+     * 
+     * @param CreateRepairRequest $request The request object containing the data 
+     * for creating a repair request.
+     * @return ApiResponse A JSON response indicating the success of the operation.
      */
     public function store(CreateRepairRequest $request): JsonResponse
     {
@@ -133,48 +52,52 @@ class RepairRequestController extends Controller
         // Create a new repair request in the database
         $repairRequest = RepairRequest::create($data);
 
+        // Check if images are provided in the request
+        if ($request->hasFile('images')) {
+            try {
+                // Begin a database transaction to ensure atomicity
+                DB::beginTransaction();
+
+                // Store each image and create a record in the database
+                $images = [];
+                foreach ($request->file('images') as $image) {
+                    $path = Storage::put('repair_requests', $image);
+                    $images[] = ['path' => Storage::url($path)];
+                }
+                $repairRequest->images()->createMany($images);
+
+                // Commit the transaction if all operations are successful
+                DB::commit();
+            } catch (\Throwable $th) {
+                // Rollback the transaction if any operation fails
+                DB::rollBack();
+
+                // Return an error response with the exception message
+                return ApiResponse::error(
+                    status: Response::HTTP_INTERNAL_SERVER_ERROR,
+                    message: __('messages.repair_request.creation_failed'),
+                    errors: ['exception' => $th->getMessage()]
+                );
+            }
+        }
+
         // Return a successful response with the created repair request
         return ApiResponse::success(
-            data: compact('repairRequest'),
-            message: __('messages.repair_request.created')
+            status: Response::HTTP_CREATED,
+            message: __('messages.repair_request.created'),
+            data: [
+                'repairRequest' => RepairRequestResource::make(
+                    $repairRequest->load('images')
+                )
+            ]
         );
     }
 
     /**
      * Display the specified resource.
-     *
-     * @OA\Get(
-     *     path="/api/{version}/repair-requests/{receipt_number}",
-     *     summary="Get a specific repair request",
-     *     tags={"Repair Requests"},
-     *     security={{"BearerAuth":{}}},
-     *     @OA\Parameter(
-     *         name="version",
-     *         in="path",
-     *         required=true,
-     *         description="API version",
-     *         @OA\Schema(type="string", example="v1")
-     *     ),
-     *     @OA\Parameter(
-     *         name="receipt_number",
-     *         in="path",
-     *         required=true,
-     *         description="Receipt number of the repair request",
-     *         @OA\Schema(type="string", example="RR-000000000001")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Repair request retrieved successfully",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="status", type="integer", example=200),
-     *             @OA\Property(property="message", type="string", example="Repair request retrieved successfully"),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="repairRequest", ref="#/components/schemas/CreateRepairRequest")
-     *             )
-     *         )
-     *     )
-     * )
+     * 
+     * @param RepairRequest $repairRequest The repair request to be displayed.
+     * @return ApiResponse A JSON response containing the details of the repair request.
      */
     public function show(RepairRequest $repairRequest): JsonResponse
     {
@@ -185,53 +108,25 @@ class RepairRequestController extends Controller
                 status: Response::HTTP_BAD_REQUEST
             );
         }
+
+        // Load the images associated with the repair request
+        $repairRequest->load('images');
         
         // Return a successful response with the repair request details
         return ApiResponse::success(
-            data: compact('repairRequest'),
+            data: ['repairRequest' => RepairRequestResource::make($repairRequest)],
             message: __('messages.repair_request.retrieved')
         );
     }
 
     /**
      * Update the specified resource in storage.
+     * @requestMediaType multipart/form-data
      *
-     * @OA\Put(
-     *     path="/api/{version}/repair-requests/{receipt_number}",
-     *     summary="Update a repair request",
-     *     tags={"Repair Requests"},
-     *     security={{"BearerAuth":{}}},
-     *     @OA\Parameter(
-     *         name="version",
-     *         in="path",
-     *         required=true,
-     *         description="API version",
-     *         @OA\Schema(type="string", example="v1")
-     *     ),
-     *     @OA\Parameter(
-     *         name="receipt_number",
-     *         in="path",
-     *         required=true,
-     *         description="Receipt number of the repair request",
-     *         @OA\Schema(type="string", example="RR-000000000001")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/UpdateRepairRequest")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Repair request updated successfully",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="status", type="integer", example=200),
-     *             @OA\Property(property="message", type="string", example="Repair request updated successfully"),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="repairRequest", ref="#/components/schemas/UpdateRepairRequest")
-     *             )
-     *         )
-     *     )
-     * )
+     * @param RepairRequest $repairRequest The repair request to be updated.
+     * @param UpdateRepairRequest $request The request object containing the data
+     * for updating the repair request.
+     * @return ApiResponse A JSON response indicating the success of the operation.
      */
     public function update(UpdateRepairRequest $request, RepairRequest $repairRequest): JsonResponse
     {
@@ -250,45 +145,53 @@ class RepairRequestController extends Controller
         // Update the repair request in the database
         $repairRequest->update($data);
 
+        // Check if images are provided in the request
+        if ($request->hasFile('images')) {
+            try {
+                // Begin a database transaction to ensure atomicity
+                DB::beginTransaction();
+
+                // Delete existing images associated with the repair request
+                $repairRequest->images()->each(function ($image) {
+                    Storage::delete(str_replace('/storage/', '', $image->path));
+                    $image->delete();
+                });
+
+                // Store each new image and create a record in the database
+                $images = [];
+                foreach ($request->file('images') as $image) {
+                    $path = Storage::put('repair_requests', $image);
+                    $images[] = ['path' => Storage::url($path)];
+                }
+                $repairRequest->images()->createMany($images);
+
+                // Commit the transaction if all operations are successful
+                DB::commit();
+            } catch (\Throwable $th) {
+                // Rollback the transaction if any operation fails
+                DB::rollBack();
+
+                // Return an error response with the exception message
+                return ApiResponse::error(
+                    status: Response::HTTP_INTERNAL_SERVER_ERROR,
+                    message: __('messages.repair_request.update_failed'),
+                    errors: ['exception' => $th->getMessage()]
+                );
+            }
+        }
+
         // Return a successful response with the updated repair request
         return ApiResponse::success(
             message: __('messages.repair_request.updated'),
-            data: compact('repairRequest'),
+            data: ['repairRequest' => RepairRequestResource::make($repairRequest->load('images'))],
         );
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @OA\Delete(
-     *     path="/api/{version}/repair-requests/{receipt_number}",
-     *     summary="Delete a repair request",
-     *     tags={"Repair Requests"},
-     *     security={{"BearerAuth":{}}},
-     *     @OA\Parameter(
-     *         name="version",
-     *         in="path",
-     *         required=true,
-     *         description="API version",
-     *         @OA\Schema(type="string", example="v1")
-     *     ),
-     *     @OA\Parameter(
-     *         name="receipt_number",
-     *         in="path",
-     *         required=true,
-     *         description="Receipt number of the repair request",
-     *         @OA\Schema(type="string", example="RR-000000000001")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Repair request deleted successfully",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="status", type="integer", example=200),
-     *             @OA\Property(property="message", type="string", example="Repair request deleted successfully")
-     *         )
-     *     )
-     * )
+     * @param RepairRequest $repairRequest The repair request to be deleted.
+     * @return ApiResponse A JSON response indicating the success of the operation.
      */
     public function destroy(RepairRequest $repairRequest): JsonResponse
     {
@@ -300,10 +203,42 @@ class RepairRequestController extends Controller
                 status: Response::HTTP_BAD_REQUEST
             );
         }
+        
+        // Begin a database transaction to ensure atomicity
+        DB::beginTransaction();
+        try {
+            // Check if the repair request has associated images
+            // If so, delete each image from storage and remove the record from the database
+            if ($repairRequest->images()->exists()){
+                $repairRequest->images()->each(function ($image) {
+                    // Delete the image file from storage
+                    Storage::delete(str_replace('/storage/', '', $image->path));
+                    // Delete the image record from the database
+                    $image->delete();
+                });
+            }
 
-        // Delete the repair request from the database
-        // and return a successful response
-        $repairRequest->delete();
-        return ApiResponse::success(message: __('messages.repair_request.deleted'));
+            // Attempt to delete the repair request
+            // If deletion fails, return an error response
+            if (!$repairRequest->delete()) {
+                throw new \Exception(__('messages.repair_request.not_deleted'));
+            }
+
+            // Commit the transaction if all operations are successful
+            DB::commit();
+            
+            // Delete the repair request from the database
+            return ApiResponse::success(message: __('messages.repair_request.deleted'));
+        } catch (\Throwable $th) {
+            // Rollback the transaction if any operation fails
+            DB::rollBack();
+
+            // Return an error response with the exception message
+            return ApiResponse::error(
+                status: Response::HTTP_INTERNAL_SERVER_ERROR,
+                message: __('messages.repair_request.not_deleted'),
+                errors: ['exception' => $th->getMessage()]
+            );
+        }
     }
 }
