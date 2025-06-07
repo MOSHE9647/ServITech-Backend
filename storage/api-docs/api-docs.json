@@ -1468,6 +1468,123 @@
                 ]
             }
         },
+        "/api/v1/subcategories": {
+            "get": {
+                "tags": [
+                    "Subcategories"
+                ],
+                "summary": "Obtener todas las subcategorías",
+                "operationId": "2938fa1aee3d196d4b1d3fb4e71469b5",
+                "responses": {
+                    "200": {
+                        "description": "Subcategorías obtenidas correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Subcategorías obtenidas correctamente."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "subcategories": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/Subcategory"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Subcategories"
+                ],
+                "summary": "Crear una nueva subcategoría",
+                "operationId": "42ecab72fbe2339b73a5c6d9f6cbc5b9",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "category_id"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Tablets"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Subcategoría de tablets"
+                                    },
+                                    "category_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Subcategoría creada correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 201
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Subcategoría creada correctamente."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "subcategory": {
+                                                    "$ref": "#/components/schemas/Subcategory"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/{version}/support-requests": {
             "get": {
                 "tags": [
@@ -2387,6 +2504,59 @@
                 },
                 "type": "object"
             },
+            "Subcategory": {
+                "title": "Subcategoría",
+                "required": [
+                    "name",
+                    "category_id"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Laptops"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "Subcategoría de laptops"
+                    },
+                    "category_id": {
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "category": {
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "example": 2
+                            },
+                            "name": {
+                                "type": "string",
+                                "example": "Electrónica"
+                            },
+                            "description": {
+                                "type": "string",
+                                "example": "Artículos tecnológicos"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-06-05T18:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-06-05T18:30:00Z"
+                    }
+                },
+                "type": "object"
+            },
             "CreateSupportRequest": {
                 "required": [
                     "date",
@@ -2532,6 +2702,10 @@
         {
             "name": "Repair Requests",
             "description": "Repair Requests"
+        },
+        {
+            "name": "Subcategories",
+            "description": "Subcategories"
         },
         {
             "name": "Support Requests",

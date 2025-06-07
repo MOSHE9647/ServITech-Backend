@@ -48,14 +48,7 @@ Route::middleware('auth:api')->group(function () {
             Route::delete('{category:name}', [CategoryController::class,'destroy'])->name('category.destroy');
         });
 
-        // Subcategory routes
-        Route::prefix('subcategories')->group(function () {
-            Route::get('', [SubcategoryController::class, 'index'])->name('subcategories.index');
-            Route::post('', [SubcategoryController::class, 'store'])->name('subcategories.store');
-            Route::get('{subcategory}', [SubcategoryController::class, 'show'])->name('subcategories.show');
-            Route::put('{subcategory}', [SubcategoryController::class, 'update'])->name('subcategories.update');
-            Route::delete('{subcategory}', [SubcategoryController::class, 'destroy'])->name('subcategories.destroy');
-        });
+
 
         // RepairRequest routes
         Route::prefix('repair-request')->group(function () {
@@ -77,3 +70,12 @@ Route::prefix('articles')->group(function () {
     Route::put('{article}', [ArticleController::class, 'update'])->name('articles.update');
     Route::delete('{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
 });
+
+        // Subcategory routes
+        Route::prefix('subcategories')->group(function () {
+            Route::get('', [SubcategoryController::class, 'index'])->name('subcategories.index');
+            Route::post('', [SubcategoryController::class, 'store'])->name('subcategories.store');
+            Route::get('{subcategory}', [SubcategoryController::class, 'show'])->name('subcategories.show');
+            Route::put('{subcategory}', [SubcategoryController::class, 'update'])->name('subcategories.update');
+            Route::delete('{subcategory}', [SubcategoryController::class, 'destroy'])->name('subcategories.destroy');
+        });
