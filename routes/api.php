@@ -69,6 +69,8 @@ Route::prefix('articles')->group(function () {
     Route::get('{article:category}', [ArticleController::class, 'show'])->name('articles.show');
     Route::put('{article}', [ArticleController::class, 'update'])->name('articles.update');
     Route::delete('{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
+    Route::get('id/{id}', [ArticleController::class, 'showById'])->name('articles.showById');
+
 });
 
         // Subcategory routes

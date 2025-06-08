@@ -508,14 +508,14 @@
                 ]
             }
         },
-        "/api/{version}/articles/{id}": {
+        "/api/{version}/articles/{category}": {
             "get": {
                 "tags": [
                     "Articles"
                 ],
                 "summary": "Get a specific article",
                 "description": "Display the specified resource.",
-                "operationId": "5123ce53ff3225955c396002f351e8c3",
+                "operationId": "0c09be8c486b8958c7b3831364799f9c",
                 "parameters": [
                     {
                         "name": "version",
@@ -528,13 +528,13 @@
                         }
                     },
                     {
-                        "name": "id",
+                        "name": "category",
                         "in": "path",
                         "description": "ID of the article",
                         "required": true,
                         "schema": {
-                            "type": "integer",
-                            "example": 1
+                            "type": "string",
+                            "example": "anime"
                         }
                     }
                 ],
@@ -573,7 +573,9 @@
                         "BearerAuth": []
                     }
                 ]
-            },
+            }
+        },
+        "/api/{version}/articles/{id}": {
             "put": {
                 "tags": [
                     "Articles"
@@ -698,6 +700,75 @@
                                 }
                             }
                         }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/{version}/articles/id/{id}": {
+            "get": {
+                "tags": [
+                    "Articles"
+                ],
+                "summary": "Get a specific article by ID",
+                "description": "Get a specific article by ID.",
+                "operationId": "996c7144e565b8ac5b406605f6c7d511",
+                "parameters": [
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "v1"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the article",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 42
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Article retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Article retrieved successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "article": {
+                                                    "$ref": "#/components/schemas/Article"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Article not found"
                     }
                 },
                 "security": [
