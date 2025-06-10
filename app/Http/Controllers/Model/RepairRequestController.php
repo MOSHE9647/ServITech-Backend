@@ -41,7 +41,11 @@ class RepairRequestController extends Controller
         // Return a successful response with the list of repair requests
         return ApiResponse::success(
             message: __('messages.repair_request.retrieved_list'),
-            data: compact("repairRequests")
+            data: [
+                'repairRequests' => RepairRequestResource::collection(
+                    $repairRequests->load('images')
+                )
+            ]
         );
     }
 
