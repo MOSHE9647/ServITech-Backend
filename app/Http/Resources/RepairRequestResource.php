@@ -15,6 +15,7 @@ class RepairRequestResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id'                   => $this->id,
             'receipt_number'       => $this->receipt_number,
             'customer_name'        => $this->customer_name,
             'customer_phone'       => $this->customer_phone,
