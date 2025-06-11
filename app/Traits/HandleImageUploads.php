@@ -72,11 +72,12 @@ trait HandleImageUploads
     /**
      * Delete images from storage.
      *
-     * This method deletes images from the storage based on the provided paths.
-     * It ensures that the paths are correctly formatted and removes the images
-     * from the specified directory.
+     * This method deletes images from the storage based on the provided model instances.
+     * Each model instance should have a 'path' property and a 'delete' method.
+     * The method ensures that the image files are removed from the storage
+     * and the corresponding database records are deleted.
      *
-     * @param array $images An array of image paths to be deleted.
+     * @param array $images An array of model instances representing the images to be deleted.
      * @return void
      */
     public function deleteImages(array $images): void
