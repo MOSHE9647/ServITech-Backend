@@ -16,7 +16,7 @@ class Image extends Model
     // For example:
     // Article::create(['name' => 'Sample Article', 'description' => 'Sample Description']);
     // This will insert a new article with the name and description provided.
-    protected $fillable = ['path'];
+    protected $fillable = ['path', 'title', 'alt'];
 
     /**
      * Polymorphic relationship: This image can belong to different models.

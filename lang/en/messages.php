@@ -30,6 +30,10 @@ return [
         'reset_success'        => 'Password reset successfully',
     ],
     'repair_request' => [
+        'creation_failed'      => 'Failed to create repair request.',
+        'update_failed'        => 'Failed to update repair request.',
+        'not_found'            => 'Repair request not found.',
         'created'              => 'Repair request created successfully.',
+        'not_deleted'          => 'Repair request could not be deleted.',
     ],
 ];

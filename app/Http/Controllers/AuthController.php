@@ -10,136 +10,66 @@ use App\Http\Resources\UserResource;
 use App\Http\Responses\ApiResponse;
 use App\Http\Responses\MessageResponse;
 use App\Models\User;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
 use OpenApi\Annotations as OA;
 
 /**
  * Class AuthController for handling user authentication.
+ * This controller provides methods for user login, registration,
+ * password reset, and logout functionalities.
  * 
- * @OA\Schema(
- *     schema="LoginUserRequest",
- *     type="object",
- *     required={"email", "password"},
- *     @OA\Property(property="email", type="string", format="email", example="john.doe@example.com"),
- *     @OA\Property(property="password", type="string", format="password", example="password123")
- * )
- * 
- * @OA\Schema(
- *    schema="RegisterUserRequest",
- *    type="object",
- *    required={"email", "password", "password_confirmation", "name", "last_name"},
- *    @OA\Property(property="email", type="string", format="email", example="john.doe@example.com"),
- *    @OA\Property(property="password", type="string", format="password", example="password123"),
- *    @OA\Property(property="password_confirmation", type="string", format="password", example="password123"),
- *    @OA\Property(property="name", type="string", example="John"),
- *    @OA\Property(property="last_name", type="string", example="Doe")
- * )
- * 
- * @OA\Schema(
- *    schema="ResetPasswordRequest",
- *    type="object",
- *    required={"email", "token", "password", "password_confirmation"},
- *    @OA\Property(property="email", type="string", format="email", example="john.doe@example.com"),
- *    @OA\Property(property="token", type="string", example="1234567890"),
- *    @OA\Property(property="password", type="string", format="password", example="password123"),
- *    @OA\Property(property="password_confirmation", type="string", format="password", example="password123")
- * )
- * 
- * @OA\Schema(
- *    schema="MessageResponse",
- *    type="object",
- *    @OA\Property(property="title", type="string", example="Your password has been reset."),
- *    @OA\Property(property="type", type="string", example="success")
- * )
+ * For Authentication, it uses JWT (JSON Web Tokens)
+ * to manage user sessions and provide secure access to the API.
  */
 class AuthController extends Controller
 {
     /**
      * Login a user.
      * 
-     * @OA\Post(
-     *     path="/api/{version}/auth/login",
-     *     summary="Login a user",
-     *     tags={"Auth"},
-     *     @OA\Parameter(
-     *         name="version",
-     *         in="path",
-     *         required=true,
-     *         description="API version",
-     *         @OA\Schema(type="string", example="v1")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/LoginUserRequest")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="User logged in successfully",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="status", type="integer", example=200),
-     *             @OA\Property(property="message", type="string", example="User logged in successfully"),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="token", type="string", example="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."),
-     *                 @OA\Property(property="expires_in", type="integer", example=3600)
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="We can\'t find a user with that email address. / Invalid credentials",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="status", type="integer", example=401),
-     *             @OA\Property(property="message", type="string", example="We can\'t find a user with that email address. / Invalid credentials")
-     *         )
-     *     )
-     * )
+     * This method handles user login by validating the request data,
+     * attempting to authenticate the user with the provided credentials,
+     * and returning a JWT token if the authentication is successful.
+     * @unauthenticated Indicates that this endpoint does not requires authentication.
      * 
-     * @param \App\Http\Requests\LoginUserRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param LoginUserRequest $request The request containing the user's email and password.
+     * @return ApiResponse JSON response containing the user data and JWT token
+     * @throws ValidationException If the request validation fails.
      */
     public function login(LoginUserRequest $request): JsonResponse 
     {
         // Validate the request and get the credentials
-        // The request is validated using the LoginUserRequest class
-        // which contains the validation rules for the login request
-        // The credentials are extracted from the request
-        // using the request() helper function
         $request->validated();
         $credentials = request(['email', 'password']);
 
-        // Attempt to authenticate the user using the credentials
-        // The auth() helper function is used to get the authentication guard
-        // The attempt() method is called on the guard to check if the credentials are valid
-        // If the credentials are valid, a token is generated
-        // If the credentials are invalid, an error response is returned
-        // The error response contains a status code and a message
-        // indicating that the credentials are invalid
-        // The message is translated using the __() helper function
-        // The messages are defined in the lang/en and lang/es folder
+        /*         
+         * Attempt to authenticate the user using the provided credentials.
+         * If the credentials are valid, a JWT token is generated.
+         * If the credentials are invalid, an error response is returned.
+         */
         if (! $token = auth()->guard('api')->attempt($credentials)) {
             // If the token is not generated, it means the credentials are invalid
             $user = User::where('email', $request->email)->first();
             
-            // If the user is not found, return an error response
-            // indicating that the user does not exist
             if (!$user) {
+                // If the user is not found, return an error response
+                // indicating that the user does not exist.
                 return ApiResponse::error(
-                    status: Response::HTTP_UNAUTHORIZED,
+                    status: Response::HTTP_BAD_REQUEST,
                     message: __('passwords.user'),
                     errors: ['email' => __('messages.user.not_found')]
                 );
             }
-    
-            // If the user is found, return an error response
-            // indicating that the credentials are invalid
+
+            // If the user is found and the password is incorrect, return an error response
+            // indicating that the credentials are invalid.
             return ApiResponse::error(
                 status: Response::HTTP_UNAUTHORIZED,
                 message: __('messages.user.invalid_credentials'),
@@ -147,11 +77,12 @@ class AuthController extends Controller
             );
         }
 
-        // If the token is generated, it means the credentials are valid
-        // The token is returned in the response among with the user and the expiration time
+        // If the token is generated, it means the credentials are valid.
+        // The token is returned in the response among with the user and the expiration time.
         $user = auth()->guard('api')->user();
         $expiresIn = auth('api')->factory()->getTTL() * 60;
 
+        // Return a success response with the user data, token, and expiration time.
         return ApiResponse::success(message: __('messages.user.logged_in'),
         data: [
             'user' => UserResource::make($user),
@@ -163,48 +94,21 @@ class AuthController extends Controller
     /**
      * Register a new user.
      * 
-     * @OA\Post(
-     *     path="/api/{version}/auth/register",
-     *     summary="Register a new user",
-     *     tags={"Auth"},
-     *     @OA\Parameter(
-     *         name="version",
-     *         in="path",
-     *         required=true,
-     *         description="API version",
-     *         @OA\Schema(type="string", example="v1")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/RegisterUserRequest")
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="User registered successfully",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="status", type="integer", example=201),
-     *             @OA\Property(property="message", type="string", example="User registered successfully"),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="user", type="object",
-     *                     @OA\Property(property="id", type="integer", example=1),
-     *                     @OA\Property(property="email", type="string", example="john.doe@example.com"),
-     *                     @OA\Property(property="name", type="string", example="John"),
-     *                     @OA\Property(property="last_name", type="string", example="Doe")
-     *                 )
-     *             )
-     *         )
-     *     )
-     * )
-     * 
-     * @param \App\Http\Requests\RegisterUserRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * This method handles user registration by validating the request data,
+     * and creating a new user in the database.
+     * @unauthenticated
+     *
+     * @param RegisterUserRequest $request The request containing the user registration data.
+     * @return JsonResponse JSON response containing the newly created user data
+     * @throws ValidationException If the request validation fails.
      */
     public function register(RegisterUserRequest $request): JsonResponse
     {
-        // Validate the request and create a new user
-        // The request is validated using the RegisterUserRequest class
-        // which contains the validation rules for the registration request
+        /**
+         * Validate the request data and create a new user with an USER role.
+         * The request is validated using the RegisterUserRequest class
+         * which contains the validation rules for the registration request
+         */
         $user = User::create($request->validated());
         $user->assignRole(UserRoles::USER);
 
@@ -219,47 +123,14 @@ class AuthController extends Controller
     /**
      * Send a password reset link to the user.
      * 
-     * @OA\Post(
-     *     path="/api/{version}/auth/reset-password",
-     *     summary="Send password reset link",
-     *     tags={"Auth"},
-     *     @OA\Parameter(
-     *         name="version",
-     *         in="path",
-     *         required=true,
-     *         description="API version",
-     *         @OA\Schema(type="string", example="v1")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             type="object",
-     *             required={"email"},
-     *             @OA\Property(property="email", type="string", format="email", example="john.doe@example.com")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Password reset link sent successfully",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="status", type="integer", example=200),
-     *             @OA\Property(property="message", type="string", example="Password reset link sent successfully")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=500,
-     *         description="Your password could not be reset.",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="status", type="integer", example=500),
-     *             @OA\Property(property="message", type="string", example="Your password could not be reset.")
-     *         )
-     *     )
-     * )
+     * This method handles the request to send a password reset link
+     * to the user's email address. It validates the request,
+     * checks if the email exists in the database, and sends the reset link.
+     * @unauthenticated
      * 
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param Request $request The request containing the user's email address.
+     * @return ApiResponse JSON response indicating the status of the operation
+     * @throws \Illuminate\Validation\ValidationException If the request validation fails.
      */
     public function sendResetLink(Request $request): JsonResponse
     {
@@ -286,45 +157,14 @@ class AuthController extends Controller
     /**
      * Reset the user's password.
      * 
-     * @OA\Put(
-     *     path="/api/{version}/auth/reset-password",
-     *     summary="Reset the user's password",
-     *     tags={"Auth"},
-     *     @OA\Parameter(
-     *         name="version",
-     *         in="path",
-     *         required=true,
-     *         description="API version",
-     *         @OA\Schema(type="string", example="v1")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/ResetPasswordRequest")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Your password has been reset.",
-     *         @OA\MediaType(
-     *             mediaType="text/html",
-     *             @OA\Schema(
-     *                 type="string",
-     *                 example="<html><body>Success: Your password has been reset.</body></html>"
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=500,
-     *         description="We can't find a user with that email address. / This password reset token is invalid.",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="status", type="integer", example=500),
-     *             @OA\Property(property="message", type="string", example="We can't find a user with that email address. / This password reset token is invalid.")
-     *         )
-     *     )
-     * )
+     * This method handles the password reset process by validating the request data,
+     * resetting the user's password using the provided token, and returning a view
+     * indicating the success or failure of the operation.
+     * @unauthenticated
      * 
-     * @param \App\Http\Requests\ResetPasswordRequest $request
-     * @return \Illuminate\View\View
+     * @param ResetPasswordRequest $request The request containing the password reset data.
+     * @return View A HTML view indicating the success or failure of the password reset operation.
+     * @throws ValidationException If the request validation fails.
      */
     public function resetPassword(ResetPasswordRequest $request): View
     {
@@ -367,38 +207,13 @@ class AuthController extends Controller
     }
 
     /**
-     * @OA\Post(
-     *     path="/api/{version}/auth/logout",
-     *     summary="Logs out the authenticated user",
-     *     tags={"Auth"},
-     *     @OA\Parameter(
-     *         name="version",
-     *         in="path",
-     *         required=true,
-     *         description="API version",
-     *         @OA\Schema(type="string", example="v1")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="User successfully logged out",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="User logged out successfully"),
-     *             @OA\Property(property="status", type="integer", example=200)
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="User already logged out",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="User already logged out"),
-     *             @OA\Property(property="status", type="integer", example=401)
-     *         )
-     *     )
-     * )
+     * Logout the authenticated user.
+     * 
+     * This method handles the logout process by checking if the user is authenticated,
+     * logging them out, and returning a success response.
      *
-     * Logs out the authenticated user.
-     *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse JSON response indicating the status of the logout operation
+     * @throws AuthenticationException If the user is not authenticated.
      */
     public function logout(): JsonResponse
     {

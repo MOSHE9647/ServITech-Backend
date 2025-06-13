@@ -4,8 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\Article;
 use App\Models\Category;
+use App\Models\Image;
 use App\Models\Subcategory;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class ArticleSeeder extends Seeder
@@ -35,9 +35,12 @@ class ArticleSeeder extends Seeder
             return;
         }
 
-        Article::factory()->create([
+        $article = Article::factory()->create([
             'category_id' => $category->id, // Link article to the selected category
             'subcategory_id' => $subcategory->id, // Link article to the selected subcategory
         ]);
+        $article->images()->createMany(
+            Image::factory(3)->make()->toArray() // Create 3 images for the article
+        );
     }
 }

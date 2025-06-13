@@ -22,11 +22,15 @@ return [
         'reset_success'        => 'Contraseña restablecida con éxito',
     ],
     'repair_request' => [
+        'creation_failed'      => 'Error al crear la solicitud de reparación.',
+        'update_failed'        => 'Error al actualizar la solicitud de reparación.',
+        'not_found'            => 'Solicitud de reparación no encontrada.',
         'retrieved_list'       => 'Lista de solicitudes de reparación obtenida exitosamente.',
         'retrieved'            => 'Solicitud de reparación obtenida exitosamente.',
         'created'              => 'Solicitud de reparación creada exitosamente.',
         'updated'              => 'Solicitud de reparación actualizada exitosamente.',
         'deleted'              => 'Solicitud de reparación eliminada exitosamente.',
+        'not_deleted'          => 'No se pudo eliminar la solicitud de reparación.',
     ],
     'subcategory' => [
         'retrieved_all'        => 'Lista de subcategorías obtenida exitosamente.',
