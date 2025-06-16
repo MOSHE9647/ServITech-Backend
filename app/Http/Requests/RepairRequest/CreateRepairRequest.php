@@ -42,9 +42,9 @@ class CreateRepairRequest extends FormRequest
             'repair_price'          => 'nullable|numeric',
             'received_at'           => 'required|date',
             'repaired_at'           => 'nullable|date',
+            'images'                => 'nullable', // form name=images[]
+            'images.*'              => 'file|mimes:jpeg,png,jpg',
          ];
-
-
     }
 
     /**
@@ -167,6 +167,16 @@ class CreateRepairRequest extends FormRequest
             ]),
             'repaired_at.date' => __('validation.date', [
                 'attribute' => __('validation.attributes.repaired_at')
+            ]),
+            'images.*.image' => __('validation.image', [
+                'attribute'=> __('validation.attributes.image')
+            ]),
+            'images.*.mimes' => __('validation.mimes', [
+                'attribute'=> __('validation.attributes.image'),
+                'values' => 'jpeg,png,jpg'
+            ]),
+            'images.*.max' => __('validation.max.file', [
+                'attribute'=> __('validation.attributes.image')
             ]),
         ];
     }
