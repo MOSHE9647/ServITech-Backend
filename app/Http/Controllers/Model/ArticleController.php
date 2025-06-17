@@ -220,7 +220,7 @@ class ArticleController extends Controller
      * Display the specified resource.
      *
      * @OA\Get(
-     *     path="/api/{version}/articles/{id}",
+     *     path="/api/{version}/articles/{category}",
      *     summary="Get a specific article",
      *     tags={"Articles"},
      *     security={{"BearerAuth":{}}},
@@ -232,11 +232,11 @@ class ArticleController extends Controller
      *         @OA\Schema(type="string", example="v1")
      *     ),
      *     @OA\Parameter(
-     *         name="id",
+     *         name="category",
      *         in="path",
      *         required=true,
      *         description="ID of the article",
-     *         @OA\Schema(type="integer", example=1)
+     *         @OA\Schema(type="string", example="anime")
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -410,4 +410,61 @@ class ArticleController extends Controller
             message: __('messages.article.deleted')
         );
     }
+
+    /**
+ * Get a specific article by ID.
+ *
+ * @OA\Get(
+ *     path="/api/{version}/articles/id/{id}",
+ *     summary="Get a specific article by ID",
+ *     tags={"Articles"},
+ *     security={{"BearerAuth":{}}},
+ *     @OA\Parameter(
+ *         name="version",
+ *         in="path",
+ *         required=true,
+ *         @OA\Schema(type="string", example="v1")
+ *     ),
+ *     @OA\Parameter(
+ *         name="id",
+ *         in="path",
+ *         required=true,
+ *         description="ID of the article",
+ *         @OA\Schema(type="integer", example=42)
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Article retrieved successfully",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="status", type="integer", example=200),
+ *             @OA\Property(property="message", type="string", example="Article retrieved successfully"),
+ *             @OA\Property(property="data", type="object",
+ *                 @OA\Property(property="article", ref="#/components/schemas/Article")
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Article not found"
+ *     )
+ * )
+ */
+public function showById($id): JsonResponse
+{
+    $article = Article::with(['images', 'category', 'subcategory'])->find($id);
+
+    if (!$article) {
+        return ApiResponse::error(
+            message: __('messages.not_found', ['attribute' => 'Article']),
+            status: Response::HTTP_NOT_FOUND
+        );
+    }
+
+    return ApiResponse::success(
+        data: ['article' => new ArticleResource($article)],
+        message: __('messages.article.retrieved')
+    );
+}
+
+
 }
