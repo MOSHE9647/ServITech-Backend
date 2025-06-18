@@ -30,15 +30,15 @@ class AppServiceProvider extends ServiceProvider
     {
         Scramble::configure()
             ->routes(
-                routeResolver: fn (Route $route): bool => 
+                routeResolver: fn (Route $route): bool =>
                     !Str::contains(haystack: $route->getName(), needles: 'localized.')
             )
             ->withDocumentTransformers(function (OpenApi $openApi) {
                 $openApi->secure(
                     SecurityScheme::http('bearer', 'JWT')
                 );
-            })
-            ->withOperationTransformers(function (Operation $operation) {
+            });
+          /*  ->withOperationTransformers(function (Operation $operation) {
                 $operation->addParameters([
                     new Parameter(name: 'Accept-Language', in: 'header')
                         ->setSchema(new Schema()->fromType(new StringType()))
@@ -46,7 +46,7 @@ class AppServiceProvider extends ServiceProvider
                         ->required(false)
                         ->example('en')
                 ]);
-            });
+            });*/
 
     }
 }
