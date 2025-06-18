@@ -11,12 +11,13 @@ class Category extends Model
     /** @use HasFactory<\Database\Factories\Admin\CategoryFactory> */
     use HasFactory, SoftDeletes; 
 
-    // Fillable properties for mass assignment
-    // These are the attributes that are mass assignable.
-    // This means you can use the create() method to insert data into these fields.
-    // For example:
-    // Article::create(['name' => 'Sample Article', 'description' => 'Sample Description']);
-    // This will insert a new article with the name and description provided.
+    /**
+     * The attributes that are mass assignable.
+     * This means you can use the create() method to insert
+     * data ONLY into these fields.
+     *
+     * @var list<string>
+     */
     protected $fillable = ['name', 'description'];
 
     /**

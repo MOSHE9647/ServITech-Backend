@@ -39,12 +39,12 @@ class CreateArticleRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'category_id.required' => __('validation.required', ['attribute' => __('validation.attributes.category')]),
-            'category_id.exists' => __('validation.exists', ['attribute' => __('validation.attributes.category')]),
+            'category_id.required' => __('validation.required', ['attribute' => __('messages.entities.category.singular')]),
+            'category_id.exists' => __('validation.exists', ['attribute' => __('messages.entities.category.singular')]),
             'category_id.string' => __('validation.string'),
             'category_id.min' => __('validation.min.string'),
-            'subcategory_id.required' => __('validation.required', ['attribute' => __('validation.attributes.subcategory')]),
-            'subcategory_id.exists' => __('validation.exists', ['attribute' => __('validation.attributes.subcategory')]),
+            'subcategory_id.required' => __('validation.required', ['attribute' => __('messages.entities.subcategory.singular')]),
+            'subcategory_id.exists' => __('validation.exists', ['attribute' => __('messages.entities.subcategory.singular')]),
             'subcategory_id.string' => __('validation.string'),
             'subcategory_id.min' => __('validation.min.string'),
             'images.*.image' => __('validation.image', ['attribute'=> __('validation.attributes.image')]),

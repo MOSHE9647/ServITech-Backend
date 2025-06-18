@@ -15,32 +15,44 @@ class ArticleSeeder extends Seeder
      */
     public function run(): void
     {
-        // Generate categories and their associated subcategories
-        Category::factory(5)->create()->each(function ($category) {
-            Subcategory::factory(10)->create([
-                'category_id' => $category->id, // Link subcategories to the parent category
-            ]);
-        });
+        // Generate Tecnologia Category
+        $tecnologiaCategory = Category::factory()->create([
+            'name' => 'Tecnologia',
+            'description' => 'tecnologia',
+        ]);
 
-        // Create an article and associate it with a random category and subcategory
-        $category = Category::inRandomOrder()->first();
-        if (!$category) {
-            $this->command->error('No categories found. Please ensure categories are seeded.'); // Error if no categories exist
-            return;
-        }
+        // Generate Anime Category
+        $animeCategory = Category::factory()->create([
+            'name' => 'Anime',
+            'description' => 'anime',
+        ]);
 
-        $subcategory = $category->subcategories()->inRandomOrder()->first();
-        if (!$subcategory) {
-            $this->command->error('No subcategories found for the selected category.'); // Error if no subcategories exist
-            return;
-        }
+        $tecnologiaSubcategory = Subcategory::factory()->create([
+            'name' => 'Gadgets',
+            'description' => 'gadgets',
+            'category_id' => $tecnologiaCategory->id, // Link subcategory to the Tecnologia category
+        ]);
+
+        $animeSubcategory = Subcategory::factory()->create([
+            'name' => 'Manga',
+            'description' => 'manga',
+            'category_id' => $animeCategory->id, // Link subcategory to the Anime category
+        ]);
 
         $article = Article::factory()->create([
-            'category_id' => $category->id, // Link article to the selected category
-            'subcategory_id' => $subcategory->id, // Link article to the selected subcategory
+            'category_id' => $tecnologiaCategory->id, // Link article to the selected category
+            'subcategory_id' => $tecnologiaSubcategory->id, // Link article to the selected subcategory
         ]);
         $article->images()->createMany(
-            Image::factory(3)->make()->toArray() // Create 3 images for the article
+            Image::factory(rand(1, 5))->make()->toArray()
+        );
+
+        $article = Article::factory()->create([
+            'category_id' => $animeCategory->id, // Link article to the selected category
+            'subcategory_id' => $animeSubcategory->id, // Link article to the selected subcategory
+        ]);
+        $article->images()->createMany(
+            Image::factory(rand(1, 5))->make()->toArray()
         );
     }
 }

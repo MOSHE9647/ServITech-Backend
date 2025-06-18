@@ -6,19 +6,19 @@ use App\Enums\RepairStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Cache;
 
 class RepairRequest extends Model
 {
     /** @use HasFactory<\Database\Factories\RepairRequestFactory> */
     use HasFactory, SoftDeletes;
 
-    // Fillable properties for mass assignment
-    // These are the attributes that are mass assignable.
-    // This means you can use the create() method to insert data into these fields.
-    // For example:
-    // Article::create(['name' => 'Sample Article', 'description' => 'Sample Description']);
-    // This will insert a new article with the name and description provided.
+    /**
+     * The attributes that are mass assignable.
+     * This means you can use the create() method to insert
+     * data ONLY into these fields.
+     *
+     * @var list<string>
+     */
     protected $fillable = [
         'customer_name',
         'customer_phone',
@@ -76,16 +76,16 @@ class RepairRequest extends Model
 
     /**
      * Generate a unique receipt number for a new RepairRequest.
+     * This method generates a unique numeric identifier and formats it as RR-{number}.
      */
     public static function generateReceiptNumber() {
-        return Cache::lock('repair_request_number_lock', 5)
-            ->block(3, function () {
-                $key = 'repair_request_last_number';
-                $lastNumber = Cache::get($key, 0) + 1;
-                Cache::put($key, $lastNumber, now()->addDays(1)); // Store the last number for 1 day
-                return 'RR-' . str_pad($lastNumber, 12, '0', STR_PAD_LEFT);
-            }
-        );
+        // Generate a unique numeric identifier based on current timestamp and random number
+        $timestamp = now()->format('YmdHisv'); // 17 digits: YYYYMMDDHHMMSSmmm
+        $random = mt_rand(1000, 999999); // 6 digits
+        $uniqueNumber = "$timestamp$random"; // 23 digits total
+
+        // Create the receipt number with the format RR-{Number}
+        return "RR-$uniqueNumber";
     }
 
     /**

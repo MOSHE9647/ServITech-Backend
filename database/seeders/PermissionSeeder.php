@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Enums\UserRoles;
 use File;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Permission;
