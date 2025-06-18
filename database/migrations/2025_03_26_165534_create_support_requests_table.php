@@ -18,8 +18,7 @@ return new class extends Migration
             $table->string('location');
             $table->text(column:'detail');
             $table->softDeletes();
-            $table->timestamps(); //create and update view dates ...
-
+            $table->timestamps();
         });
     }
 

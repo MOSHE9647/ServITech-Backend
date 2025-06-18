@@ -51,25 +51,6 @@ trait HandleImageUploads
     }
 
     /**
-     * Update images by deleting old ones and storing new ones.
-     *
-     * This method deletes existing images associated with a related ID,
-     * then stores new images and returns their paths, titles, and alt texts.
-     *
-     * @param array $images         Images to be updated, typically from a request input.
-     * @param int|string $relatedId The ID of the related entity to which the images belong.
-     * @param string $prefix        Prefix for the image title, default is 'image'.
-     * @param string $directory     Directory where the images will be stored, default is 'default'.
-     * @return array                An array of associative arrays containing the stored image paths, titles, and alt texts.
-     */
-    public function updateImages(array $images, $relatedId, string $prefix = 'image', string $directory = 'default'): array
-    {
-        $this->deleteImages($images);
-        $newImages = $this->storeImages($images, $relatedId, $prefix, $directory);
-        return $newImages;
-    }
-
-    /**
      * Delete images from storage.
      *
      * This method deletes images from the storage based on the provided model instances.
@@ -77,14 +58,23 @@ trait HandleImageUploads
      * The method ensures that the image files are removed from the storage
      * and the corresponding database records are deleted.
      *
-     * @param array $images An array of model instances representing the images to be deleted.
+     * @param mixed $images Collection, array, or relation of model instances representing the images to be deleted.
      * @return void
      */
-    public function deleteImages(array $images): void
+    public function deleteImages($images): void
     {
+        // Convert collection or relation to array if needed
+        if ($images instanceof \Illuminate\Database\Eloquent\Collection) {
+            $images = $images->all();
+        } elseif (method_exists($images, 'get')) {
+            // Handle Eloquent relations
+            $images = $images->get()->all();
+        }
+
         foreach ($images as $image) {
-            $path = $image->path; //<- Store the path of the image before deleting
-            $image->delete(); //<- Delete the image record from the database
+            $path = $image->path; // Store the path of the image before deleting
+            $image->delete(); // Delete the image record from the database
+            
             // Check if the image path exists in storage and delete it
             if ($path && Storage::exists($path)) {
                 Storage::delete($path);
