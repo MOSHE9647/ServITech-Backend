@@ -5,6 +5,10 @@
 
     RewriteEngine On
 
+    # Permitir acceso a archivos del storage (enlace simbólico)
+    RewriteCond %{REQUEST_URI} ^/storage/
+    RewriteRule ^storage/(.*)$ storage/$1 [L,QSA]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
