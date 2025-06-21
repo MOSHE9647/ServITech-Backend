@@ -273,7 +273,7 @@ class AuthController extends Controller implements HasMiddleware
         }
 
         // Logs out the user
-        auth()->logout(true);
+        auth()->logout();
 
         // Returns a success response
         return ApiResponse::success(

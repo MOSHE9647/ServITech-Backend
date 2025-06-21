@@ -63,7 +63,7 @@ Route::localizedGroup(function () {
             Route::put('{supportRequest}', [SupportRequestController::class, 'update'])->name('support-request.update');
             Route::delete('{supportRequest}', [SupportRequestController::class, 'destroy'])->name('support-request.destroy');
         });
-        
+
         // User Routes
         Route::prefix('user')->group(function () {
             Route::get('profile', [UserController::class, 'profile'])->name('user.profile');
@@ -75,13 +75,13 @@ Route::localizedGroup(function () {
         Route::middleware("role:" . UserRoles::ADMIN->value)->group(function () {
             // Category Routes
             Route::prefix('category')->group(function () {
-                Route::get('', [CategoryController::class,'index'])->name('category.index');
-                Route::post('', [CategoryController::class,'store'])->name('category.store');
-                Route::get('{category:name}', [CategoryController::class,'show'])->name('category.show');
-                Route::put('{category:name}', [CategoryController::class,'update'])->name('category.update');
-                Route::delete('{category:name}', [CategoryController::class,'destroy'])->name('category.destroy');
+                Route::get('', [CategoryController::class, 'index'])->name('category.index');
+                Route::post('', [CategoryController::class, 'store'])->name('category.store');
+                Route::get('{category:name}', [CategoryController::class, 'show'])->name('category.show');
+                Route::put('{category:name}', [CategoryController::class, 'update'])->name('category.update');
+                Route::delete('{category:name}', [CategoryController::class, 'destroy'])->name('category.destroy');
             });
-            
+
             // RepairRequest Routes
             Route::prefix('repair-request')->group(function () {
                 Route::get('', [RepairRequestController::class, 'index'])->name('repair-request.index');

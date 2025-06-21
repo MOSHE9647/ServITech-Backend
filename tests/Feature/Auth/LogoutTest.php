@@ -3,7 +3,7 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\User;
-use Database\Seeders\UserSeeder;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -18,7 +18,7 @@ class LogoutTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp(); // Call the parent setUp method
-        $this->seed(UserSeeder::class); // Seed the database with test users
+        $this->seed(DatabaseSeeder::class); // Seed the database with test users
     }
 
     /**
@@ -37,8 +37,8 @@ class LogoutTest extends TestCase
         // Then: The response should return a 200 status with a success message
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'status', 
-                'message', 
+                'status',
+                'message',
                 'data'
             ])
             ->assertJsonFragment([
@@ -61,7 +61,7 @@ class LogoutTest extends TestCase
         // Then: The response should return a 401 status with an authentication error
         $response->assertStatus(401)
             ->assertJsonStructure([
-                'status', 
+                'status',
                 'message'
             ])
             ->assertJsonFragment([
@@ -95,7 +95,7 @@ class LogoutTest extends TestCase
     {
         // Given: A user with an expired token (we simulate this by using an invalid token)
         $user = User::where('email', 'example@example.com')->first();
-        
+
         // When: Attempting to logout with an invalid/expired token
         $response = $this->postJson(route('auth.logout'), [], [
             'Authorization' => 'Bearer expired.jwt.token'
@@ -142,10 +142,10 @@ class LogoutTest extends TestCase
             'email' => 'example@example.com',
             'password' => 'password',
         ];
-        
+
         $loginResponse = $this->postJson(route('auth.login'), $credentials);
         $loginResponse->assertStatus(200);
-        
+
         $token = $loginResponse->json('data.token');
         $this->assertNotNull($token);
 
@@ -153,7 +153,7 @@ class LogoutTest extends TestCase
         $logoutResponse = $this->postJson(route('auth.logout'), [], [
             'Authorization' => 'Bearer ' . $token
         ]);
-        
+
         // Then: The logout should be successful
         $logoutResponse->assertStatus(200);
 

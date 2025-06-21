@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Auth;
 
-use Database\Seeders\UserSeeder;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -17,7 +17,7 @@ class LoginTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp(); // Call the parent setUp method
-        $this->seed(UserSeeder::class); // Seed the database with test users
+        $this->seed(DatabaseSeeder::class); // Seed the database with test users
     }
 
     /**
@@ -43,7 +43,7 @@ class LoginTest extends TestCase
                 'data' => [
                     'user' => [
                         'id',
-                        'name', 
+                        'name',
                         'email'
                     ],
                     'token',
@@ -76,11 +76,11 @@ class LoginTest extends TestCase
         $response->assertStatus(400)
             ->assertJsonStructure([
                 'status',
-                'message', 
+                'message',
                 'errors' => ['email']
             ])
             ->assertJsonFragment([
-                'status' => 400, 
+                'status' => 400,
                 'message' => __('passwords.user')
             ])
             ->assertJsonPath('errors.email', __('passwords.user'));
@@ -132,8 +132,8 @@ class LoginTest extends TestCase
         // Then: The response should return a 422 status with validation errors for the email field
         $response->assertStatus(422)
             ->assertJsonStructure([
-                'status', 
-                'message', 
+                'status',
+                'message',
                 'errors' => ['email']
             ])
             ->assertJsonPath('errors.email', __('validation.required', [
@@ -159,8 +159,8 @@ class LoginTest extends TestCase
         // Then: The response should return a 422 status with validation errors for the email field
         $response->assertStatus(422)
             ->assertJsonStructure([
-                'status', 
-                'message', 
+                'status',
+                'message',
                 'errors' => ['email']
             ])
             ->assertJsonPath('errors.email', __('validation.email', [
@@ -186,8 +186,8 @@ class LoginTest extends TestCase
         // Then: The response should return a 422 status with validation errors for the email field
         $response->assertStatus(422)
             ->assertJsonStructure([
-                'status', 
-                'message', 
+                'status',
+                'message',
                 'errors' => ['email']
             ]);
 
@@ -215,8 +215,8 @@ class LoginTest extends TestCase
         // Then: The response should return a 422 status with validation errors for the password field
         $response->assertStatus(422)
             ->assertJsonStructure([
-                'status', 
-                'message', 
+                'status',
+                'message',
                 'errors' => ['password']
             ])
             ->assertJsonPath('errors.password', __('validation.required', [
@@ -242,8 +242,8 @@ class LoginTest extends TestCase
         // Then: The response should return a 422 status with validation errors for the password field
         $response->assertStatus(422)
             ->assertJsonStructure([
-                'status', 
-                'message', 
+                'status',
+                'message',
                 'errors' => ['password']
             ])
             ->assertJsonPath('errors.password', __('validation.min.string', [

@@ -5,9 +5,9 @@ namespace Tests\Feature\Article;
 use App\Enums\UserRoles;
 use App\Models\Article;
 use App\Models\User;
-use Database\Seeders\ArticleSeeder;
-use Database\Seeders\UserSeeder;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class ArticleShowByIdTest extends TestCase
@@ -21,11 +21,8 @@ class ArticleShowByIdTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed([
-            // Seed the database with necessary data
-            UserSeeder::class,
-            ArticleSeeder::class,
-        ]);
+        $this->seed([DatabaseSeeder::class]); // Seed the database with initial data
+        Storage::fake('public'); // Use a fake storage disk for testing
     }
 
     /**
@@ -66,7 +63,7 @@ class ArticleShowByIdTest extends TestCase
         // Verify the returned article data matches the expected article
         $responseData = $response->json();
         $articleData = $responseData['data']['article'];
-        
+
         $this->assertEquals($article->id, $articleData['id']);
         $this->assertEquals($article->name, $articleData['name']);
         $this->assertEquals($article->description, $articleData['description']);
@@ -180,9 +177,9 @@ class ArticleShowByIdTest extends TestCase
         // Given: An article that we will soft delete
         $article = Article::inRandomOrder()->first();
         $this->assertNotNull($article, 'Article not found');
-        
+
         $articleId = $article->id;
-        
+
         // Soft delete the article
         $article->delete();
         $this->assertSoftDeleted('articles', ['id' => $articleId]);
@@ -203,7 +200,7 @@ class ArticleShowByIdTest extends TestCase
     {
         // Given: An article with images
         $article = Article::with('images')->whereHas('images')->first();
-        
+
         // If no article with images exists, create one with a mock image
         if (!$article) {
             $article = Article::inRandomOrder()->first();
@@ -225,14 +222,14 @@ class ArticleShowByIdTest extends TestCase
 
         // Then: The response should include the images
         $response->assertStatus(200);
-        
+
         $responseData = $response->json();
         $articleData = $responseData['data']['article'];
-        
+
         $this->assertArrayHasKey('images', $articleData);
         $this->assertIsArray($articleData['images']);
         $this->assertGreaterThan(0, count($articleData['images']));
-        
+
         // Verify image structure
         foreach ($articleData['images'] as $image) {
             $this->assertArrayHasKey('title', $image);
@@ -249,7 +246,7 @@ class ArticleShowByIdTest extends TestCase
     {
         // Given: An article without images
         $article = Article::doesntHave('images')->first();
-        
+
         // If no such article exists, create one and ensure it has no images
         if (!$article) {
             $article = Article::inRandomOrder()->first();
@@ -264,10 +261,10 @@ class ArticleShowByIdTest extends TestCase
 
         // Then: The response should include an empty images array
         $response->assertStatus(200);
-        
+
         $responseData = $response->json();
         $articleData = $responseData['data']['article'];
-        
+
         $this->assertArrayHasKey('images', $articleData);
         $this->assertIsArray($articleData['images']);
         $this->assertCount(0, $articleData['images']);

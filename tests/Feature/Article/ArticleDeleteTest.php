@@ -5,8 +5,7 @@ namespace Tests\Feature\Article;
 use App\Enums\UserRoles;
 use App\Models\Article;
 use App\Models\User;
-use Database\Seeders\ArticleSeeder;
-use Database\Seeders\UserSeeder;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -22,19 +21,18 @@ class ArticleDeleteTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed([
-            // Seed the database with necessary data
-            UserSeeder::class,
-            ArticleSeeder::class,
-        ]);
-    }    /**
+        $this->seed([DatabaseSeeder::class]); // Seed the database with initial data
+        Storage::fake('public'); // Use a fake storage disk for testing
+    }
+
+    /**
      * Test that an authenticated admin user can delete an article.
      * This ensures that only admin users can delete articles successfully.
      */
     public function test_an_authenticated_admin_user_can_delete_an_article(): void
     {
         Storage::fake('public');
-        
+
         // Given: An existing article
         $article = Article::inRandomOrder()->first();
         $this->assertNotNull($article, 'Article not found');
@@ -48,14 +46,16 @@ class ArticleDeleteTest extends TestCase
         // Then: The request should succeed, and the article should be deleted from the database
         $response->assertStatus(200);
         $response->assertJsonStructure(['status', 'message']);
-        
+
         $response->assertJsonFragment([
             'message' => __('messages.common.deleted', ['item' => __('messages.entities.article.singular')])
         ]);
 
         // Verify that the article is soft deleted
         $this->assertSoftDeleted('articles', ['id' => $article->id]);
-    }    /**
+    }
+
+    /**
      * Test that an authenticated non-admin user cannot delete an article.
      * This ensures that only admin users can delete articles.
      */
@@ -74,10 +74,12 @@ class ArticleDeleteTest extends TestCase
         // Then: The request should fail with a 403 Forbidden status
         $response->assertStatus(403);
         $response->assertJsonStructure(['status', 'message']);
-        
+
         // Verify that the article was not deleted
         $this->assertDatabaseHas('articles', ['id' => $article->id, 'deleted_at' => null]);
-    }    /**
+    }
+
+    /**
      * Test that a non-authenticated user cannot delete an article.
      * This ensures that only authenticated users can delete articles.
      */
@@ -93,10 +95,12 @@ class ArticleDeleteTest extends TestCase
         // Then: The request should fail with a 401 Unauthorized status
         $response->assertStatus(401);
         $response->assertJsonStructure(['status', 'message']);
-        
+
         // Verify that the article was not deleted
         $this->assertDatabaseHas('articles', ['id' => $article->id, 'deleted_at' => null]);
-    }    /**
+    }
+
+    /**
      * Test that deleting a non-existent article returns a 404 error.
      * This ensures that the API handles non-existent resources gracefully.
      */
@@ -124,10 +128,10 @@ class ArticleDeleteTest extends TestCase
     public function test_deleting_article_with_images_removes_images(): void
     {
         Storage::fake('public');
-        
+
         // Given: An article with images
         $article = Article::with('images')->whereHas('images')->first();
-        
+
         // If no article with images exists, create one with fake images
         if (!$article) {
             $article = Article::inRandomOrder()->first();
@@ -138,10 +142,10 @@ class ArticleDeleteTest extends TestCase
             ]);
             $article->refresh();
         }
-        
+
         $this->assertNotNull($article, 'Article not found');
         $this->assertTrue($article->images->count() > 0, 'Article should have images');
-        
+
         $imageCount = $article->images->count();
 
         // When: An admin user deletes the article
@@ -153,10 +157,10 @@ class ArticleDeleteTest extends TestCase
         // Then: The article and its images should be deleted
         $response->assertStatus(200);
         $response->assertJsonStructure(['status', 'message']);
-        
+
         // Verify the article is soft deleted
         $this->assertSoftDeleted('articles', ['id' => $article->id]);
-        
+
         // Verify that the images records are also deleted from the database
         $this->assertEquals(0, $article->fresh()->images()->count());
     }
@@ -170,7 +174,7 @@ class ArticleDeleteTest extends TestCase
         // Given: An article that is already soft deleted
         $article = Article::inRandomOrder()->first();
         $this->assertNotNull($article, 'Article not found');
-        
+
         // Soft delete the article first
         $article->delete();
         $this->assertSoftDeleted('articles', ['id' => $article->id]);

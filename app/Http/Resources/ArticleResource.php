@@ -15,15 +15,17 @@ class ArticleResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'          => $this->id,
+            'id' => $this->id,
             'category_id' => $this->category_id,
             'subcategory_id' => $this->subcategory_id,
-            'name'        => $this->name,
+            'name' => $this->name,
             'description' => $this->description,
-            'price'       => $this->price,
-            'images'      => ImageResource::collection(
+            'price' => $this->price,
+            'images' => ImageResource::collection(
                 $this->whenLoaded('images')
             ),
+            'category' => new CategoryResource($this->whenLoaded('category')),
+            'subcategory' => new SubcategoryResource($this->whenLoaded('subcategory')),
         ];
     }
 }

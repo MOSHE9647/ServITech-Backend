@@ -4,7 +4,7 @@ namespace Tests\Feature\Auth;
 
 use App\Models\User;
 use App\Notifications\ResetPasswordNotification;
-use Database\Seeders\UserSeeder;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
@@ -24,8 +24,8 @@ class ResetPasswordTest extends TestCase
      */
     protected function setUp(): void
     {
-        parent::setUp();
-        $this->seed(UserSeeder::class); // Seed the database with test users
+        parent::setUp(); // Call the parent setUp method
+        $this->seed(DatabaseSeeder::class); // Seed the database with test users
     }
 
     /**
@@ -126,7 +126,7 @@ class ResetPasswordTest extends TestCase
     {
         // Given: An invalid token
         $invalidToken = 'invalid-token-12345';
-        
+
         // When: The user attempts to reset password with invalid token
         $response = $this->putJson(route('auth.reset-password'), [
             'email' => 'example@example.com',
@@ -149,7 +149,7 @@ class ResetPasswordTest extends TestCase
     {
         // Given: A valid token but non-existing email
         $token = $this->sendResetPasswordAndGetToken();
-        
+
         // When: The user attempts to reset password with non-existing email
         $response = $this->putJson(route('auth.reset-password'), [
             'email' => 'nonexisting@example.com',
@@ -181,8 +181,8 @@ class ResetPasswordTest extends TestCase
         // Then: The response should return a 422 status with validation errors for the email field
         $response->assertStatus(422)
             ->assertJsonStructure([
-                'status', 
-                'message', 
+                'status',
+                'message',
                 'errors' => ['email']
             ])
             ->assertJsonPath('errors.email', __('validation.required', [
@@ -207,8 +207,8 @@ class ResetPasswordTest extends TestCase
         // Then: The response should return a 422 status with validation errors for the email field
         $response->assertStatus(422)
             ->assertJsonStructure([
-                'status', 
-                'message', 
+                'status',
+                'message',
                 'errors' => ['email']
             ])
             ->assertJsonPath('errors.email', __('validation.email', [
@@ -233,8 +233,8 @@ class ResetPasswordTest extends TestCase
         // Then: The response should return a 422 status with validation errors for the email field
         $response->assertStatus(422)
             ->assertJsonStructure([
-                'status', 
-                'message', 
+                'status',
+                'message',
                 'errors' => ['email']
             ])
             ->assertJsonPath('errors.email', __('validation.exists', [
@@ -263,8 +263,8 @@ class ResetPasswordTest extends TestCase
         // Then: The response should return a 422 status with validation errors for the email field
         $response->assertStatus(422)
             ->assertJsonStructure([
-                'status', 
-                'message', 
+                'status',
+                'message',
                 'errors' => ['email']
             ])
             ->assertJsonPath('errors.email', __('validation.required', [
@@ -291,8 +291,8 @@ class ResetPasswordTest extends TestCase
         // Then: The response should return a 422 status with validation errors for the password field
         $response->assertStatus(422)
             ->assertJsonStructure([
-                'status', 
-                'message', 
+                'status',
+                'message',
                 'errors' => ['password']
             ])
             ->assertJsonPath('errors.password', __('validation.required', [
@@ -320,8 +320,8 @@ class ResetPasswordTest extends TestCase
         // Then: The response should return a 422 status with validation errors for the password field
         $response->assertStatus(422)
             ->assertJsonStructure([
-                'status', 
-                'message', 
+                'status',
+                'message',
                 'errors' => ['password']
             ])
             ->assertJsonPath('errors.password', __('validation.confirmed', [
@@ -349,8 +349,8 @@ class ResetPasswordTest extends TestCase
         // Then: The response should return a 422 status with validation errors for the password field
         $response->assertStatus(422)
             ->assertJsonStructure([
-                'status', 
-                'message', 
+                'status',
+                'message',
                 'errors' => ['password']
             ])
             ->assertJsonPath('errors.password', __('validation.min.string', [
@@ -376,8 +376,8 @@ class ResetPasswordTest extends TestCase
         // Then: The response should return a 422 status with validation errors for the token field
         $response->assertStatus(422)
             ->assertJsonStructure([
-                'status', 
-                'message', 
+                'status',
+                'message',
                 'errors' => ['token']
             ])
             ->assertJsonPath('errors.token', __('validation.required', [
@@ -438,9 +438,9 @@ class ResetPasswordTest extends TestCase
 
         // Verify that the notification contains a token
         Notification::assertSentTo(
-            [$user], 
-            ResetPasswordNotification::class, 
-            fn ($notification) => $notification->url && $notification->via($user) === ['mail']
+            [$user],
+            ResetPasswordNotification::class,
+            fn($notification) => $notification->url && $notification->via($user) === ['mail']
         );
 
         // Also verify that exactly one notification was sent

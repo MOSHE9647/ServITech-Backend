@@ -25,6 +25,7 @@ class SubcategoryController extends Controller
      * 
      * This method retrieves all subcategories from the database,
      * orders them by ID in descending order, and returns them in a JSON response.
+     * @unauthenticated
      * 
      * @return JsonResponse A JSON response containing the list of subcategories.
      * @throws \Exception If there is an error retrieving the subcategories.
@@ -41,7 +42,7 @@ class SubcategoryController extends Controller
         return ApiResponse::success(
             data: ['subcategories' => SubcategoryResource::collection($subcategories)],
             message: __(
-                'messages.common.retrieved_all', 
+                'messages.common.retrieved_all',
                 ['items' => __('messages.entities.subcategory.plural')]
             )
         );
@@ -52,6 +53,7 @@ class SubcategoryController extends Controller
      * 
      * This method handles the creation of a new subcategory
      * by validating the request data and storing it in the database.
+     * @unauthenticated
      * 
      * @param CreateSubcategoryRequest $request The request object containing the data 
      * for creating a subcategory.
@@ -79,7 +81,7 @@ class SubcategoryController extends Controller
                 status: Response::HTTP_CREATED,
                 data: ['subcategory' => new SubcategoryResource($subcategory)],
                 message: __(
-                    'messages.common.created', 
+                    'messages.common.created',
                     ['item' => __('messages.entities.subcategory.singular')]
                 )
             );
@@ -91,7 +93,7 @@ class SubcategoryController extends Controller
             return ApiResponse::error(
                 status: Response::HTTP_INTERNAL_SERVER_ERROR,
                 message: __(
-                    'messages.common.creation_failed', 
+                    'messages.common.creation_failed',
                     ['item' => __('messages.entities.subcategory.singular')]
                 ),
                 errors: ['exception' => $th->getMessage()]
@@ -104,6 +106,7 @@ class SubcategoryController extends Controller
      * 
      * This method retrieves a specific subcategory by its model binding
      * and returns its details in a JSON response.
+     * @unauthenticated
      * 
      * @param Subcategory $subcategory The subcategory to be displayed.
      * @return JsonResponse A JSON response containing the details of the subcategory.
@@ -116,7 +119,7 @@ class SubcategoryController extends Controller
             // If the subcategory does not exist, return an error response
             return ApiResponse::error(
                 message: __(
-                    'messages.common.not_found', 
+                    'messages.common.not_found',
                     ['item' => __('messages.entities.subcategory.singular')]
                 ),
                 status: Response::HTTP_NOT_FOUND
@@ -130,7 +133,7 @@ class SubcategoryController extends Controller
         return ApiResponse::success(
             data: ['subcategory' => new SubcategoryResource($subcategory)],
             message: __(
-                'messages.common.retrieved', 
+                'messages.common.retrieved',
                 ['item' => __('messages.entities.subcategory.singular')]
             )
         );
@@ -141,6 +144,7 @@ class SubcategoryController extends Controller
      * 
      * This method handles the update of an existing subcategory by its model binding
      * by validating the request data and updating the record in the database.
+     * @unauthenticated
      *
      * @param UpdateSubcategoryRequest $request The request object containing the data
      * for updating the subcategory.
@@ -156,7 +160,7 @@ class SubcategoryController extends Controller
             // If the subcategory does not exist, return an error response
             return ApiResponse::error(
                 message: __(
-                    'messages.common.not_found', 
+                    'messages.common.not_found',
                     ['item' => __('messages.entities.subcategory.singular')]
                 ),
                 status: Response::HTTP_NOT_FOUND
@@ -180,7 +184,7 @@ class SubcategoryController extends Controller
             return ApiResponse::success(
                 data: ['subcategory' => new SubcategoryResource($subcategory->fresh('category'))],
                 message: __(
-                    'messages.common.updated', 
+                    'messages.common.updated',
                     ['item' => __('messages.entities.subcategory.singular')]
                 )
             );
@@ -192,7 +196,7 @@ class SubcategoryController extends Controller
             return ApiResponse::error(
                 status: Response::HTTP_INTERNAL_SERVER_ERROR,
                 message: __(
-                    'messages.common.update_failed', 
+                    'messages.common.update_failed',
                     ['item' => __('messages.entities.subcategory.singular')]
                 ),
                 errors: ['exception' => $th->getMessage()]
@@ -204,6 +208,7 @@ class SubcategoryController extends Controller
      * Remove a specific subcategory.
      * 
      * This method deletes a specific subcategory by its model binding from the database.
+     * @unauthenticated
      *
      * @param Subcategory $subcategory The subcategory to be deleted.
      * @return JsonResponse A JSON response indicating the success of the operation.
@@ -216,7 +221,7 @@ class SubcategoryController extends Controller
             // If the subcategory does not exist, return an error response
             return ApiResponse::error(
                 message: __(
-                    'messages.common.not_found', 
+                    'messages.common.not_found',
                     ['item' => __('messages.entities.subcategory.singular')]
                 ),
                 status: Response::HTTP_NOT_FOUND
@@ -230,7 +235,7 @@ class SubcategoryController extends Controller
             // Return a successful response indicating the subcategory was deleted
             return ApiResponse::success(
                 message: __(
-                    'messages.common.deleted', 
+                    'messages.common.deleted',
                     ['item' => __('messages.entities.subcategory.singular')]
                 )
             );

@@ -5,10 +5,8 @@ namespace Tests\Feature\Article;
 use App\Enums\UserRoles;
 use App\Models\Article;
 use App\Models\Category;
-use App\Models\Subcategory;
 use App\Models\User;
-use Database\Seeders\ArticleSeeder;
-use Database\Seeders\UserSeeder;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -25,11 +23,8 @@ class ArticleUpdateTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed([
-            // Seed the database with necessary data
-            UserSeeder::class,
-            ArticleSeeder::class,
-        ]);
+        $this->seed([DatabaseSeeder::class]); // Seed the database with initial data
+        Storage::fake('public'); // Use a fake storage disk for testing
     }
 
     /**
@@ -39,7 +34,7 @@ class ArticleUpdateTest extends TestCase
     public function test_an_authenticated_admin_user_can_update_an_article(): void
     {
         Storage::fake('public');
-        
+
         // Given: An existing article
         $article = Article::inRandomOrder()->first();
         $this->assertNotNull($article, 'Article not found');
@@ -427,7 +422,7 @@ class ArticleUpdateTest extends TestCase
     public function test_admin_can_update_article_with_new_images(): void
     {
         Storage::fake('public');
-        
+
         // Given: An existing article
         $article = Article::inRandomOrder()->first();
         $this->assertNotNull($article, 'Article not found');
@@ -490,7 +485,7 @@ class ArticleUpdateTest extends TestCase
     public function test_validation_fails_for_invalid_image_files_during_update(): void
     {
         Storage::fake('public');
-        
+
         // Given: An existing article
         $article = Article::inRandomOrder()->first();
         $this->assertNotNull($article, 'Article not found');

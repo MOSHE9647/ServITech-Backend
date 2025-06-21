@@ -7,9 +7,9 @@ use App\Models\Article;
 use App\Models\Category;
 use App\Models\Subcategory;
 use App\Models\User;
-use Database\Seeders\ArticleSeeder;
-use Database\Seeders\UserSeeder;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class ArticleShowByCategoryTest extends TestCase
@@ -23,13 +23,10 @@ class ArticleShowByCategoryTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed([
-            // Seed the database with necessary data
-            UserSeeder::class,
-            ArticleSeeder::class,
-        ]);
-    }    
-    
+        $this->seed([DatabaseSeeder::class]); // Seed the database with initial data
+        Storage::fake('public'); // Use a fake storage disk for testing
+    }
+
     /**
      * Test that articles can be retrieved by an existing category name.
      * This ensures that the endpoint returns articles for a valid category.
@@ -39,7 +36,7 @@ class ArticleShowByCategoryTest extends TestCase
         // Given: A category with articles
         $category = Category::has('articles')->first();
         $this->assertNotNull($category, 'Category with articles not found');
-        
+
         $expectedArticleCount = $category->articles()->count();
         $this->assertGreaterThan(0, $expectedArticleCount, 'Category should have articles');
 
@@ -50,7 +47,7 @@ class ArticleShowByCategoryTest extends TestCase
         $response->assertStatus(200);
         $response->assertJsonStructure([
             'status',
-            'message', 
+            'message',
             'data' => [
                 'articles' => [
                     '*' => [
@@ -95,7 +92,7 @@ class ArticleShowByCategoryTest extends TestCase
         // Then: The request should return a 404 error
         $response->assertStatus(404);
         $response->assertJsonStructure(['status', 'message']);
-        
+
         $response->assertJsonFragment([
             'status' => 404,
             'message' => __('messages.common.not_found', ['item' => __('messages.entities.article.singular')])
@@ -110,7 +107,7 @@ class ArticleShowByCategoryTest extends TestCase
     {
         // Given: A category without articles
         $category = Category::doesntHave('articles')->first();
-        
+
         // If no such category exists, create one
         if (!$category) {
             $category = Category::factory()->create([
@@ -127,13 +124,13 @@ class ArticleShowByCategoryTest extends TestCase
         // Then: The request should return a 404 error
         $response->assertStatus(404);
         $response->assertJsonStructure(['status', 'message']);
-        
+
         $response->assertJsonFragment([
             'status' => 404,
             'message' => __('messages.common.not_found', ['item' => __('messages.entities.article.singular')])
         ]);
     }
-    
+
     /**
      * Test that the endpoint works with different category names.
      * This ensures proper handling of category names.
@@ -146,14 +143,14 @@ class ArticleShowByCategoryTest extends TestCase
             'name' => $categoryName,
             'description' => 'A test category'
         ]);
-        
+
         // Create a subcategory for this category
         $subcategory = Subcategory::factory()->create([
             'category_id' => $category->id,
             'name' => 'Test Subcategory',
             'description' => 'Test subcategory'
         ]);
-        
+
         // Create some articles for this category
         $article = Article::factory()->create([
             'category_id' => $category->id,
@@ -170,13 +167,13 @@ class ArticleShowByCategoryTest extends TestCase
             'message',
             'data' => ['articles']
         ]);
-        
+
         // Verify the returned article belongs to the correct category
         $responseData = $response->json();
         $this->assertCount(1, $responseData['data']['articles']);
         $this->assertEquals($category->id, $responseData['data']['articles'][0]['category_id']);
     }
-    
+
     /**
      * Test that articles are returned with proper relationships loaded.
      * This ensures that category_id, subcategory_id, and images are properly included.
@@ -192,25 +189,25 @@ class ArticleShowByCategoryTest extends TestCase
 
         // Then: The articles should include all necessary relationships
         $response->assertStatus(200);
-        
+
         $responseData = $response->json();
         $articles = $responseData['data']['articles'];
-        
+
         $this->assertNotEmpty($articles, 'Should return articles');
-        
+
         foreach ($articles as $article) {
             // Verify category_id
             $this->assertArrayHasKey('category_id', $article);
             $this->assertEquals($category->id, $article['category_id']);
-            
+
             // Verify subcategory_id
             $this->assertArrayHasKey('subcategory_id', $article);
             $this->assertIsNumeric($article['subcategory_id']);
-            
+
             // Verify images relationship (array should exist even if empty)
             $this->assertArrayHasKey('images', $article);
             $this->assertIsArray($article['images']);
-            
+
             // Verify other required fields
             $this->assertArrayHasKey('id', $article);
             $this->assertArrayHasKey('name', $article);
@@ -228,7 +225,7 @@ class ArticleShowByCategoryTest extends TestCase
         // Given: A category with articles
         $category = Category::has('articles')->first();
         $this->assertNotNull($category, 'Category with articles not found');
-        
+
         $originalCategoryName = $category->name;
         $uppercaseCategoryName = strtoupper($originalCategoryName);
 
@@ -238,7 +235,7 @@ class ArticleShowByCategoryTest extends TestCase
 
         // Then: Original case should work, uppercase should fail (if they're different)
         $originalResponse->assertStatus(200);
-        
+
         if ($originalCategoryName !== $uppercaseCategoryName) {
             $uppercaseResponse->assertStatus(404);
         }
@@ -253,13 +250,13 @@ class ArticleShowByCategoryTest extends TestCase
         // Given: A category with articles, where we soft delete one article
         $category = Category::has('articles')->first();
         $this->assertNotNull($category, 'Category with articles not found');
-        
+
         $articlesInCategory = $category->articles;
         $this->assertGreaterThan(0, $articlesInCategory->count(), 'Category should have articles');
-        
+
         $articleToDelete = $articlesInCategory->first();
         $originalCount = $articlesInCategory->count();
-        
+
         // Soft delete one article
         $articleToDelete->delete();
 
@@ -271,7 +268,7 @@ class ArticleShowByCategoryTest extends TestCase
             $response->assertStatus(200);
             $responseData = $response->json();
             $this->assertCount($originalCount - 1, $responseData['data']['articles']);
-            
+
             // Verify the deleted article is not in the results
             $returnedArticleIds = array_column($responseData['data']['articles'], 'id');
             $this->assertNotContains($articleToDelete->id, $returnedArticleIds);
@@ -312,7 +309,7 @@ class ArticleShowByCategoryTest extends TestCase
         // Given: A category with articles and an authenticated user
         $category = Category::has('articles')->first();
         $this->assertNotNull($category, 'Category with articles not found');
-        
+
         $user = User::role(UserRoles::USER)->first();
         $this->assertNotNull($user, 'User not found');
 
@@ -337,7 +334,7 @@ class ArticleShowByCategoryTest extends TestCase
         // Given: A category with articles and an admin user
         $category = Category::has('articles')->first();
         $this->assertNotNull($category, 'Category with articles not found');
-        
+
         $admin = User::role(UserRoles::ADMIN)->first();
         $this->assertNotNull($admin, 'Admin user not found');
 

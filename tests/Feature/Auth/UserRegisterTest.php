@@ -4,7 +4,7 @@ namespace Tests\Feature\Auth;
 
 use App\Enums\UserRoles;
 use App\Models\User;
-use Database\Seeders\UserSeeder;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -19,7 +19,7 @@ class UserRegisterTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp(); // Call the parent setUp method
-        $this->seed(UserSeeder::class); // Seed the database with test users
+        $this->seed(DatabaseSeeder::class); // Seed the database with test users
     }
 
     /**
@@ -30,10 +30,10 @@ class UserRegisterTest extends TestCase
     {
         // Given: Valid user data
         $data = [
-            "name"                  => "Example User",
-            "phone"                 => "1234567890",
-            "email"                 => "email@email.com",
-            "password"              => "password",
+            "name" => "Example User",
+            "phone" => "1234567890",
+            "email" => "email@email.com",
+            "password" => "password",
             "password_confirmation" => "password",
         ];
 
@@ -67,7 +67,7 @@ class UserRegisterTest extends TestCase
         // And: Ensure the user is in the database
         $this->assertDatabaseHas('users', [
             'email' => 'email@email.com',
-            'name'  => 'Example User',
+            'name' => 'Example User',
             'phone' => '1234567890',
         ]);
 
@@ -84,10 +84,10 @@ class UserRegisterTest extends TestCase
     {
         // Given: Valid user data for registration
         $userData = [
-            "name"                  => "Example User",
-            "phone"                 => "1234567890",
-            "email"                 => "email@email.com",
-            "password"              => "password",
+            "name" => "Example User",
+            "phone" => "1234567890",
+            "email" => "email@email.com",
+            "password" => "password",
             "password_confirmation" => "password",
         ];
 
@@ -96,7 +96,7 @@ class UserRegisterTest extends TestCase
         $registerResponse->assertStatus(201);
 
         $loginResponse = $this->postJson(route('auth.login'), [
-            "email"    => "email@email.com",
+            "email" => "email@email.com",
             "password" => "password",
         ]);
 
@@ -135,9 +135,9 @@ class UserRegisterTest extends TestCase
     {
         // Given: Missing email field
         $data = [
-            "name"                  => "Example User",
-            "phone"                 => "1234567890",
-            "password"              => "password",
+            "name" => "Example User",
+            "phone" => "1234567890",
+            "password" => "password",
             "password_confirmation" => "password",
         ];
 
@@ -147,8 +147,8 @@ class UserRegisterTest extends TestCase
         // Then: The response should return a 422 status with validation errors for the email field
         $response->assertStatus(422)
             ->assertJsonStructure([
-                'status', 
-                'message', 
+                'status',
+                'message',
                 'errors' => ['email']
             ])
             ->assertJsonPath('errors.email', __('validation.required', [
@@ -164,10 +164,10 @@ class UserRegisterTest extends TestCase
     {
         // Given: Invalid email format
         $data = [
-            "name"                  => "Example User",
-            "phone"                 => "1234567890",
-            "email"                 => "invalid-email-format",
-            "password"              => "password",
+            "name" => "Example User",
+            "phone" => "1234567890",
+            "email" => "invalid-email-format",
+            "password" => "password",
             "password_confirmation" => "password",
         ];
 
@@ -177,8 +177,8 @@ class UserRegisterTest extends TestCase
         // Then: The response should return a 422 status with validation errors for the email field
         $response->assertStatus(422)
             ->assertJsonStructure([
-                'status', 
-                'message', 
+                'status',
+                'message',
                 'errors' => ['email']
             ])
             ->assertJsonPath('errors.email', __('validation.email', [
@@ -196,10 +196,10 @@ class UserRegisterTest extends TestCase
         User::factory()->create(['email' => 'existing@email.com']);
 
         $data = [
-            "name"                  => "Example User",
-            "phone"                 => "1234567890",
-            "email"                 => "existing@email.com",
-            "password"              => "password",
+            "name" => "Example User",
+            "phone" => "1234567890",
+            "email" => "existing@email.com",
+            "password" => "password",
             "password_confirmation" => "password",
         ];
 
@@ -209,8 +209,8 @@ class UserRegisterTest extends TestCase
         // Then: The response should return a 422 status with validation errors for the email field
         $response->assertStatus(422)
             ->assertJsonStructure([
-                'status', 
-                'message', 
+                'status',
+                'message',
                 'errors' => ['email']
             ])
             ->assertJsonPath('errors.email', __('validation.unique', [
@@ -226,9 +226,9 @@ class UserRegisterTest extends TestCase
     {
         // Given: Missing password field
         $data = [
-            "name"                  => "Example User",
-            "phone"                 => "1234567890",
-            "email"                 => "email@email.com",
+            "name" => "Example User",
+            "phone" => "1234567890",
+            "email" => "email@email.com",
             "password_confirmation" => "password",
         ];
 
@@ -238,8 +238,8 @@ class UserRegisterTest extends TestCase
         // Then: The response should return a 422 status with validation errors for the password field
         $response->assertStatus(422)
             ->assertJsonStructure([
-                'status', 
-                'message', 
+                'status',
+                'message',
                 'errors' => ['password']
             ])
             ->assertJsonPath('errors.password', __('validation.required', [
@@ -255,10 +255,10 @@ class UserRegisterTest extends TestCase
     {
         // Given: Password with less than 8 characters
         $data = [
-            "name"                  => "Example User",
-            "phone"                 => "1234567890",
-            "email"                 => "email@email.com",
-            "password"              => "short",
+            "name" => "Example User",
+            "phone" => "1234567890",
+            "email" => "email@email.com",
+            "password" => "short",
             "password_confirmation" => "short",
         ];
 
@@ -268,8 +268,8 @@ class UserRegisterTest extends TestCase
         // Then: The response should return a 422 status with validation errors for the password field
         $response->assertStatus(422)
             ->assertJsonStructure([
-                'status', 
-                'message', 
+                'status',
+                'message',
                 'errors' => ['password']
             ])
             ->assertJsonPath('errors.password', __('validation.min.string', [
@@ -286,9 +286,9 @@ class UserRegisterTest extends TestCase
     {
         // Given: Missing password confirmation
         $data = [
-            "name"     => "Example User",
-            "phone"    => "1234567890",
-            "email"    => "email@email.com",
+            "name" => "Example User",
+            "phone" => "1234567890",
+            "email" => "email@email.com",
             "password" => "password",
         ];
 
@@ -298,8 +298,8 @@ class UserRegisterTest extends TestCase
         // Then: The response should return a 422 status with validation errors for the password field
         $response->assertStatus(422)
             ->assertJsonStructure([
-                'status', 
-                'message', 
+                'status',
+                'message',
                 'errors' => ['password']
             ])
             ->assertJsonPath('errors.password', __('validation.confirmed', [
@@ -315,10 +315,10 @@ class UserRegisterTest extends TestCase
     {
         // Given: Mismatched password and confirmation
         $data = [
-            "name"                  => "Example User",
-            "phone"                 => "1234567890",
-            "email"                 => "email@email.com",
-            "password"              => "password",
+            "name" => "Example User",
+            "phone" => "1234567890",
+            "email" => "email@email.com",
+            "password" => "password",
             "password_confirmation" => "different_password",
         ];
 
@@ -328,8 +328,8 @@ class UserRegisterTest extends TestCase
         // Then: The response should return a 422 status with validation errors for the password field
         $response->assertStatus(422)
             ->assertJsonStructure([
-                'status', 
-                'message', 
+                'status',
+                'message',
                 'errors' => ['password']
             ])
             ->assertJsonPath('errors.password', __('validation.confirmed', [
@@ -345,9 +345,9 @@ class UserRegisterTest extends TestCase
     {
         // Given: Missing name field
         $data = [
-            "phone"                 => "1234567890",
-            "email"                 => "email@email.com",
-            "password"              => "password",
+            "phone" => "1234567890",
+            "email" => "email@email.com",
+            "password" => "password",
             "password_confirmation" => "password",
         ];
 
@@ -357,8 +357,8 @@ class UserRegisterTest extends TestCase
         // Then: The response should return a 422 status with validation errors for the name field
         $response->assertStatus(422)
             ->assertJsonStructure([
-                'status', 
-                'message', 
+                'status',
+                'message',
                 'errors' => ['name']
             ])
             ->assertJsonPath('errors.name', __('validation.required', [
@@ -374,10 +374,10 @@ class UserRegisterTest extends TestCase
     {
         // Given: Non-string name value
         $data = [
-            "name"                  => 1234567890,
-            "phone"                 => "1234567890",
-            "email"                 => "email@email.com",
-            "password"              => "password",
+            "name" => 1234567890,
+            "phone" => "1234567890",
+            "email" => "email@email.com",
+            "password" => "password",
             "password_confirmation" => "password",
         ];
 
@@ -387,8 +387,8 @@ class UserRegisterTest extends TestCase
         // Then: The response should return a 422 status with validation errors for the name field
         $response->assertStatus(422)
             ->assertJsonStructure([
-                'status', 
-                'message', 
+                'status',
+                'message',
                 'errors' => ['name']
             ])
             ->assertJsonPath('errors.name', __('validation.string', [
@@ -404,10 +404,10 @@ class UserRegisterTest extends TestCase
     {
         // Given: Name with less than 2 characters
         $data = [
-            "name"                  => "E",
-            "phone"                 => "1234567890",
-            "email"                 => "email@email.com",
-            "password"              => "password",
+            "name" => "E",
+            "phone" => "1234567890",
+            "email" => "email@email.com",
+            "password" => "password",
             "password_confirmation" => "password",
         ];
 
@@ -417,8 +417,8 @@ class UserRegisterTest extends TestCase
         // Then: The response should return a 422 status with validation errors for the name field
         $response->assertStatus(422)
             ->assertJsonStructure([
-                'status', 
-                'message', 
+                'status',
+                'message',
                 'errors' => ['name']
             ])
             ->assertJsonPath('errors.name', __('validation.min.string', [
@@ -435,9 +435,9 @@ class UserRegisterTest extends TestCase
     {
         // Given: Missing phone field
         $data = [
-            "name"                  => "Example User",
-            "email"                 => "email@email.com",
-            "password"              => "password",
+            "name" => "Example User",
+            "email" => "email@email.com",
+            "password" => "password",
             "password_confirmation" => "password",
         ];
 
@@ -447,8 +447,8 @@ class UserRegisterTest extends TestCase
         // Then: The response should return a 422 status with validation errors for the phone field
         $response->assertStatus(422)
             ->assertJsonStructure([
-                'status', 
-                'message', 
+                'status',
+                'message',
                 'errors' => ['phone']
             ])
             ->assertJsonPath('errors.phone', __('validation.required', [
@@ -464,10 +464,10 @@ class UserRegisterTest extends TestCase
     {
         // Given: Non-string phone value
         $data = [
-            "name"                  => "Example User",
-            "phone"                 => 1234567890,
-            "email"                 => "email@email.com",
-            "password"              => "password",
+            "name" => "Example User",
+            "phone" => 1234567890,
+            "email" => "email@email.com",
+            "password" => "password",
             "password_confirmation" => "password",
         ];
 
@@ -477,8 +477,8 @@ class UserRegisterTest extends TestCase
         // Then: The response should return a 422 status with validation errors for the phone field
         $response->assertStatus(422)
             ->assertJsonStructure([
-                'status', 
-                'message', 
+                'status',
+                'message',
                 'errors' => ['phone']
             ])
             ->assertJsonPath('errors.phone', __('validation.string', [
@@ -494,10 +494,10 @@ class UserRegisterTest extends TestCase
     {
         // Given: Phone with less than 10 characters
         $data = [
-            "name"                  => "Example User",
-            "phone"                 => "123456789", // 9 characters
-            "email"                 => "email@email.com",
-            "password"              => "password",
+            "name" => "Example User",
+            "phone" => "123456789", // 9 characters
+            "email" => "email@email.com",
+            "password" => "password",
             "password_confirmation" => "password",
         ];
 
@@ -507,8 +507,8 @@ class UserRegisterTest extends TestCase
         // Then: The response should return a 422 status with validation errors for the phone field
         $response->assertStatus(422)
             ->assertJsonStructure([
-                'status', 
-                'message', 
+                'status',
+                'message',
                 'errors' => ['phone']
             ])
             ->assertJsonPath('errors.phone', __('validation.min.string', [
@@ -525,10 +525,10 @@ class UserRegisterTest extends TestCase
     {
         // Given: Valid user data
         $data = [
-            "name"                  => "Example User",
-            "phone"                 => "1234567890",
-            "email"                 => "test@example.com",
-            "password"              => "password",
+            "name" => "Example User",
+            "phone" => "1234567890",
+            "email" => "test@example.com",
+            "password" => "password",
             "password_confirmation" => "password",
         ];
 
@@ -552,10 +552,10 @@ class UserRegisterTest extends TestCase
     {
         // Given: Valid user data
         $data = [
-            "name"                  => "Resource Test User",
-            "phone"                 => "9876543210",
-            "email"                 => "resource@test.com",
-            "password"              => "password",
+            "name" => "Resource Test User",
+            "phone" => "9876543210",
+            "email" => "resource@test.com",
+            "password" => "password",
             "password_confirmation" => "password",
         ];
 
@@ -601,17 +601,17 @@ class UserRegisterTest extends TestCase
         // Given: Multiple sets of valid user data
         $users = [
             [
-                "name"                  => "User One",
-                "phone"                 => "1111111111",
-                "email"                 => "user1@example.com",
-                "password"              => "password",
+                "name" => "User One",
+                "phone" => "1111111111",
+                "email" => "user1@example.com",
+                "password" => "password",
                 "password_confirmation" => "password",
             ],
             [
-                "name"                  => "User Two",
-                "phone"                 => "2222222222",
-                "email"                 => "user2@example.com",
-                "password"              => "password",
+                "name" => "User Two",
+                "phone" => "2222222222",
+                "email" => "user2@example.com",
+                "password" => "password",
                 "password_confirmation" => "password",
             ]
         ];
@@ -619,7 +619,7 @@ class UserRegisterTest extends TestCase
         // When: Both users register
         foreach ($users as $index => $userData) {
             $response = $this->postJson(route('auth.register'), $userData);
-            
+
             // Then: Each registration should be successful
             $response->assertStatus(201)
                 ->assertJsonStructure([
@@ -660,10 +660,10 @@ class UserRegisterTest extends TestCase
     {
         // Given: Valid user data
         $data = [
-            "name"                  => "Security Test User",
-            "phone"                 => "5555555555",
-            "email"                 => "security@test.com",
-            "password"              => "secretpassword123",
+            "name" => "Security Test User",
+            "phone" => "5555555555",
+            "email" => "security@test.com",
+            "password" => "secretpassword123",
             "password_confirmation" => "secretpassword123",
         ];
 
@@ -672,9 +672,9 @@ class UserRegisterTest extends TestCase
 
         // Then: The response should not contain sensitive information
         $response->assertStatus(201);
-        
+
         $userData = $response->json('data.user');
-        
+
         // Verify sensitive fields are not exposed
         $this->assertArrayNotHasKey('password', $userData);
         $this->assertArrayNotHasKey('remember_token', $userData);
@@ -682,7 +682,7 @@ class UserRegisterTest extends TestCase
         $this->assertArrayNotHasKey('created_at', $userData);
         $this->assertArrayNotHasKey('updated_at', $userData);
         $this->assertArrayNotHasKey('deleted_at', $userData);
-        
+
         // Verify only expected fields are present
         $expectedFields = ['id', 'role', 'name', 'email', 'phone'];
         $this->assertEquals($expectedFields, array_keys($userData));
