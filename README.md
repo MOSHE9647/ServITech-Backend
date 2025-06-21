@@ -71,6 +71,8 @@ El sistema está compuesto por los siguientes componentes principales:
     /bin/bash -c "$(curl -fsSL https://php.new/install/linux/8.4)"
     ```
 
+---
+
 1. Clona el repositorio:
 
     ```bash
