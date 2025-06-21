@@ -57,6 +57,12 @@ jobs:
           DB_DATABASE: database/database.sqlite
         run: php artisan migrate --force
 
+      - name: Seed Database
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+        run: php artisan db:seed --force
+
       - name: Setup testing environment
         run: |
           php artisan config:clear
