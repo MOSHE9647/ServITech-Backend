@@ -43,12 +43,33 @@ El sistema está compuesto por los siguientes componentes principales:
 - [Laravel 12](https://laravel.com/)
 - [Node.js & NPM](https://nodejs.org/)
 - [MySQL](https://www.mysql.com/) / [SQLite](https://www.sqlite.org/)
-- [Swagger (L5-Swagger)](https://github.com/DarkaOnLine/L5-Swagger)
+- [Scramble (Dedoc Scramble)](https://scramble.dedoc.co/)
 - [JWT (jwt-auth)](https://jwt-auth.readthedocs.io/en/develop/)
 
 ---
 
 ## ⚙️ Instalación
+
+> Recuerda instalar Node.JS y ejecutar el siguiente comando para instalar PHP y Composer:
+
+- **Mac:**
+    
+    ```bash
+    /bin/bash -c "$(curl -fsSL https://php.new/install/mac/8.4)"
+    ```
+
+- **Windows:**
+
+    ```powershell
+    # Run as administrator...
+    Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://php.new/install/windows/8.4'))
+    ```
+
+- **Linux:**
+
+    ```bash
+    /bin/bash -c "$(curl -fsSL https://php.new/install/linux/8.4)"
+    ```
 
 1. Clona el repositorio:
 
@@ -106,14 +127,15 @@ Puedes acceder a la documentación en:
 ${APP_URL}/api/docs
 ```
 
-Esta documentación es generada automáticamente con Swagger (`l5-swagger`) e incluye ejemplos de uso y detalles de cada endpoint.
+Esta documentación es generada automáticamente con Scramble (`scramble`) e incluye ejemplos de uso y detalles de cada endpoint.
 
 La documentación está dividida en secciones para facilitar la navegación. Aquí tienes un resumen de las secciones más importantes:
 
 - **Autenticación**: Métodos para iniciar sesión y obtener tokens JWT.
-- **Usuarios**: Endpoints para gestionar usuarios, roles y permisos.
+- **Usuarios**: Endpoints para gestionar la información del usuario logueado.
 - **Artículos**: Métodos para gestionar artículos tecnológicos y de anime.
 - **Soporte Técnico**: Métodos para gestionar solicitudes de soporte técnico.
+- **Solicitudes de Reparación**: Métodos para gestionar solicitudes de reparación por parte de los administradores del sistema.
 
 ---
 ## 🧠 Uso de Gitflow
@@ -234,12 +256,6 @@ MAIL_USERNAME=tu_usuario
 MAIL_PASSWORD=tu_contraseña
 MAIL_FROM_ADDRESS="mailhelper@servitechcr.com"
 MAIL_FROM_NAME="${APP_NAME}"
-
-# L5 SWAGGER
-L5_SWAGGER_GENERATE_ALWAYS=true
-L5_SWAGGER_API_BASE_PATH=/
-SCRAMBLE_API_ROUTE=/api/doc
-L5_SWAGGER_USE_ABSOLUTE_PATH=true
 
 JWT_SECRET=tu_jwt_secret
 VITE_APP_NAME="${APP_NAME}"
