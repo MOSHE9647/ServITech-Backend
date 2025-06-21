@@ -70,4 +70,4 @@ jobs:
           APP_ENV: testing
           APP_KEY: base64:testing_key_for_github_actions
           VITE_APP_NAME: "${APP_NAME}"
-        run: php artisan test --parallel
+        run: php artisan test
