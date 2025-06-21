@@ -130,7 +130,7 @@ Luego, sigue las siguientes instrucciones  para clonar y ejecutar la aplicación
 Puedes acceder a la documentación en:
 
 ```
-${APP_URL}/api/docs
+${APP_URL}/docs/api
 ```
 
 Esta documentación es generada automáticamente con Scramble (`scramble`) e incluye ejemplos de uso y detalles de cada endpoint.
