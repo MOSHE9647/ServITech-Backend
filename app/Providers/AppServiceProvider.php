@@ -37,15 +37,15 @@ class AppServiceProvider extends ServiceProvider
                 $openApi->secure(
                     SecurityScheme::http('bearer', 'JWT')
                 );
-            })
-            ->withOperationTransformers(function (Operation $operation) {
-                $operation->addParameters([
-                    new Parameter('Accept-Language', 'header')
-                        ->setSchema(new Schema()->fromType(new StringType()))
-                        ->description('The language to use for the response. Defaults to the application\'s locale (es).')
-                        ->required(false)
-                        ->example('en')
-                ]);
             });
+        // ->withOperationTransformers(function (Operation $operation) {
+        //     $operation->addParameters([
+        //         new Parameter('Accept-Language', 'header')
+        //             ->setSchema(new Schema()->fromType(new StringType()))
+        //             ->description('The language to use for the response. Defaults to the application\'s locale (es).')
+        //             ->required(false)
+        //             ->example('en')
+        //     ]);
+        // });
     }
 }
