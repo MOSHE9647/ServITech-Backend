@@ -5,9 +5,9 @@ namespace Tests\Feature\Article;
 use App\Enums\UserRoles;
 use App\Models\Article;
 use App\Models\User;
-use Database\Seeders\ArticleSeeder;
-use Database\Seeders\UserSeeder;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class ArticleIndexTest extends TestCase
@@ -21,11 +21,8 @@ class ArticleIndexTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed([
-            // Seed the database with necessary data
-            UserSeeder::class,
-            ArticleSeeder::class,
-        ]);
+        $this->seed([DatabaseSeeder::class]); // Seed the database with initial data
+        Storage::fake('public'); // Use a fake storage disk for testing
     }
 
     /**
@@ -83,7 +80,7 @@ class ArticleIndexTest extends TestCase
         $response->assertStatus(200);
         $response->assertJsonStructure([
             'status',
-            'message', 
+            'message',
             'data' => [
                 'articles'
             ]
@@ -129,7 +126,7 @@ class ArticleIndexTest extends TestCase
 
         // Then: The articles should include their relationships
         $response->assertStatus(200);
-        
+
         $articles = $response->json('data.articles');
         $this->assertNotEmpty($articles, 'Articles array should not be empty');
 
@@ -139,26 +136,26 @@ class ArticleIndexTest extends TestCase
         $this->assertArrayHasKey('subcategory', $firstArticle, 'Article should have subcategory relationship');
         $this->assertArrayHasKey('images', $firstArticle, 'Article should have images relationship');
     }    /**
-     * Test that articles are ordered by ID in descending order.
-     * This ensures that newer articles appear first in the list.
-     */
+         * Test that articles are ordered by ID in descending order.
+         * This ensures that newer articles appear first in the list.
+         */
     public function test_articles_are_ordered_by_id_descending(): void
     {
         // Given: Multiple articles exist (create additional ones if needed)
         $initialCount = Article::count();
-        
+
         // If we don't have enough articles, create more
         if ($initialCount < 2) {
             $category = \App\Models\Category::first();
             $subcategory = $category->subcategories()->first();
-            
+
             // Create additional articles to have at least 3 total
             Article::factory(3 - $initialCount)->create([
                 'category_id' => $category->id,
                 'subcategory_id' => $subcategory->id,
             ]);
         }
-        
+
         $articleCount = Article::count();
         $this->assertGreaterThan(1, $articleCount, 'Need at least 2 articles for ordering test');
 
@@ -167,7 +164,7 @@ class ArticleIndexTest extends TestCase
 
         // Then: Articles should be ordered by ID in descending order
         $response->assertStatus(200);
-        
+
         $articles = $response->json('data.articles');
         $this->assertNotEmpty($articles, 'Articles array should not be empty');
 
@@ -175,7 +172,7 @@ class ArticleIndexTest extends TestCase
         $ids = array_column($articles, 'id');
         $sortedIds = $ids;
         rsort($sortedIds); // Sort in descending order
-        
+
         $this->assertEquals($sortedIds, $ids, 'Articles should be ordered by ID in descending order');
     }
 
@@ -190,22 +187,22 @@ class ArticleIndexTest extends TestCase
 
         // Then: The response should have the correct structure and data types
         $response->assertStatus(200);
-        
+
         $responseData = $response->json();
-        
+
         // Check main response structure
         $this->assertArrayHasKey('status', $responseData);
         $this->assertArrayHasKey('message', $responseData);
         $this->assertArrayHasKey('data', $responseData);
-        
+
         // Check data structure
         $this->assertArrayHasKey('articles', $responseData['data']);
         $this->assertIsArray($responseData['data']['articles']);
-        
+
         // Check status is an integer
         $this->assertIsInt($responseData['status']);
         $this->assertEquals(200, $responseData['status']);
-        
+
         // Check message is a string
         $this->assertIsString($responseData['message']);
     }
@@ -246,7 +243,7 @@ class ArticleIndexTest extends TestCase
                 'articles'
             ]
         ]);
-        
+
         $articles = $response->json('data.articles');
         $this->assertIsArray($articles, 'Articles should be an array');
         $this->assertEmpty($articles, 'Articles array should be empty');
@@ -261,9 +258,9 @@ class ArticleIndexTest extends TestCase
         // Given: An article that we will soft delete
         $article = Article::first();
         $this->assertNotNull($article, 'Article not found');
-        
+
         $initialCount = Article::count();
-        
+
         // Soft delete the article
         $article->delete();
         $this->assertSoftDeleted('articles', ['id' => $article->id]);
@@ -273,10 +270,10 @@ class ArticleIndexTest extends TestCase
 
         // Then: The soft deleted article should not be included
         $response->assertStatus(200);
-        
+
         $articles = $response->json('data.articles');
         $articleIds = array_column($articles, 'id');
-        
+
         $this->assertNotContains($article->id, $articleIds, 'Soft deleted article should not be in the list');
         $this->assertCount($initialCount - 1, $articles, 'Article count should be reduced by 1');
     }

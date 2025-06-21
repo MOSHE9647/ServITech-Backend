@@ -30,8 +30,8 @@ class AppServiceProvider extends ServiceProvider
     {
         Scramble::configure()
             ->routes(
-                routeResolver: fn (Route $route): bool => 
-                    !Str::contains(haystack: $route->getName(), needles: 'localized.')
+                routeResolver: fn(Route $route): bool =>
+                !Str::contains(haystack: $route->getName(), needles: 'localized.')
             )
             ->withDocumentTransformers(function (OpenApi $openApi) {
                 $openApi->secure(
@@ -40,13 +40,12 @@ class AppServiceProvider extends ServiceProvider
             })
             ->withOperationTransformers(function (Operation $operation) {
                 $operation->addParameters([
-                    new Parameter(name: 'Accept-Language', in: 'header')
+                    new Parameter('Accept-Language', 'header')
                         ->setSchema(new Schema()->fromType(new StringType()))
                         ->description('The language to use for the response. Defaults to the application\'s locale (es).')
                         ->required(false)
                         ->example('en')
                 ]);
             });
-
     }
 }

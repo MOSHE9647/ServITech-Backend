@@ -37,7 +37,7 @@ class CategoryController extends Controller
         return ApiResponse::success(
             data: compact('categories'),
             message: __(
-                'messages.common.retrieved_all', 
+                'messages.common.retrieved_all',
                 ['items' => __('messages.entities.category.plural')]
             )
         );
@@ -73,7 +73,7 @@ class CategoryController extends Controller
         return ApiResponse::success(
             data: compact('category'),
             message: __(
-                'messages.common.created', 
+                'messages.common.created',
                 ['item' => __('messages.entities.category.singular')]
             ),
             status: Response::HTTP_CREATED
@@ -97,7 +97,7 @@ class CategoryController extends Controller
             // If the category does not exist, return an error response
             return ApiResponse::error(
                 message: __(
-                    'messages.common.not_found', 
+                    'messages.common.not_found',
                     ['item' => __('messages.entities.category.singular')]
                 ),
                 status: Response::HTTP_NOT_FOUND
@@ -108,7 +108,7 @@ class CategoryController extends Controller
         return ApiResponse::success(
             data: compact('category'),
             message: __(
-                'messages.common.retrieved', 
+                'messages.common.retrieved',
                 ['item' => __('messages.entities.category.singular')]
             )
         );
@@ -135,7 +135,7 @@ class CategoryController extends Controller
          */
         $data = $request->validate([
             'name' => 'required|string|max:255',
-            'description'=> 'nullable|string|max:255',
+            'description' => 'nullable|string|max:255',
         ]);
 
         // Update the category in the database
@@ -145,7 +145,7 @@ class CategoryController extends Controller
         return ApiResponse::success(
             data: compact('category'),
             message: __(
-                'messages.common.updated', 
+                'messages.common.updated',
                 ['item' => __('messages.entities.category.singular')]
             )
         );
@@ -167,7 +167,7 @@ class CategoryController extends Controller
             // If the category does not exist, return an error response
             return ApiResponse::error(
                 message: __(
-                    'messages.common.not_found', 
+                    'messages.common.not_found',
                     ['item' => __('messages.entities.category.singular')]
                 ),
                 status: Response::HTTP_NOT_FOUND
@@ -176,10 +176,10 @@ class CategoryController extends Controller
 
         // Delete the category from the database
         $category->delete();
-        
+
         // Return a successful response indicating the category was deleted
         return ApiResponse::success(message: __(
-            'messages.common.deleted', 
+            'messages.common.deleted',
             ['item' => __('messages.entities.category.singular')]
         ));
     }

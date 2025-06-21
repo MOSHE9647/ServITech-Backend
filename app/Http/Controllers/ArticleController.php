@@ -47,6 +47,7 @@ class ArticleController extends Controller implements HasMiddleware
      * 
      * This method retrieves all repair requests from the database,
      * orders them by ID in descending order, and returns them in a JSON response.
+     * @unauthenticated
      * 
      * @return ApiResponse A JSON response containing the list of repair requests.
      * @throws \Exception If there is an error retrieving the repair requests.
@@ -59,7 +60,7 @@ class ArticleController extends Controller implements HasMiddleware
         return ApiResponse::success(
             data: ['articles' => $articles],
             message: __(
-                'messages.common.retrieved_all', 
+                'messages.common.retrieved_all',
                 ['items' => __('messages.entities.article.plural')]
             )
         );
@@ -94,7 +95,7 @@ class ArticleController extends Controller implements HasMiddleware
             if ($request->hasFile('images')) {
                 // Store each image and create a record in the database
                 $images = $this->storeImages(
-                    images: $request->file('images'), 
+                    images: $request->file('images'),
                     relatedId: $article->id,
                     prefix: 'article_image',
                     directory: 'articles'
@@ -109,7 +110,7 @@ class ArticleController extends Controller implements HasMiddleware
             return ApiResponse::success(
                 status: Response::HTTP_CREATED,
                 message: __(
-                    'messages.common.created', 
+                    'messages.common.created',
                     ['item' => __('messages.entities.article.singular')]
                 ),
                 data: [
@@ -126,7 +127,7 @@ class ArticleController extends Controller implements HasMiddleware
             return ApiResponse::error(
                 status: Response::HTTP_INTERNAL_SERVER_ERROR,
                 message: __(
-                    'messages.common.creation_failed', 
+                    'messages.common.creation_failed',
                     ['item' => __('messages.entities.article.singular')]
                 ),
                 errors: ['exception' => $th->getMessage()]
@@ -139,6 +140,7 @@ class ArticleController extends Controller implements HasMiddleware
      * 
      * This method retrieves all articles in a specific category
      * and returns them in a JSON response.
+     * @unauthenticated
      * 
      * @param string $category The category of the articles to be displayed.
      * @return ApiResponse A JSON response containing the details of the articles.
@@ -149,13 +151,13 @@ class ArticleController extends Controller implements HasMiddleware
         $articles = Article::whereHas('category', function ($query) use ($category) {
             $query->where('name', $category);
         })
-        ->with(['images', 'category', 'subcategory'])
-        ->get(); // Retrieve all articles in the specified category
+            ->with(['images', 'category', 'subcategory'])
+            ->get(); // Retrieve all articles in the specified category
 
         if ($articles->isEmpty()) {
             return ApiResponse::error(
                 message: __(
-                    'messages.common.not_found', 
+                    'messages.common.not_found',
                     ['item' => __('messages.entities.article.singular')]
                 ),
                 status: Response::HTTP_NOT_FOUND
@@ -176,6 +178,7 @@ class ArticleController extends Controller implements HasMiddleware
      * 
      * This method retrieves a specific article by its ID
      * and returns its details in a JSON response.
+     * @unauthenticated
      * 
      * @param Article $article The article to be displayed.
      * @return ApiResponse A JSON response containing the details of the article.
@@ -187,13 +190,13 @@ class ArticleController extends Controller implements HasMiddleware
         if (!$article->exists()) {
             return ApiResponse::error(
                 message: __(
-                    'messages.common.not_found', 
+                    'messages.common.not_found',
                     ['item' => __('messages.entities.article.singular')]
                 ),
                 status: Response::HTTP_NOT_FOUND
             );
         }
-        
+
         // Load the images associated with the article
         $article->load(['images', 'category', 'subcategory']);
 
@@ -238,10 +241,10 @@ class ArticleController extends Controller implements HasMiddleware
                 if ($article->images()->exists()) {
                     $this->deleteImages($article->images());
                 }
-                
+
                 // Then store new images
                 $images = $this->storeImages(
-                    images: $request->file('images'), 
+                    images: $request->file('images'),
                     relatedId: $article->id,
                     prefix: 'article_image',
                     directory: 'articles'
@@ -255,7 +258,7 @@ class ArticleController extends Controller implements HasMiddleware
             // Return a successful response with the updated article
             return ApiResponse::success(
                 message: __(
-                    'messages.common.updated', 
+                    'messages.common.updated',
                     ['item' => __('messages.entities.article.singular')]
                 ),
                 data: [
@@ -272,7 +275,7 @@ class ArticleController extends Controller implements HasMiddleware
             return ApiResponse::error(
                 status: Response::HTTP_INTERNAL_SERVER_ERROR,
                 message: __(
-                    'messages.common.update_failed', 
+                    'messages.common.update_failed',
                     ['item' => __('messages.entities.article.singular')]
                 ),
                 errors: ['exception' => $th->getMessage()]
@@ -308,7 +311,7 @@ class ArticleController extends Controller implements HasMiddleware
         try {
             // Begin a database transaction to ensure atomicity
             DB::beginTransaction();
-        
+
             // Check if the article has associated images
             // If so, delete each image from storage and remove the record from the database
             if ($article->images()->exists()) {
@@ -319,7 +322,7 @@ class ArticleController extends Controller implements HasMiddleware
             // If deletion fails, return an error response
             if (!$article->delete()) {
                 throw new \Exception(__(
-                    'messages.common.deletion_failed', 
+                    'messages.common.deletion_failed',
                     ['item' => __('messages.entities.article.singular')]
                 ));
             }

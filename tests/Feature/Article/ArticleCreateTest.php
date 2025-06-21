@@ -5,8 +5,7 @@ namespace Tests\Feature\Article;
 use App\Enums\UserRoles;
 use App\Models\Category;
 use App\Models\User;
-use Database\Seeders\ArticleSeeder;
-use Database\Seeders\UserSeeder;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -23,11 +22,8 @@ class ArticleCreateTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed([
-            // Seed the database with necessary data
-            UserSeeder::class,
-            ArticleSeeder::class,
-        ]);
+        $this->seed([DatabaseSeeder::class]); // Seed the database with initial data
+        Storage::fake('public'); // Use a fake storage disk for testing
     }
 
     /**
@@ -45,12 +41,12 @@ class ArticleCreateTest extends TestCase
         }
 
         $articleData = [
-            'name'              => 'Laptop',
-            'description'       => 'A high-performance laptop with 16GB RAM.',
-            'price'             => 1200.50,
-            'category_id'       => $category->id, // Get the random category ID
-            'subcategory_id'    => $subcategory->id, // Get the random subcategory ID
-            'images'            => [
+            'name' => 'Laptop',
+            'description' => 'A high-performance laptop with 16GB RAM.',
+            'price' => 1200.50,
+            'category_id' => $category->id, // Get the random category ID
+            'subcategory_id' => $subcategory->id, // Get the random subcategory ID
+            'images' => [
                 UploadedFile::fake()->image('laptop.jpg'),
                 UploadedFile::fake()->image('laptop2.jpg'),
             ],
@@ -59,7 +55,7 @@ class ArticleCreateTest extends TestCase
         // When: An admin user attempts to create an article
         $admin = User::role(UserRoles::ADMIN)->first();
         $this->assertNotNull(
-            $admin, 
+            $admin,
             __('messages.common.not_found', [
                 'item' => __('messages.entities.user.singular')
             ])
@@ -73,10 +69,10 @@ class ArticleCreateTest extends TestCase
         $response->assertJsonStructure(['data', 'status', 'message']);
         // Verify the article data exists in the articles table
         $this->assertDatabaseHas('articles', [
-            'name'           => $articleData['name'],
-            'description'    => $articleData['description'],
-            'price'          => $articleData['price'],
-            'category_id'    => $articleData['category_id'],
+            'name' => $articleData['name'],
+            'description' => $articleData['description'],
+            'price' => $articleData['price'],
+            'category_id' => $articleData['category_id'],
             'subcategory_id' => $articleData['subcategory_id'],
         ]);
 
@@ -113,7 +109,7 @@ class ArticleCreateTest extends TestCase
         // When: A non-admin user attempts to create an article
         $user = User::role(UserRoles::USER)->first();
         $this->assertNotNull(
-            $user, 
+            $user,
             __('messages.common.not_found', [
                 'item' => __('messages.entities.user.singular')
             ])
@@ -179,7 +175,7 @@ class ArticleCreateTest extends TestCase
         // When: An admin user attempts to create an article
         $admin = User::role(UserRoles::ADMIN)->first();
         $this->assertNotNull(
-            $admin, 
+            $admin,
             __('messages.common.not_found', [
                 'item' => __('messages.entities.user.singular')
             ])
@@ -217,7 +213,7 @@ class ArticleCreateTest extends TestCase
         // When: An admin user attempts to create an article
         $admin = User::role(UserRoles::ADMIN)->first();
         $this->assertNotNull(
-            $admin, 
+            $admin,
             __('messages.common.not_found', [
                 'item' => __('messages.entities.user.singular')
             ])
@@ -255,7 +251,7 @@ class ArticleCreateTest extends TestCase
         // When: An admin user attempts to create an article
         $admin = User::role(UserRoles::ADMIN)->first();
         $this->assertNotNull(
-            $admin, 
+            $admin,
             __('messages.common.not_found', [
                 'item' => __('messages.entities.user.singular')
             ])
@@ -293,7 +289,7 @@ class ArticleCreateTest extends TestCase
         // When: An admin user attempts to create an article
         $admin = User::role(UserRoles::ADMIN)->first();
         $this->assertNotNull(
-            $admin, 
+            $admin,
             __('messages.common.not_found', [
                 'item' => __('messages.entities.user.singular')
             ])
@@ -331,12 +327,12 @@ class ArticleCreateTest extends TestCase
         // When: An admin user attempts to create an article
         $admin = User::role(UserRoles::ADMIN)->first();
         $this->assertNotNull(
-            $admin, 
+            $admin,
             __('messages.common.not_found', [
                 'item' => __('messages.entities.user.singular')
             ])
         ); // Ensure the admin exists
-        
+
         $response = $this->apiAs($admin, 'POST', route('articles.store'), $articleData);
 
         // Then: The request should fail with a 422 Unprocessable Entity status
@@ -369,7 +365,7 @@ class ArticleCreateTest extends TestCase
         // When: An admin user attempts to create an article
         $admin = User::role(UserRoles::ADMIN)->first();
         $this->assertNotNull(
-            $admin, 
+            $admin,
             __('messages.common.not_found', [
                 'item' => __('messages.entities.user.singular')
             ])
@@ -408,14 +404,14 @@ class ArticleCreateTest extends TestCase
         // When: An admin user attempts to create an article
         $admin = User::role(UserRoles::ADMIN)->first();
         $this->assertNotNull(
-            $admin, 
+            $admin,
             __('messages.common.not_found', [
                 'item' => __('messages.entities.user.singular')
             ])
         ); // Ensure the admin exists
-        
+
         $response = $this->apiAs($admin, 'POST', route('articles.store'), $articleData);
-        
+
         // Then: The request should fail with a 422 Unprocessable Entity status
         $response->assertStatus(422);
         $response->assertJsonStructure(['status', 'message', 'errors' => ['description']]);
@@ -446,7 +442,7 @@ class ArticleCreateTest extends TestCase
         // When: An admin user attempts to create an article
         $admin = User::role(UserRoles::ADMIN)->first();
         $this->assertNotNull(
-            $admin, 
+            $admin,
             __('messages.common.not_found', [
                 'item' => __('messages.entities.user.singular')
             ])
@@ -484,7 +480,7 @@ class ArticleCreateTest extends TestCase
         // When: An admin user attempts to create an article
         $admin = User::role(UserRoles::ADMIN)->first();
         $this->assertNotNull(
-            $admin, 
+            $admin,
             __('messages.common.not_found', [
                 'item' => __('messages.entities.user.singular')
             ])
@@ -522,7 +518,7 @@ class ArticleCreateTest extends TestCase
         // When: An admin user attempts to create an article
         $admin = User::role(UserRoles::ADMIN)->first();
         $this->assertNotNull(
-            $admin, 
+            $admin,
             __('messages.common.not_found', [
                 'item' => __('messages.entities.user.singular')
             ])
@@ -560,7 +556,7 @@ class ArticleCreateTest extends TestCase
         // When: An admin user attempts to create an article
         $admin = User::role(UserRoles::ADMIN)->first();
         $this->assertNotNull(
-            $admin, 
+            $admin,
             __('messages.common.not_found', [
                 'item' => __('messages.entities.user.singular')
             ])
@@ -598,7 +594,7 @@ class ArticleCreateTest extends TestCase
         // When: An admin user attempts to create an article
         $admin = User::role(UserRoles::ADMIN)->first();
         $this->assertNotNull(
-            $admin, 
+            $admin,
             __('messages.common.not_found', [
                 'item' => __('messages.entities.user.singular')
             ])
@@ -635,7 +631,7 @@ class ArticleCreateTest extends TestCase
         // When: An admin user attempts to create an article
         $admin = User::role(UserRoles::ADMIN)->first();
         $this->assertNotNull(
-            $admin, 
+            $admin,
             __('messages.common.not_found', [
                 'item' => __('messages.entities.user.singular')
             ])
@@ -673,7 +669,7 @@ class ArticleCreateTest extends TestCase
         // When: An admin user attempts to create an article
         $admin = User::role(UserRoles::ADMIN)->first();
         $this->assertNotNull(
-            $admin, 
+            $admin,
             __('messages.common.not_found', [
                 'item' => __('messages.entities.user.singular')
             ])
@@ -712,7 +708,7 @@ class ArticleCreateTest extends TestCase
         // When: An admin user attempts to create an article
         $admin = User::role(UserRoles::ADMIN)->first();
         $this->assertNotNull(
-            $admin, 
+            $admin,
             __('messages.common.not_found', [
                 'item' => __('messages.entities.user.singular')
             ])
@@ -753,7 +749,7 @@ class ArticleCreateTest extends TestCase
         // When: An admin user attempts to create an article
         $admin = User::role(UserRoles::ADMIN)->first();
         $this->assertNotNull(
-            $admin, 
+            $admin,
             __('messages.common.not_found', [
                 'item' => __('messages.entities.user.singular')
             ])
