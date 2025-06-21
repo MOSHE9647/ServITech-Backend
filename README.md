@@ -50,7 +50,7 @@ El sistema está compuesto por los siguientes componentes principales:
 
 ## ⚙️ Instalación
 
-> Recuerda instalar Node.JS y ejecutar el siguiente comando para instalar PHP y Composer:
+Antes de empezar, recuerda tener instalado Node.JS y ejecutar uno de los siguientes comandos para instalar PHP y Composer:
 
 - **Mac:**
     
@@ -71,7 +71,9 @@ El sistema está compuesto por los siguientes componentes principales:
     /bin/bash -c "$(curl -fsSL https://php.new/install/linux/8.4)"
     ```
 
----
+> Después de ejecutar el comando, debes reiniciar la terminal para que los cambios surtan efecto.
+
+Luego, sigue las siguientes instrucciones  para clonar y ejecutar la aplicación:
 
 1. Clona el repositorio:
 
@@ -85,6 +87,8 @@ El sistema está compuesto por los siguientes componentes principales:
     ```bash
     cp .env.example .env
     ```
+
+    > O, en su defecto, crea un archivo ```.env``` y copia y pega el contenido del archivo ```.env.example``` en este.
 
 3. Genera la clave de la aplicación:
 
