@@ -43,12 +43,37 @@ El sistema está compuesto por los siguientes componentes principales:
 - [Laravel 12](https://laravel.com/)
 - [Node.js & NPM](https://nodejs.org/)
 - [MySQL](https://www.mysql.com/) / [SQLite](https://www.sqlite.org/)
-- [Swagger (L5-Swagger)](https://github.com/DarkaOnLine/L5-Swagger)
+- [Scramble (Dedoc Scramble)](https://scramble.dedoc.co/)
 - [JWT (jwt-auth)](https://jwt-auth.readthedocs.io/en/develop/)
 
 ---
 
 ## ⚙️ Instalación
+
+Antes de empezar, recuerda tener instalado Node.JS y ejecutar uno de los siguientes comandos para instalar PHP y Composer:
+
+- **Mac:**
+    
+    ```bash
+    /bin/bash -c "$(curl -fsSL https://php.new/install/mac/8.4)"
+    ```
+
+- **Windows:**
+
+    ```powershell
+    # Run as administrator...
+    Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://php.new/install/windows/8.4'))
+    ```
+
+- **Linux:**
+
+    ```bash
+    /bin/bash -c "$(curl -fsSL https://php.new/install/linux/8.4)"
+    ```
+
+> Después de ejecutar el comando, debes reiniciar la terminal para que los cambios surtan efecto.
+
+Luego, sigue las siguientes instrucciones  para clonar y ejecutar la aplicación:
 
 1. Clona el repositorio:
 
@@ -62,6 +87,8 @@ El sistema está compuesto por los siguientes componentes principales:
     ```bash
     cp .env.example .env
     ```
+
+    > O, en su defecto, crea un archivo ```.env``` y copia y pega el contenido del archivo ```.env.example``` en este.
 
 3. Genera la clave de la aplicación:
 
@@ -106,14 +133,15 @@ Puedes acceder a la documentación en:
 ${APP_URL}/api/docs
 ```
 
-Esta documentación es generada automáticamente con Swagger (`l5-swagger`) e incluye ejemplos de uso y detalles de cada endpoint.
+Esta documentación es generada automáticamente con Scramble (`scramble`) e incluye ejemplos de uso y detalles de cada endpoint.
 
 La documentación está dividida en secciones para facilitar la navegación. Aquí tienes un resumen de las secciones más importantes:
 
 - **Autenticación**: Métodos para iniciar sesión y obtener tokens JWT.
-- **Usuarios**: Endpoints para gestionar usuarios, roles y permisos.
+- **Usuarios**: Endpoints para gestionar la información del usuario logueado.
 - **Artículos**: Métodos para gestionar artículos tecnológicos y de anime.
 - **Soporte Técnico**: Métodos para gestionar solicitudes de soporte técnico.
+- **Solicitudes de Reparación**: Métodos para gestionar solicitudes de reparación por parte de los administradores del sistema.
 
 ---
 ## 🧠 Uso de Gitflow
@@ -197,51 +225,73 @@ php artisan test --filter NombreDeLaPrueba
 APP_NAME=ServITech
 APP_VERSION=1.0.0
 APP_ENV=local
-APP_KEY=base64:tu_clave_genérica
+APP_KEY=
 APP_DEBUG=true
 APP_URL=http://localhost:8000
 
 APP_LOCALE=es
 APP_FALLBACK_LOCALE=en
-APP_FAKER_LOCALE=en_US
+APP_FAKER_LOCALE=es_ES
+
+APP_MAINTENANCE_DRIVER=file
+APP_MAINTENANCE_STORE=database
+APP_PREVIOUS_KEYS=
+
+PHP_CLI_SERVER_WORKERS=4
+
+BCRYPT_ROUNDS=12
 
 LOG_CHANNEL=stack
+LOG_STACK=single
+LOG_DEPRECATIONS_CHANNEL=null
 LOG_LEVEL=debug
 
-## SQLite
+# To use MySQL, change DB_CONNECTION for mysql an uncomment and change the other fields to fit your credentials
 DB_CONNECTION=sqlite
-DB_DATABASE=/ruta/a/tu/base_de_datos/database.sqlite
-
-## MySQL
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=tu_base_de_datos
-DB_USERNAME=root
-DB_PASSWORD=tu_contraseña
+# DB_HOST=127.0.0.1
+# DB_PORT=3306
+# DB_DATABASE=servitechdb
+# DB_USERNAME=root
+# DB_PASSWORD=
 
 SESSION_DRIVER=database
 SESSION_LIFETIME=120
+SESSION_ENCRYPT=false
+SESSION_PATH=/
+SESSION_DOMAIN=null
 
+BROADCAST_CONNECTION=log
+FILESYSTEM_DISK=local
 QUEUE_CONNECTION=database
-FILESYSTEM_DISK=public
-CACHE_STORE=database
 
-MAIL_MAILER=smtp
-MAIL_HOST=sandbox.smtp.mailtrap.io
+CACHE_STORE=database
+# CACHE_PREFIX=
+
+MEMCACHED_HOST=127.0.0.1
+
+REDIS_CLIENT=phpredis
+REDIS_HOST=127.0.0.1
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+
+MAIL_MAILER=log
+MAIL_SCHEME=null
+MAIL_HOST=127.0.0.1
 MAIL_PORT=2525
-MAIL_USERNAME=tu_usuario
-MAIL_PASSWORD=tu_contraseña
-MAIL_FROM_ADDRESS="mailhelper@servitechcr.com"
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_FROM_ADDRESS="hello@example.com"
 MAIL_FROM_NAME="${APP_NAME}"
 
-# L5 SWAGGER
-L5_SWAGGER_GENERATE_ALWAYS=true
-L5_SWAGGER_API_BASE_PATH=/
-SCRAMBLE_API_ROUTE=/api/doc
-L5_SWAGGER_USE_ABSOLUTE_PATH=true
+# SCRAMBLE
+SCRAMBLE_API_ROUTE=/docs/api
 
-JWT_SECRET=tu_jwt_secret
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_DEFAULT_REGION=us-east-1
+AWS_BUCKET=
+AWS_USE_PATH_STYLE_ENDPOINT=false
+
 VITE_APP_NAME="${APP_NAME}"
 ```
 
