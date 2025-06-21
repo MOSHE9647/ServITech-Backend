@@ -3,7 +3,6 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -13,6 +12,8 @@ class ResetPasswordNotification extends Notification
 
     /**
      * Create a new notification instance.
+     * 
+     * @param string $url The URL to reset the password.
      */
     public function __construct(public string $url)
     {
@@ -35,7 +36,8 @@ class ResetPasswordNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->greeting(__('Hello') . ' ' . $notifiable->name . ',')
+            ->subject(__('Reset Password Notification'))
+            ->greeting(__('Hello, :name!', ['name' => $notifiable->name ?? __('User')]))
             ->line(__('You are receiving this email because we received a password reset request for your account.'))
             ->action(__('Reset Password'), $this->url)
             ->line(__('If you did not request a password reset, no further action is required.'));

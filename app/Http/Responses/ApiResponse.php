@@ -15,8 +15,11 @@ class ApiResponse
      * @param string $message
      * @return JsonResponse|mixed
      */
-    public static function success(array $data = [], int $status = Response::HTTP_OK, string $message = 'OK'): JsonResponse
+    public static function success(array $data = [], int $status = Response::HTTP_OK, string $message = null): JsonResponse
     {
+        if ($message === null) {
+            $message = __('http-statuses.200');
+        }
         return response()->json([
             'status' => $status,
             'message' => $message,

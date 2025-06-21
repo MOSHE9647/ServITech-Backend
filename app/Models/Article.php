@@ -11,14 +11,20 @@ class Article extends Model
     /** @use HasFactory<\Database\Factories\ArticleFactory> */
     use HasFactory, SoftDeletes;
 
-    // Fillable properties for mass assignment
-    // These are the attributes that are mass assignable.
-    // This means you can use the create() method to insert data into these fields.
-    // For example:
-    // Article::create(['name' => 'Sample Article', 'description' => 'Sample Description']);
-    // This will insert a new article with the name and description provided.
-    protected $fillable = ['name', 'description', 'price', 'category_id', 'subcategory_id'];
-
+    /**
+     * The attributes that are mass assignable.
+     * This means you can use the create() method to insert
+     * data ONLY into these fields.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'name', 
+        'description', 
+        'price', 
+        'category_id', 
+        'subcategory_id'
+    ];
 
     /**
      * Polymorphic relationship: An article can have multiple images.
@@ -61,5 +67,4 @@ class Article extends Model
     {
         return $this->belongsTo(Subcategory::class);
     }
-
 }

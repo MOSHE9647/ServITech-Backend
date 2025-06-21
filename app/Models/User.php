@@ -2,27 +2,26 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Str;
 use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, SoftDeletes, HasRoles;
+    use HasFactory, HasRoles, Notifiable, SoftDeletes;
 
-    // Fillable properties for mass assignment
-    // These are the attributes that are mass assignable.
-    // This means you can use the create() method to insert data into these fields.
-    // For example:
-    // Article::create(['name' => 'Sample Article', 'description' => 'Sample Description']);
-    // This will insert a new article with the name and description provided.
+    /**
+     * The attributes that are mass assignable.
+     * This means you can use the create() method to insert
+     * data ONLY into these fields.
+     *
+     * @var list<string>
+     */
     protected $fillable = [
         'name',
         'email',
@@ -88,9 +87,10 @@ class User extends Authenticatable implements JWTSubject
      */
     public function sendPasswordResetNotification($token)
     {
+        $locale = app()->getLocale();
         $appUrl = config('app.url');
         $email = urlencode($this->email);
-        $url = "{$appUrl}/reset-password?token={$token}&email={$email}";
+        $url = "{$appUrl}/{$locale}/reset-password?token={$token}&email={$email}";
         $this->notify(new ResetPasswordNotification($url));
     }
 

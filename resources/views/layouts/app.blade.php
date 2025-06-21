@@ -11,11 +11,11 @@
     <!-- Title -->
     <title>{{ config('app.name', 'Laravel') }}</title>
 
-    <!-- Styles -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Styles -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-gray-50 dark:bg-gray-900">
     <div id="app" class="font-sans text-gray-900 antialiased">
