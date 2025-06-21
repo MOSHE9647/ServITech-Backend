@@ -5,42 +5,42 @@ declare(strict_types=1);
 return [
     // Common messages reused with parameters
     'common' => [
-        'not_found'         => ':item no encontrado.',
-        'creation_failed'   => 'Error al crear :item.',
-        'update_failed'     => 'Error al actualizar :item.',
-        'deletion_failed'   => 'No se pudo eliminar :item.',
-        'retrieved_all'     => 'Lista de :items obtenida exitosamente.',
-        'retrieved'         => ':item obtenido exitosamente.',
-        'created'           => ':item creado exitosamente.',
-        'updated'           => ':item actualizado exitosamente.',
-        'deleted'           => ':item eliminado exitosamente.',
+        'not_found' => ':item no encontrado.',
+        'creation_failed' => 'Error al crear el registro :item.',
+        'update_failed' => 'Error al actualizar el registro :item.',
+        'deletion_failed' => 'No se pudo eliminar el registro :item.',
+        'retrieved_all' => 'Lista de :items obtenida exitosamente.',
+        'retrieved' => ':item obtenido exitosamente.',
+        'created' => ':item creado exitosamente.',
+        'updated' => ':item actualizado exitosamente.',
+        'deleted' => ':item eliminado exitosamente.',
     ],
 
     // Entity-specific messages
     'entities' => [
-        'article'           => [
-            'plural'    => 'artículos',
-            'singular'  => 'artículo',
+        'article' => [
+            'plural' => 'Artículos',
+            'singular' => 'Artículo',
         ],
-        'category'          => [
-            'plural'    => 'categorías',
-            'singular'  => 'categoría',
+        'category' => [
+            'plural' => 'Categorías',
+            'singular' => 'Categoría',
         ],
-        'subcategory'       => [
-            'plural'    => 'subcategorías',
-            'singular'  => 'subcategoría',
+        'subcategory' => [
+            'plural' => 'Subcategorías',
+            'singular' => 'Subcategoría',
         ],
-        'repair_request'    => [
-            'plural'    => 'solicitudes de reparación',
-            'singular'  => 'solicitud de reparación',
+        'repair_request' => [
+            'plural' => 'Solicitudes de Reparación',
+            'singular' => 'Solicitud de Reparación',
         ],
-        'support_request'   => [
-            'plural'    => 'solicitudes de soporte',
-            'singular'  => 'solicitud de soporte',
+        'support_request' => [
+            'plural' => 'Solicitudes de Soporte',
+            'singular' => 'Solicitud de Soporte',
         ],
-        'user'              => [
-            'plural'    => 'usuarios',
-            'singular'  => 'usuario',
+        'user' => [
+            'plural' => 'Usuarios',
+            'singular' => 'Usuario',
         ],
     ],
 
@@ -50,18 +50,18 @@ return [
     ],
 
     'password' => [
-        'reset_success'     => 'Contraseña restablecida con éxito.',
-        'updated'           => 'Contraseña actualizada con éxito.',
-        'invalid'           => 'Contraseña inválida.',
+        'reset_success' => 'Contraseña restablecida con éxito.',
+        'updated' => 'Contraseña actualizada con éxito.',
+        'invalid' => 'Contraseña inválida.',
     ],
 
     'user' => [
-        'info_updated'      => 'Información del usuario actualizada con éxito.',
-        'registered'        => 'Usuario registrado con éxito.',
-        'logged_in'         => 'Usuario conectado con éxito.',
-        'logged_out'        => 'Usuario desconectado con éxito.',
-        'info_retrieved'    => 'Información del usuario obtenida con éxito.',
-        'already_logged_out'=> 'El usuario ya está desconectado.',
-        'logout_failed'     => 'Error al cerrar la sesión.',
+        'info_updated' => 'Información del usuario actualizada con éxito.',
+        'registered' => 'Usuario registrado con éxito.',
+        'logged_in' => 'Usuario conectado con éxito.',
+        'logged_out' => 'Usuario desconectado con éxito.',
+        'info_retrieved' => 'Información del usuario obtenida con éxito.',
+        'already_logged_out' => 'El usuario ya está desconectado.',
+        'logout_failed' => 'Error al cerrar la sesión.',
     ],
 ];
